@@ -1,0 +1,14 @@
+name = "cholaxanh-nap"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+# Tạo KV: npx wrangler kv namespace create ORDERS  → dán id vào đây
+[[kv_namespaces]]
+binding = "ORDERS"
+id = "DIEN_ID_KV_VAO_DAY"
+
+[vars]
+# Địa chỉ trang game, ví dụ "https://minhvy107.github.io" (để "*" khi đang thử)
+ALLOWED_ORIGIN = "*"
+
+# Khóa bí mật KHÔNG ghi ở đây. Chạy: npx wrangler secret put SEPAY_API_KEY
