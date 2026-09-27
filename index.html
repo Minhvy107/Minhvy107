@@ -878,6 +878,17 @@ const HAIR_STY={
       hairCap(g,x,y,r,c,lw,0); g.fillStyle='#e5534b'; rr(g,x-r*0.18,y-r*1.06,r*0.36,r*0.1,r*0.04); g.fill(); g.stroke();
       for(const sd of [-1,1]) lock(g,()=>{ g.moveTo(x+sd*r*0.92,y-r*0.05); g.quadraticCurveTo(x+sd*r*1.02,y+r*0.35,x+sd*r*0.86,y+r*0.62); },c,r*0.13,lw);
       hairShine(g,x,y,r,lw); } },
+  sidepart:{ front(g,x,y,r,L,lw){ const c=L.hair; g.fillStyle=c; g.beginPath();
+      g.moveTo(x-r*1.04,y+r*0.15); g.arc(x,y-r*0.05,r*1.07,Math.PI*1.02,Math.PI*1.98); g.lineTo(x+r*1.04,y+r*0.12);
+      g.quadraticCurveTo(x+r*0.92,y-r*0.4,x+r*0.6,y-r*0.5); g.quadraticCurveTo(x+r*0.1,y-r*0.3,x-r*0.45,y-r*0.5);
+      g.quadraticCurveTo(x-r*0.85,y-r*0.45,x-r*1.04,y+r*0.15); g.closePath(); g.fill(); g.stroke();
+      g.strokeStyle=shade(c,-35); g.lineWidth=lw*0.7; g.beginPath(); g.moveTo(x-r*0.45,y-r*0.98); g.quadraticCurveTo(x-r*0.5,y-r*0.7,x-r*0.45,y-r*0.52); g.stroke();
+      for(const k of [0,0.25,0.5]){ g.beginPath(); g.moveTo(x-r*0.3+k*r,y-r*0.95+k*r*0.1); g.quadraticCurveTo(x+r*0.1+k*r,y-r*0.7,x+r*0.2+k*r*1.1,y-r*0.42); g.stroke(); }
+      g.strokeStyle=OL; g.lineWidth=lw; hairShine(g,x,y,r,lw); } },
+  buzz:{ front(g,x,y,r,L,lw){ const c=L.hair; g.fillStyle=c; g.beginPath();
+      g.moveTo(x-r*1.02,y-r*0.05); g.arc(x,y-r*0.02,r*1.03,Math.PI*1.04,Math.PI*1.96); g.lineTo(x+r*1.02,y-r*0.05);
+      g.quadraticCurveTo(x+r*0.9,y-r*0.55,x,y-r*0.66); g.quadraticCurveTo(x-r*0.9,y-r*0.55,x-r*1.02,y-r*0.05); g.closePath(); g.fill(); g.stroke();
+      g.fillStyle=shade(c,-30); for(let i=0;i<14;i++){ const a=Math.PI*(1.12+0.76*i/13), rr2=r*(0.8+(i%3)*0.06); g.beginPath(); g.arc(x+Math.cos(a)*rr2,y-r*0.02+Math.sin(a)*rr2,r*0.035,0,7); g.fill(); } } },
   crownbraid:{ back(g,x,y,r,L,lw){ const c=L.hair; blob(g,[[x+r*0.95,y+r*1.02,r*0.38],[x+r*1.12,y+r*0.72,r*0.28]],c,lw); g.strokeStyle=shade(c,-35); g.lineWidth=lw*0.7; g.beginPath(); g.arc(x+r*0.95,y+r*1.02,r*0.22,0,4.4); g.stroke(); g.strokeStyle=OL; g.lineWidth=lw; },
     front(g,x,y,r,L,lw){ const c=L.hair; hairCap(g,x,y,r,c,lw,-0.3);
       g.fillStyle=c; g.beginPath(); g.moveTo(x-r*0.3,y-r*0.62); g.quadraticCurveTo(x+r*0.4,y-r*0.52,x+r*0.92,y+r*0.02); g.quadraticCurveTo(x+r*0.35,y-r*0.28,x-r*0.16,y-r*0.3); g.closePath(); g.fill(); g.stroke();
@@ -1488,16 +1499,18 @@ function stageBg(w,h,d){
    TỦ ĐỒ, KIM CƯƠNG, NHIỆM VỤ
    ===================================================================== */
 const WARDROBE=[
-  {id:'hair_anh',slot:'hair',name:'Đuôi ngựa xoăn nơ đỏ',price:0,hs:'highpony',hcDef:'#3a2620'},
+  {id:'hair_anh',slot:'hair',name:'Đuôi ngựa xoăn nơ đỏ',price:0,hs:'highpony',hcDef:'#3a2620',fem:true},
   {id:'hair_default',slot:'hair',name:'Tóc mặc định',icon:'💇',price:0},
-  {id:'hair_messybun',slot:'hair',name:'Búi messy',price:80,hs:'messybun'},
-  {id:'hair_bluntbob',slot:'hair',name:'Tóc bob mái',price:80,hs:'bluntbob'},
-  {id:'hair_halfbun',slot:'hair',name:'Búi nửa đầu',price:90,hs:'halfbun'},
-  {id:'hair_braids',slot:'hair',name:'Song bím thấp',price:110,hs:'twinbraids'},
+  {id:'hair_messybun',slot:'hair',name:'Búi messy',price:80,hs:'messybun',fem:true},
+  {id:'hair_bluntbob',slot:'hair',name:'Tóc bob mái',price:80,hs:'bluntbob',fem:true},
+  {id:'hair_halfbun',slot:'hair',name:'Búi nửa đầu',price:90,hs:'halfbun',fem:true},
+  {id:'hair_braids',slot:'hair',name:'Song bím thấp',price:110,hs:'twinbraids',fem:true},
   {id:'hair_wolf',slot:'hair',name:'Wolf cut phá cách',price:110,hs:'wolfcut'},
-  {id:'hair_wavy',slot:'hair',name:'Sóng dài siêu',price:140,hs:'wavylong'},
+  {id:'hair_wavy',slot:'hair',name:'Sóng dài siêu',price:140,hs:'wavylong',fem:true},
   {id:'hair_afro',slot:'hair',name:'Xoăn xù afro',price:140,hs:'afro'},
-  {id:'hair_crown',slot:'hair',name:'Vương miện tết',price:150,hs:'crownbraid'},
+  {id:'hair_crown',slot:'hair',name:'Vương miện tết',price:150,hs:'crownbraid',fem:true},
+  {id:'hair_sidepart',slot:'hair',name:'Rẽ ngôi lịch lãm',price:60,hs:'sidepart'},
+  {id:'hair_buzz',slot:'hair',name:'Đầu đinh gọn gàng',price:60,hs:'buzz'},
   {id:'hc_default',slot:'haircolor',name:'Màu tóc gốc',price:0},
   {id:'hc_brown',slot:'haircolor',name:'Nâu hạt dẻ',price:30,hc:'#9a6a4f'},
   {id:'hc_black',slot:'haircolor',name:'Đen tuyền',price:30,hc:'#2b1d1a'},
@@ -1597,14 +1610,17 @@ function ownerView(over){
   const hairItem=WMAP[wear.hair]||WMAP.hair_default, hcItem=WMAP[wear.haircolor]||WMAP.hc_default;
   if(!hcItem.hc&&/#[cde]/.test(L.hair)) L.hair='#4a2c22';
   if(L.hat==='maid'){ L.f=true; if(!hairItem.hs){ L.hs='bob'; L.tail=true; } }
-  if(hairItem.hs) L.f=true;
+  if(hairItem.fem) L.f=true;
   if(hairItem.hcDef&&!hcItem.hc) L.hair=hairItem.hcDef;
   L.mood='happy';
   if(L.outfit==='maid') L.f=true;
   return L;
 }
 function uniLook(look,role,it){ if(!(role==='cashier'||role==='stocker')) return look; if(it.uniMaid) return {...look,outfit:'maid',gc:it.gc||null,apron:null,cap:null,f:true}; if(it.uniOutfit) return {...look,outfit:it.uniOutfit,apron:null,cap:null}; return it.uni?{...look,shirt:it.uni,cap:it.uni}:look; }
-function staffLook(s){ return uniLook(s.look,s.role,wornItem('uniform')); }
+function staffLook(s,hairId,hcId){ let L=uniLook(s.look,s.role,wornItem('uniform'));
+  const it=WMAP[hairId!==undefined?hairId:s.hair], hc=WMAP[hcId!==undefined?hcId:s.hc];
+  if(it&&it.hs){ L={...L,hs:it.hs,cap:null,tail:false}; if(it.fem) L.f=true; if(it.hcDef&&!(hc&&hc.hc)) L.hair=it.hcDef; }
+  if(hc&&hc.hc) L={...L,hair:hc.hc}; return L; }
 function applyAwning(){ const aw=S?wornItem('awning').aw:['#6fc18a','#ffffff'], st=document.documentElement.style, key=aw.join(',');
   if(applyAwning.k===key) return; applyAwning.k=key; const n=aw.length*32;
   st.setProperty('--awg',`repeating-linear-gradient(90deg,${aw.map((c,i)=>`${c} ${i*32}px ${(i+1)*32}px`).join(',')})`);
@@ -1776,6 +1792,16 @@ function fireIncident(id){
       logMsg(`💥 Đổ kệ, mất ${n} ${p.name.toLowerCase()}.`,'warn'); break; }
   }
 }
+window.staffHair=function(id){ const s=S.staff.find(x=>x.id==id); if(!s) return;
+  const cell=(kind,it,thumbLook,label)=>{ const cur=kind==='hair'?(s.hair||''):(s.hc||''), val=it?it.id:'', own=!it||owns(it.id);
+    return `<div class="wd-item${cur===val?' worn':''}" ${own?`onclick="setStaffHair(${s.id},'${kind}','${val}')"`:''}>${cur===val?'<span class="tagw">Đang dùng</span>':''}<img class="thumb" src="${avatar(thumbLook)}" alt=""><div class="nm">${label}</div>${own?'':`<div class="muted" style="font-size:11px">🔒 ${it.price}💎 · mua ở Tủ đồ</div>`}</div>`; };
+  const hairs=WARDROBE.filter(w=>w.slot==='hair'&&w.hs), cols=WARDROBE.filter(w=>w.slot==='haircolor'&&w.hc);
+  modal(`<h3>💇 Kiểu tóc của ${esc(s.name)}</h3><p class="muted">Chọn từ những kiểu tóc & màu tóc tiệm đã mua trong 👗 Tủ đồ.</p>
+    <h4>Kiểu tóc</h4><div class="wd-items">${cell('hair',null,staffLook(s,'',s.hc),'Tóc gốc')}${hairs.map(w=>cell('hair',w,staffLook(s,w.id,s.hc),esc(w.name))).join('')}</div>
+    <h4>Màu tóc</h4><div class="wd-items">${cell('hc',null,staffLook(s,s.hair,''),'Màu gốc')}${cols.map(w=>cell('hc',w,staffLook(s,s.hair,w.id),esc(w.name))).join('')}</div>
+    <div class="row"><button class="primary" onclick="closeModal()">Xong</button></div>`); };
+window.setStaffHair=function(id,kind,val){ const s=S.staff.find(x=>x.id==id); if(!s) return; if(val&&!owns(val)) return;
+  if(val) s[kind]=val; else delete s[kind]; toast(`💇 ${s.name} đã đổi ${kind==='hair'?'kiểu tóc':'màu tóc'}!`); autosaveSoft(); refreshAll(); if(typeof renderStaff==='function') renderStaff(); const bx=$('#modalBox'), st=bx.scrollTop; staffHair(id); bx.scrollTop=st; };
 window.resolveInc=function(k){ if(k&&INC_ACT[k]) INC_ACT[k](); INC_ACT={}; closeModal(); if(R) R.paused=false; refreshAll(); };
 
 
@@ -1879,7 +1905,7 @@ function renderStaff(){
     <div>${ROLES[s.role].icon} <b>${ROLES[s.role].name}</b> · Tay nghề <span class="stars">${starStr(s.skill)}</span></div>
     <div class="desc muted">${ROLES[s.role].desc}</div>
     <div>Lương: <b>${fmt(s.wage)}</b>/ngày</div>
-    <div class="foot">${hire?`<button class="primary" data-hire="${s.id}" ${R||S.money<500e3?'disabled':''}>Tuyển (500k)</button>`:`<button class="danger" data-fire="${s.id}" ${R?'disabled':''}>Cho nghỉ (trả ${fmtS(s.wage)})</button>`}</div></div>`;
+    <div class="foot">${hire?`<button class="primary" data-hire="${s.id}" ${R||S.money<500e3?'disabled':''}>Tuyển (500k)</button>`:`<button onclick="staffHair(${s.id})">💇 Kiểu tóc</button><button class="danger" data-fire="${s.id}" ${R?'disabled':''}>Cho nghỉ (trả ${fmtS(s.wage)})</button>`}</div></div>`;
   $('#staffCards').innerHTML=S.staff.map(s=>card(s,false)).join('')||'<p class="bad">Tiệm chưa có nhân viên nào.</p>';
   $('#candCards').innerHTML=`<div class="card"><h4>⭐ Săn ứng viên 5 sao</h4><div class="desc">Nhờ trung tâm giới thiệu việc làm tìm ngay một người tay nghề cao nhất.</div>
     <div class="foot">${Object.entries(ROLES).map(([k,r])=>`<button class="sm" data-hunt="${k}" ${S.gems<HUNT_GEMS?'disabled':''}>${r.icon} ${r.name} · ${HUNT_GEMS}💎</button>`).join('')}</div></div>`+
