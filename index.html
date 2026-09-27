@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Chợ Lá Xanh – Mô phỏng kinh doanh tạp hóa</title>
+<title>Chợ Lá Xanh</title>
 <style>
 :root{
   --bg:#f3f7f2; --panel:#ffffff; --panel2:#eef5ec; --ink:#1d2b1f; --muted:#5f6f61;
@@ -14,13 +14,13 @@
   :root:not([data-theme="light"]){
     --bg:#0f1712; --panel:#17221a; --panel2:#1d2c21; --ink:#e4eee5; --muted:#9db0a0;
     --line:#2b3d2f; --brand:#27b35d; --brand2:#1b8c47; --accent:#ffc933; --bad:#ff6b6b; --good:#3fd07a;
-    --floor:#2a2a24; --shelf:#233a29; --shadow:0 2px 10px rgba(0,0,0,.4);
+    --floor:#2a2a24; --shelf:#233a29; --shadow:0 2px 10px rgba(0,0,0,.4); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0f1712; --panel:#17221a; --panel2:#1d2c21; --ink:#e4eee5; --muted:#9db0a0;
   --line:#2b3d2f; --brand:#27b35d; --brand2:#1b8c47; --accent:#ffc933; --bad:#ff6b6b; --good:#3fd07a;
-  --floor:#2a2a24; --shelf:#233a29; --shadow:0 2px 10px rgba(0,0,0,.4);
+  --floor:#2a2a24; --shelf:#233a29; --shadow:0 2px 10px rgba(0,0,0,.4); color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -35,7 +35,7 @@ button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 input[type=number]{font:inherit;width:64px;padding:3px 4px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);text-align:right}
 .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
 
-header{background:var(--brand);color:#fff;box-shadow:var(--shadow);position:sticky;top:0;z-index:5}
+header{background:var(--brand);color:#fff;box-shadow:var(--shadow);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
 header .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-top:10px;padding-bottom:10px}
 .logo{font-weight:800;font-size:20px;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
 .logo small{font-weight:500;opacity:.85;font-size:12px}
