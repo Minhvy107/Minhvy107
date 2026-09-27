@@ -7,6 +7,12 @@ const PACKS = {
   p1: { vnd: 22000, gems: 60 },
   p2: { vnd: 99000, gems: 350 },
   p3: { vnd: 199000, gems: 800 },
+  p4: { vnd: 399000, gems: 1800 },
+  p5: { vnd: 999000, gems: 5200 },
+  // Gói ưu đãi (vật phẩm, thẻ tháng và thưởng x2 lần đầu do game tự cộng)
+  starter: { vnd: 29000, gems: 300 },
+  card: { vnd: 49000, gems: 150 },
+  lux: { vnd: 149000, gems: 700 },
 };
 const CODE_RE = /CLX[A-Z0-9]{10}/;
 const PENDING_TTL = 24 * 3600;      // đơn chưa trả hết hạn sau 1 ngày

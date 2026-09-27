@@ -40,9 +40,22 @@ Những thông tin này không phải bí mật, vì khi chuyển khoản ngư�
 - Sau khi điền, tự nạp gói nhỏ nhất (22.000đ) để kiểm tra cả luồng.
 
 ## Giá gói
+| Gói | Giá | Nhận |
+|---|---|---|
+| p1 | 22.000đ | 60💎 |
+| p2 | 99.000đ | 320💎 + 30 tặng |
+| p3 | 199.000đ | 700💎 + 100 tặng |
+| p4 | 399.000đ | 1.500💎 + 300 tặng |
+| p5 | 999.000đ | 4.000💎 + 1.200 tặng |
+| 🌱 Khởi nghiệp (1 lần) | 29.000đ | 300💎 + Áo dài đỏ + Mái hiên cầu vồng |
+| 📅 Thẻ tháng | 49.000đ | 150💎 ngay + 30💎 mỗi sáng trong 30 ngày |
+| 👑 Tiểu thư (1 lần) | 149.000đ | 700💎 + Váy công chúa + Vương miện + Vương miện mèo |
+
+Gói p1–p5: **lần nạp đầu mỗi gói được x2 kim cương gốc**.
+
 Giá đang được khai báo ở **hai nơi** và phải khớp nhau:
-- `GEM_PACKS` trong `index.html`
-- `PACKS` trong `server/worker.js` (số kim cương ở đây đã gồm quà tặng)
+- `GEM_PACKS` / `GEM_OFFERS` trong `index.html`
+- `PACKS` trong `server/worker.js` (số 💎 ở đây đã gồm quà tặng; thưởng x2, vật phẩm, thẻ tháng do game tự cộng)
 
 Máy chủ chỉ tin giá của chính nó. Nếu tiền chuyển ít hơn giá gói, đơn sẽ không được duyệt.
 

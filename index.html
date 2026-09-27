@@ -160,10 +160,16 @@ label.toggle{display:flex;gap:6px;align-items:center;font-size:13px;cursor:point
 .quest{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:8px 10px;margin-bottom:6px;font-size:13px}
 .quest .qb{grid-column:1/-1;height:8px;border-radius:5px;background:var(--panel2);overflow:hidden}
 .quest .qb i{display:block;height:100%;background:#7fb8e6}
-.packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 8px;margin-top:14px}
 .pack{background:linear-gradient(#f4f9ff,#e3f0fd);border:2px solid #a9cdf0;border-radius:14px;padding:10px 6px;text-align:center;position:relative}
 .pack .g{font:800 20px var(--display);color:#2f6aa3}
 .pack{cursor:pointer}.pack:hover{border-color:#6fa8dc}.pack .bonus{font-size:11px;font-weight:800;color:#d9534f}
+.offer{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:linear-gradient(100deg,#fff4e0,#ffe6ee);border:2px solid #f0a8b8;border-radius:16px;padding:10px 12px;margin-bottom:8px;position:relative;cursor:pointer}
+.offer:hover{border-color:#e5738f}.offer.off{opacity:.6;cursor:default;filter:grayscale(.4)}
+.offer .oic{font-size:32px}.offer .odesc{font-size:12.5px}.offer .oval{font-size:11px;color:#b0476a;font-weight:700}
+.offer .oprice{font:800 15px var(--display);color:#fff;background:#e5738f;border-radius:12px;padding:6px 10px;white-space:nowrap}
+.offer .otag,.pack .x2{position:absolute;top:-9px;right:10px;background:#d9534f;color:#fff;border-radius:9px;font-size:10.5px;font-weight:800;padding:1px 8px}
+.pack .x2{right:50%;transform:translateX(50%);white-space:nowrap;background:#2f6aa3}
 .pay-pending{grid-column:1/-1;background:#fff6d6;border:2px dashed #e0b84a;border-radius:12px;padding:8px;font-size:13px;text-align:center;cursor:pointer}
 .payqr{display:grid;place-items:center;background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px;margin:8px auto;width:max-content;max-width:100%}
 .payqr img,.payqr canvas{width:220px;height:220px;image-rendering:pixelated}
@@ -331,6 +337,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <div id="wdQuests"></div>
     <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: tự tay phục vụ nhanh (+1), khách ở quầy của bạn chấm 5 sao (+1), đạt mốc thành tích (+20).</p>
     <h3 class="sec" style="margin-top:14px">💳 Nạp kim cương</h3>
+    <div id="wdOffers"></div>
     <div class="packs" id="wdPacks"></div>
     <p class="muted" style="font-size:12.5px">Quét mã VietQR bằng app ngân hàng bất kỳ. Kim cương được cộng tự động khi tiền về. Bạn vẫn có thể kiếm kim cương miễn phí bằng cách chơi.</p>
   </section>
@@ -1667,7 +1674,13 @@ function renderWardrobe(){
     return `<div class="quest"><span>${done&&!q.claimed?'✅':q.claimed?'🎁':'⬜'} ${Q.t(q.target)}<br><small class="muted">${q.type==='rev'?fmtS(q.prog)+' / '+fmtS(q.target):q.prog+' / '+q.target}</small></span>
       ${q.claimed?'<span class="muted">Đã nhận</span>':`<button class="sm ${done?'primary':''}" data-claim="${i}" ${done?'':'disabled'}>+${q.reward}💎</button>`}
       <div class="qb"><i style="width:${Math.round(q.prog/q.target*100)}%"></i></div></div>`; }).join('')||'<p class="muted">Nhiệm vụ sẽ có vào sáng mai.</p>';
-  $('#wdPacks').innerHTML=GEM_PACKS.map(p=>`<div class="pack" onclick="payOpen('${p.id}')" role="button" tabindex="0"><div class="g">💎 ${p.gems}</div>${p.bonus?`<div class="bonus">+${p.bonus} tặng</div>`:''}<div>${fmtVND(p.vnd)}</div></div>`).join('')
+  $('#wdOffers').innerHTML=GEM_OFFERS.map(o=>{ const lk=offerLocked(o), val=offerValue(o), per=Math.round(val/o.vnd*1000);
+    return `<div class="offer${lk?' off':''}" ${lk?'':`onclick="payOpen('${o.id}')" role="button" tabindex="0"`}><span class="otag">${lk||o.tag}</span><div class="oic">${o.icon}</div>
+      <div class="obody"><b>${o.name}</b><div class="odesc">${o.desc}</div><div class="oval">Trị giá ~${val.toLocaleString('vi-VN')}💎 · ${per}💎/1.000đ</div></div>
+      <div class="oprice">${lk?'✓':fmtVND(o.vnd)}</div></div>`; }).join('')
+    +(S.card&&S.card.left>0?`<div class="pay-pending" style="background:#eaf6ee;border-color:#6fc18a">📅 Thẻ tháng đang chạy: +${S.card.daily}💎 mỗi sáng, còn ${S.card.left} ngày</div>`:'');
+  $('#wdPacks').innerHTML=GEM_PACKS.map(p=>{ const first=!payBought(p.id);
+    return `<div class="pack" onclick="payOpen('${p.id}')" role="button" tabindex="0">${first?'<span class="x2">x2 lần đầu</span>':''}<div class="g">💎 ${p.gems}</div>${p.bonus?`<div class="bonus">+${p.bonus} tặng</div>`:''}${first?`<div class="bonus" style="color:#2f6aa3">+${p.gems} x2</div>`:''}<div>${fmtVND(p.vnd)}</div></div>`; }).join('')
     +(S.payOrder?`<div class="pay-pending" onclick="payShow()">⏳ Đơn ${S.payOrder.code} đang chờ thanh toán · bấm để xem</div>`:'');
   drawWardrobePreview();
 }
@@ -1677,7 +1690,18 @@ function renderWardrobe(){
    - api: địa chỉ máy chủ nạp (thư mục server/, Cloudflare Worker). Để trống = chế độ thử nghiệm. */
 const PAY_CFG={bin:'',acct:'',holder:'',api:''};
 const PAY_BANKS={'970436':'Vietcombank','970415':'VietinBank','970418':'BIDV','970405':'Agribank','970422':'MB Bank','970407':'Techcombank','970416':'ACB','970423':'TPBank','970432':'VPBank','970403':'Sacombank','970441':'VIB','970443':'SHB'};
-const GEM_PACKS=[{id:'p1',gems:60,bonus:0,vnd:22000},{id:'p2',gems:320,bonus:30,vnd:99000},{id:'p3',gems:700,bonus:100,vnd:199000}];
+// Giá và số 💎 (gồm cả quà tặng) phải khớp PACKS trong server/worker.js
+const GEM_PACKS=[{id:'p1',gems:60,bonus:0,vnd:22000},{id:'p2',gems:320,bonus:30,vnd:99000},{id:'p3',gems:700,bonus:100,vnd:199000},
+  {id:'p4',gems:1500,bonus:300,vnd:399000},{id:'p5',gems:4000,bonus:1200,vnd:999000}];
+const GEM_OFFERS=[
+  {id:'starter',icon:'🌱',name:'Gói Khởi nghiệp',vnd:29000,gems:300,items:['fit_aodai','aw_rainbow'],once:true,tag:'Chỉ 1 lần',desc:'300💎 + Áo dài đỏ + Mái hiên cầu vồng'},
+  {id:'card',icon:'📅',name:'Thẻ tháng',vnd:49000,gems:150,card:30,daily:30,tag:'Lời nhất',desc:'Nhận 150💎 ngay + 30💎 mỗi sáng trong 30 ngày (tổng 1.050💎)'},
+  {id:'lux',icon:'👑',name:'Gói Tiểu thư',vnd:149000,gems:700,items:['fit_princess','hat_crown','cat_crown'],once:true,tag:'Chỉ 1 lần',desc:'700💎 + Váy công chúa hồng + Vương miện + Vương miện mèo'}];
+const PAY_ALL=[...GEM_PACKS.map(p=>({...p,gems:p.gems+p.bonus,base:p.gems})),...GEM_OFFERS];
+const payBought=id=>!!(S.payBought&&S.payBought[id]);
+const offerValue=o=>o.gems+(o.card?o.card*o.daily:0)+(o.items||[]).reduce((a,i)=>a+(WMAP[i]?WMAP[i].price:0),0);
+function offerLocked(o){ if(o.once&&payBought(o.id)) return 'Đã mua'; if(o.card&&S.card&&S.card.left>0) return `Thẻ còn ${S.card.left} ngày`; return ''; }
+function payCardTick(){ if(!S.card||S.card.left<=0) return; S.card.left--; S.gems+=S.card.daily; toast(`📅 Thẻ tháng: +${S.card.daily}💎 (còn ${S.card.left} ngày)`); }
 const PAY_LIVE=()=>!!(PAY_CFG.bin&&PAY_CFG.acct&&PAY_CFG.api);
 const PAY_TEST=/[?&]paytest=1/.test(location.search);
 const fmtVND=v=>v.toLocaleString('vi-VN')+'đ';
@@ -1694,9 +1718,9 @@ async function payApi(path,body){ const r=await fetch(PAY_CFG.api.replace(/\/$/,
 window.payOpen=async function(packId){
   if(S.payOrder&&S.payOrder.pack!==packId){ if(!confirm(`Bạn còn đơn ${S.payOrder.code} chưa thanh toán. Hủy đơn đó và tạo đơn mới?`)) return payShow(); }
   else if(S.payOrder) return payShow();
-  const p=GEM_PACKS.find(x=>x.id===packId); if(!p) return;
+  const p=PAY_ALL.find(x=>x.id===packId); if(!p) return; const lk=GEM_OFFERS.includes(p)&&offerLocked(p); if(lk) return toast(`${p.name}: ${lk}`);
   const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', code='CLX'+payId()+Array.from({length:4},()=>A[Math.random()*A.length|0]).join('');
-  const o={code,pack:p.id,gems:p.gems+p.bonus,vnd:p.vnd,at:Date.now()};
+  const o={code,pack:p.id,gems:p.gems,vnd:p.vnd,at:Date.now()};
   if(PAY_LIVE()){ try{ await payApi('/order',{code,pack:p.id}); } catch(e){ return modal(`<h3>💳 Không kết nối được máy chủ nạp</h3><p>Vui lòng thử lại sau ít phút. (${esc(e.message)})</p><div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>`); } }
   S.payOrder=o; autosaveSoft(); payShow(); };
 window.payShow=function(){ const o=S.payOrder; if(!o) return; const live=PAY_LIVE();
@@ -1723,8 +1747,14 @@ async function payTick(){ const o=S&&S.payOrder; if(!o||!PAY_LIVE()||payBusy) re
   } catch(e){} finally{ payBusy=false; } }
 function payPoll(){ payTick(); }
 setInterval(()=>{ if(Date.now()-payLast>=(document.hidden?30000:5000)) payTick(); },2500);
-function payCredit(g){ const code=S.payOrder&&S.payOrder.code; S.gems+=g; (S.payLog=S.payLog||[]).push({code,g,at:Date.now()}); S.payOrder=null; autosave(); refreshAll();
-  modal(`<h3>🎉 Nạp thành công!</h3><p>Đơn <b>${code}</b> đã thanh toán. Bạn nhận được <b>${g}💎</b>. Cảm ơn bạn đã ủng hộ tiệm!</p><div class="row"><button class="primary" onclick="closeModal()">Tuyệt vời</button></div>`); }
+function payCredit(g){ const o=S.payOrder||{}, code=o.code, p=PAY_ALL.find(x=>x.id===o.pack)||{}, extra=[];
+  S.payBought=S.payBought||{};
+  if(p.base&&!S.payBought[p.id]){ g+=p.base; extra.push(`🎁 Thưởng x2 lần đầu: +${p.base}💎`); }
+  for(const id of p.items||[]) if(WMAP[id]){ S.owned[id]=true; extra.push(`${WMAP[id].icon||'👗'} ${WMAP[id].name}`); }
+  if(p.card){ S.card={left:p.card,daily:p.daily}; extra.push(`📅 Thẻ tháng: +${p.daily}💎 mỗi sáng trong ${p.card} ngày`); }
+  S.payBought[p.id]=(S.payBought[p.id]||0)+1;
+  S.gems+=g; (S.payLog=S.payLog||[]).push({code,pack:p.id,g,at:Date.now()}); S.payOrder=null; autosave(); refreshAll();
+  modal(`<h3>🎉 Nạp thành công!</h3><p>Đơn <b>${code}</b> đã thanh toán. Bạn nhận được <b>${g}💎</b>.</p>${extra.length?`<ul>${extra.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}<p>Cảm ơn bạn đã ủng hộ tiệm!</p><div class="row"><button class="primary" onclick="closeModal()">Tuyệt vời</button></div>`); }
 window.payDemoPaid=function(){ if(PAY_LIVE()||!PAY_TEST||!S.payOrder) return; payCredit(S.payOrder.gems); };
 window.payCancel=function(){ if(!confirm('Hủy đơn này? Nếu bạn ĐÃ chuyển khoản, đừng hủy – hãy đợi kim cương được cộng.')) return; S.payOrder=null; autosaveSoft(); closeModal(); refreshAll(); };
 $('#tab-wardrobe').addEventListener('click',e=>{
@@ -1909,6 +1939,7 @@ function endDay(){
   const x={costs,top,missed,spoilList,spoil,night,branch,tax,repDelta:S.rep-repBefore,r,avg,nrev:todays.length};
   R=null; if(speed===0) setSpeedBtn(1);
   S.day++;
+  payCardTick();
   rollMorning(false);
   autosave();
   refreshAll();
