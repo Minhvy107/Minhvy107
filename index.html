@@ -72,6 +72,17 @@ h3.sec{font-size:18px;margin-bottom:6px}
 #stageCv{position:absolute;inset:0;width:100%;height:100%;display:block}
 .qline{position:absolute;left:8px;top:6px;display:flex;gap:4px;align-items:center;z-index:2;max-width:60%}
 .qav{width:36px;height:36px;border-radius:50%;padding:3px;flex:0 0 auto}
+.qav.vip{box-shadow:0 0 0 3px #f5c542,0 0 10px #f5c542}
+.viptag{background:#f5c542;color:#5b3a33;border-radius:8px;padding:0 6px;font-size:11px;font-weight:800}
+#chalBox .chal{display:flex;gap:8px;align-items:center;background:#fff6d6;border:2px solid #e0b84a;border-radius:14px;padding:8px 10px;margin:8px 0;font-size:13px}
+#chalBox .chal .ci{font-size:26px}#chalBox .chal .cb{flex:1;min-width:0}#chalBox .chal button{white-space:nowrap}
+.fest-hero{border-radius:18px;padding:14px;margin-bottom:12px;border:2px solid var(--line);background:linear-gradient(135deg,var(--fa),var(--fb));color:#4a2c22}
+.fest-hero .big{font:800 22px var(--display)}.fest-hero .pts{font:800 28px var(--display);margin-top:6px}
+.fest-hero .bar{height:10px;background:rgba(255,255,255,.6);border-radius:6px;overflow:hidden;margin-top:6px}.fest-hero .bar i{display:block;height:100%;background:#e5738f}
+.mile{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:8px 10px;margin-bottom:6px;font-size:13px}
+.mile .mp{font:800 14px var(--display);min-width:58px;text-align:center}.mile.done{opacity:.6}.mile.ready{border-color:#e5738f;background:#fff0f4}
+.mile .thumbs{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}.mile .thumbs span{background:var(--panel2);border-radius:8px;padding:0 6px;font-size:12px}
+.chal-types{display:grid;gap:6px}.chal-types div{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:8px 10px;font-size:13px}
 .qav img{width:100%;height:100%;border-radius:50%;background:#fff;display:block}
 .qmore{font-size:12px;background:#fff;border-radius:10px;padding:0 6px;border:2px solid var(--line)}
 .evchip{position:absolute;right:8px;top:6px;z-index:2;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:12px;padding:1px 8px;font-size:12px;max-width:45%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -318,6 +329,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
       <div class="tray" id="tray"></div>
       <div class="bins" id="bins"></div>
     </div>
+    <div id="chalBox"></div>
     <div class="staffrow" id="staffRow"></div>
     <div class="ctl">
       <span class="row speed" id="speed"><button data-s="1" class="on">1x</button><button data-s="2">2x</button><button data-s="4">4x</button></span>
@@ -335,12 +347,14 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <h3 class="sec" style="margin-top:18px">📋 Nhiệm vụ hôm nay</h3>
     <p class="muted" style="margin:0 0 8px;font-size:13px">Làm xong nhận kim cương. Nhiệm vụ đổi mỗi sáng, nhiệm vụ đã xong mà quên nhận sẽ được cộng tự động.</p>
     <div id="wdQuests"></div>
-    <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: tự tay phục vụ nhanh (+1), khách ở quầy của bạn chấm 5 sao (+1), đạt mốc thành tích (+20).</p>
+    <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: làm nhiệm vụ hằng ngày, đạt mốc thành tích (+20), thắng thử thách bất ngờ (+5), mốc thưởng lễ hội.</p>
     <h3 class="sec" style="margin-top:14px">💳 Nạp kim cương</h3>
     <div id="wdOffers"></div>
     <div class="packs" id="wdPacks"></div>
     <p class="muted" style="font-size:12.5px">Quét mã VietQR bằng app ngân hàng bất kỳ. Kim cương được cộng tự động khi tiền về. Bạn vẫn có thể kiếm kim cương miễn phí bằng cách chơi.</p>
   </section>
+
+  <section class="tab panel" id="tab-event"><div id="evBody"></div></section>
 
   <section class="tab panel" id="tab-kho">
     <div class="sec-title">
@@ -456,6 +470,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
   <nav class="bnav" id="tabs">
     <button data-tab="store" class="on"><span class="i">🏪</span>Tiệm</button>
     <button data-tab="wardrobe"><span class="i">👗</span>Tủ đồ</button>
+    <button data-tab="event"><span class="i">🎪</span>Sự kiện<span class="badge" id="evBadge" hidden></span></button>
     <button data-tab="kho"><span class="i">📦</span>Kho</button>
     <button data-tab="staff"><span class="i">👥</span>Nhân viên</button>
     <button data-tab="reviews"><span class="i">⭐</span>Đánh giá<span class="badge" id="revBadge" hidden></span></button>
@@ -668,7 +683,7 @@ function newGame(name){
   PRODUCTS.forEach(p=>S.price[p.id]=S.market[p.id].ref);
 }
 function rollMorning(first){
-  settleQuests(); rollQuests();
+  settleQuests(); rollQuests(); festMorning();
   S.event=!first&&Math.random()<0.4?{...pick(EVENTS)}:null;
   if(S.event&&S.event.rep) S.rep=clamp(S.rep+S.event.rep,0,100);
   const ev=S.event||{};
@@ -692,7 +707,7 @@ const catLocked=cat=>{ const l=CATS[cat].lock; return !!l&&!S.eq[l]; };
 const dowOf=d=>(d-1)%7;
 const isWeekend=d=>dowOf(d)>=5;
 const staffOf=role=>S.staff.filter(s=>s.role===role);
-function demMult(p){ const ev=S.event||{}; let m=(ev.dem?.[p.id]??1)*(ev.demCat?.[p.cat]??1); for(const sv of SERVICES) if(S.svc[sv.id]&&sv.demCat?.[p.cat]) m*=sv.demCat[p.cat]; return m; }
+function demMult(p){ const ev=S.event||{}; let m=(ev.dem?.[p.id]??1)*(ev.demCat?.[p.cat]??1)*(festOn()&&festDef().cat.includes(p.cat)?1.5:1); for(const sv of SERVICES) if(S.svc[sv.id]&&sv.demCat?.[p.cat]) m*=sv.demCat[p.cat]; return m; }
 function priceFactor(p,price){ return clamp(Math.pow(S.market[p.id].ref/price,CATS[p.cat].e),0,3); }
 function adsBoost(){ return Math.min(0.8,S.ads.reduce((a,x)=>a+(ADS.find(d=>d.id===x.id)?.cust||0),0)); }
 function dailyBase(){
@@ -1132,7 +1147,7 @@ function startDay(){
   R={t:OPEN, base:dailyBase()*rand(0.9,1.12), queue:[], cur:null, curDelay:0.3, serv:{}, leaving:[], cid:0, shipBusy:{},
      paused:false, ff:false, blackoutUntil:0, slipUntil:0, closedLogged:false, deliv:0,
      st:{visitors:0,served:0,angry:0,missLeft:0,rev:0,svc:0,svcCogs:0,cogs:0,theft:0,caught:0,thieves:0,incident:0,deliv:0},
-     sold:{}, missed:{}, reviews:[], incident:null};
+     sold:{}, missed:{}, reviews:[], incident:null, chal:chalRoll(), rush:null};
   if(Math.random()<0.42){
     let pool=INCIDENTS.slice(); if(!S.eq.fridge) pool=pool.filter(x=>x!=='fridge');
     R.incident={t:rand(480,1200), id:pick(pool), fired:false};
@@ -1168,22 +1183,24 @@ function autoComplete(c){
 }
 function finishCustomer(c){
   buildBasket(c);
-  if(!c.basket.length){ R.st.missLeft++; c.mood='annoyed'; if(Math.random()<0.5) makeReview(c,'missing'); return false; }
+  if(!c.basket.length){ R.st.missLeft++; c.mood='annoyed'; if(Math.random()<0.5) makeReview(c,'missing'); if(c.vip) vipResult(c,false); return false; }
   pay(c); return true;
 }
 function pay(c){
   let amt=0,cogs=0;
-  for(const b of c.basket){ amt+=b.amt; cogs+=b.cogs; R.sold[b.id]=(R.sold[b.id]||0)+b.q; }
+  let fq=0; const fc=festOn()?festDef().cat:[];
+  for(const b of c.basket){ amt+=b.amt; cogs+=b.cogs; R.sold[b.id]=(R.sold[b.id]||0)+b.q; if(fc.includes(PMAP[b.id].cat)) fq+=b.q; }
+  if(fq){ festPts(fq); festMis('sell',fq); }
   R.st.rev+=amt; R.st.cogs+=cogs; S.money+=amt;
   let extra=0; const adds=c.stage==='pay'?c.addons:rollAddons();
   for(const a of adds){ extra+=a.price; R.st.svcCogs+=a.cogs; }
   if(extra){ R.st.svc+=extra; S.money+=extra; }
   R.st.served++; c.mood='happy';
   c.paidAmt=amt+extra;
-  if(Math.random()<0.3) makeReview(c,'paid');
+  if(c.vip) vipResult(c,true); else if(Math.random()<0.3) makeReview(c,'paid');
 }
 function angryLeave(c,msg){
-  R.st.angry++; c.mood='angry';
+  R.st.angry++; c.mood='angry'; if(c.vip) vipResult(c,false);
   logMsg(msg||`😡 ${c.name} chờ ${Math.round(c.waited)} phút không được phục vụ, bỏ về.`,'warn');
   if(Math.random()<0.75) makeReview(c,'angry');
 }
@@ -1242,12 +1259,10 @@ function collectPay(){
   const c=R&&R.cur; if(!c||c.stage!=='pay') return;
   const fast=c.waited<c.patience*0.4;
   c.byYou=true;
-  let gem=0;
-  if(finishCustomer(c)){ S.manualServed=(S.manualServed||0)+1; questProg('hand',1); if(fast){ questProg('fast',1); gem=1; } }
-  if(gem) S.gems+=gem;
+  if(finishCustomer(c)){ S.manualServed=(S.manualServed||0)+1; questProg('hand',1); festPts(2); festMis('hand',1); if(fast) questProg('fast',1); }
   questProg('rev',R.st.rev+R.st.svc);
   if(fast&&Math.random()<0.5) say(c,pick(['Lẹ ghê, cảm ơn nha!','Tiệm dễ thương quá','Mai ghé nữa nha!']),12);
-  moneyFloat('+'+fmtS(c.paidAmt||0)+(gem?' · +1💎':''));
+  moneyFloat('+'+fmtS(c.paidAmt||0));
   releaseCur(true); tutHook('paid'); renderLive();
 }
 function rollAddons(){
@@ -1287,9 +1302,11 @@ function simStep(dt){
   if(!R||R.paused) return;
   R.t+=dt;
   if(R.incident&&!R.incident.fired&&R.t>=R.incident.t){ R.incident.fired=true; fireIncident(R.incident.id); if(R.paused) return; }
+  if(R.chal&&R.chal.state==='wait'&&R.t>=R.chal.t){ if($('#modal').classList.contains('show')) R.chal.t+=5; else { chalFire(); if(R.paused) return; } }
+  chalTick();
   // khách đến trong giờ mở cửa
   if(R.t<CLOSE&&R.t>=R.blackoutUntil){
-    let rate=R.base/(CLOSE-OPEN)*prof(R.t)/PROF_AVG; if(R.t<R.slipUntil) rate*=0.6;
+    let rate=R.base/(CLOSE-OPEN)*prof(R.t)/PROF_AVG; if(R.t<R.slipUntil) rate*=0.6; if(R.rush&&R.t<R.rush.until) rate*=2.2;
     if(Math.random()<rate*dt){
       if(Math.random()<0.03*(S.eq.camera?0.55:1)) thiefEvent();
       else if(R.queue.length>=12){ R.st.visitors++; R.st.missLeft++; if(Math.random()<0.3) logMsg('👀 Có khách thấy hàng chờ quá dài nên bỏ đi.','warn'); }
@@ -1326,7 +1343,7 @@ function simStep(dt){
   for(const s of cash){
     const sv=R.serv[s.id];
     if(sv){ sv.t-=dt; if(sv.t<=0){ autoComplete(sv.c); delete R.serv[s.id]; } }
-    else if(R.queue.length>(R.cur?0:1)){ const c=R.queue.splice(R.cur?0:1,1)[0]; R.serv[s.id]={c,t:serveTime(c,s.speed)}; }
+    else { const k=R.queue.findIndex((c,i)=>i>=(R.cur?0:1)&&!c.vip); if(k>=0){ const c=R.queue.splice(k,1)[0]; R.serv[s.id]={c,t:serveTime(c,s.speed)}; } }
   }
   // hết ngày
   if(R.t>=CLOSE){
@@ -1356,7 +1373,7 @@ const setHTML=(el,h)=>{ if(el._h!==h){ el.innerHTML=h; el._h=h; } };
 function patColor(r){ return r>0.5?'#6cc48f':r>0.2?'#f2b84b':'#e8645a'; }
 function renderQueue(){
   const q=R?R.queue:[];
-  const h=q.slice(0,6).map(c=>{ const r=clamp(1-c.waited/c.patience,0,1); return `<div class="qav" title="${esc(c.name)}" style="background:conic-gradient(${patColor(r)} ${Math.round(r*360)}deg,#f1e2d6 0)"><img src="${avatar(c.look)}" alt="${esc(c.name)}"></div>`; }).join('')+(q.length>6?`<span class="qmore">+${q.length-6}</span>`:'');
+  const h=q.slice(0,6).map(c=>{ const r=clamp(1-c.waited/c.patience,0,1); return `<div class="qav${c.vip?' vip':''}" title="${esc(c.name)}" style="background:conic-gradient(${patColor(r)} ${Math.round(r*360)}deg,#f1e2d6 0)"><img src="${avatar(c.look)}" alt="${esc(c.name)}"></div>`; }).join('')+(q.length>6?`<span class="qmore">+${q.length-6}</span>`:'');
   setHTML($('#queueRow'),h);
 }
 function renderOrder(){
@@ -1365,7 +1382,7 @@ function renderOrder(){
   box.hidden=false;
   let h='';
   if(c.bubble&&c.bubT>0) h+=`<div class="say">💬 ${esc(c.bubble)}</div>`;
-  h+=`<div class="who">${esc(c.name)}${autoOn()?' · 🤖 đang tự phục vụ':''}</div>`;
+  h+=`<div class="who">${c.vip?'<span class="viptag">⭐ VIP</span> ':''}${esc(c.name)}${autoOn()?' · 🤖 đang tự phục vụ':''}</div>`;
   if(c.stage==='order'){
     h+=`<div class="otext">${c.line}</div><div class="ochips">${c.want.map((w,i)=>{ const p=PMAP[w.id], done=w.got>=w.q, st=stockOf(w.id);
       return `<span class="ochip ${done?'done':w.out?'outc':''}">${p.icon} ${w.got}/${w.q}${done?' ✓':''}${!done&&!w.out&&st<w.q-w.got&&!autoOn()?` <button class="mini" data-out="${i}">Báo hết</button>`:''}</span>`; }).join('')}</div>`;
@@ -1423,14 +1440,14 @@ function renderClosed(){
   const ev=S.event;
   setHTML(ov,S.over?`<h3>💥 Tiệm đã phá sản</h3><p>Âm tiền 3 ngày liên tiếp. Về màn hình chính để chơi lại.</p><button class="pill" onclick="toHome()">🏠 Màn hình chính</button>`:
     `<img class="ownerbig" src="${avatar(ownerView())}" alt="Chủ tiệm"><h3>☀️ Sáng ${DOW[dowOf(S.day)]} · Ngày ${S.day}</h3><p>${ev?`${ev.icon} <b>${ev.name}</b> – ${ev.desc}`:isWeekend(S.day)?'🛍️ Cuối tuần, mọi người hay đi chợ nhiều hơn.':'🌤️ Trời đẹp, ngày bình thường.'}</p>
-     <p>Nhập hàng ở tab <b>Kho</b> trước khi mở cửa nhé.</p><button class="pill" id="btnOpen">🔓 Mở cửa (6:30)</button>`);
+     ${festLine()}<p>Nhập hàng ở tab <b>Kho</b> trước khi mở cửa nhé.</p><button class="pill" id="btnOpen">🔓 Mở cửa (6:30)</button>`);
 }
 function renderLive(){
   renderQueue(); renderOrder(); renderTray(); renderCats(); renderBins(); renderStaffRow(); renderClosed();
   const ev=S.event, ads=S.ads.map(a=>ADS.find(d=>d.id===a.id)).filter(Boolean);
   const chip=$('#evChip'); const t=(ev?ev.icon+' '+ev.name:'')+(ads.length?' '+ads.map(a=>a.icon).join(''):'');
   chip.hidden=!t; chip.textContent=t;
-  $('#flash').checked=S.flash; renderAutoBox(); renderSpeedBtns();
+  $('#flash').checked=S.flash; renderAutoBox(); renderSpeedBtns(); renderChalBox();
 }
 function renderEvent(){}
 const AUTO_COST=8e6, AUTO_SERVED=30, AUTO_REP=45, AUTO_GEMS=60;
@@ -1599,6 +1616,19 @@ const WARDROBE=[
   {id:'uni_indigo',slot:'uniform',name:'Áo chàm & tạp dề đen',icon:'🧥',price:100,uniOutfit:'indigo'},
   {id:'uni_barista',slot:'uniform',name:'Sơ mi & tạp dề barista',icon:'☕',price:80,uniOutfit:'barista'},
   {id:'uni_cafe',slot:'uniform',name:'Áo nâu cà phê',icon:'☕',price:70,uni:'#8b5e3c'},
+  // Đồ độc quyền sự kiện (chỉ nhận được từ mốc thưởng lễ hội)
+  {id:'ev_dec_moon',slot:'decor',name:'Đèn lồng & bánh trung thu',icon:'🏮',price:0,ev:'trungthu',decor:['🏮','🥮','🐇']},
+  {id:'ev_aw_moon',slot:'awning',name:'Mái hiên đèn lồng',icon:'🏮',price:0,ev:'trungthu',aw:['#f2b544','#d9483b']},
+  {id:'ev_hc_moon',slot:'haircolor',name:'Vàng trăng rằm',price:0,ev:'trungthu',hc:'#e8b04a'},
+  {id:'ev_dec_tet',slot:'decor',name:'Mai đào & bao lì xì',icon:'🧧',price:0,ev:'tet',decor:['🌼','🧧','🌸']},
+  {id:'ev_aw_tet',slot:'awning',name:'Mái hiên đỏ vàng',icon:'🧧',price:0,ev:'tet',aw:['#d63b3b','#ffd84d']},
+  {id:'ev_uni_tet',slot:'uniform',name:'Đồng phục đỏ Tết',icon:'🧧',price:0,ev:'tet',uni:'#c83a3a'},
+  {id:'ev_dec_fruit',slot:'decor',name:'Mâm trái cây nhiệt đới',icon:'🍉',price:0,ev:'fruit',decor:['🍉','🍍','🥭']},
+  {id:'ev_aw_fruit',slot:'awning',name:'Mái hiên dưa hấu',icon:'🍉',price:0,ev:'fruit',aw:['#ff8fa3','#7bd389']},
+  {id:'ev_hc_fruit',slot:'haircolor',name:'Hồng dưa hấu',price:0,ev:'fruit',hc:'#ff6f91'},
+  {id:'ev_dec_green',slot:'decor',name:'Góc sống xanh',icon:'🌿',price:0,ev:'green',decor:['🌿','♻️','🌱']},
+  {id:'ev_aw_green',slot:'awning',name:'Mái hiên lá non',icon:'🌿',price:0,ev:'green',aw:['#3fa66b','#d9f2c4']},
+  {id:'ev_uni_green',slot:'uniform',name:'Đồng phục lá xanh',icon:'🌿',price:0,ev:'green',uni:'#2e8b57'},
   {id:'dec_plant',slot:'decor',name:'Chậu cây xanh',icon:'🪴',price:0,decor:['🪴']},
   {id:'dec_phin',slot:'decor',name:'Phin cà phê & ly sữa',icon:'☕',price:50,decor:['☕','🥛']},
   {id:'dec_menu',slot:'decor',name:'Menu nhỏ',icon:'📋',price:30,decor:['📋']},
@@ -1615,7 +1645,7 @@ const SLOTS={hair:'💇 Kiểu tóc',haircolor:'🎨 Màu tóc',hat:'👒 Mũ',o
 const DEFAULT_WEAR={hair:'hair_anh',haircolor:'hc_default',decor:'dec_plant',hat:'hat_none',outfit:'fit_indigo',acc:'acc_none',awning:'aw_green',cat:'cat_none',uniform:'uni_green'};
 let wdSlot='hair', wdPreview=null;
 function wornItem(slot){ return WMAP[(S&&S.wear&&S.wear[slot])||DEFAULT_WEAR[slot]]||WMAP[DEFAULT_WEAR[slot]]; }
-const owns=id=>WMAP[id].price===0||!!(S.owned&&S.owned[id]);
+const owns=id=>(WMAP[id].price===0&&!WMAP[id].ev)||!!(S.owned&&S.owned[id]);
 function ownerView(over){
   const wear={...(S.wear||DEFAULT_WEAR),...(over||{})}, L={...S.owner,cap:null,cap2:null,hat:null,bow:null,glasses:false,shades:false,apron:null,outfit:null,gc:null,clip:null,mask:false,phones:false};
   for(const slot of ['hat','outfit','acc','hair','haircolor']){ const it=WMAP[wear[slot]]||WMAP[DEFAULT_WEAR[slot]];
@@ -1649,6 +1679,117 @@ const QUESTS=[
 function rollQuests(){ if(!S) return; S.q=QUESTS.slice().sort(()=>Math.random()-0.5).slice(0,3).map(q=>({type:q.type,target:q.n(),prog:0,reward:q.reward,claimed:false})); }
 function settleQuests(){ if(!S||!S.q) return; let g=0; for(const q of S.q) if(!q.claimed&&q.prog>=q.target){ q.claimed=true; g+=q.reward; } if(g){ S.gems+=g; S.pendingGemNote=g; } }
 function questProg(type,v){ if(!S||!S.q) return; for(const q of S.q){ if(q.type!==type||q.claimed) continue; const was=q.prog>=q.target; q.prog=Math.min(q.target,type==='rev'?v:q.prog+v); if(!was&&q.prog>=q.target) toast(`📋 Xong nhiệm vụ: ${QUESTS.find(x=>x.type===type).t(q.target)} – vào Tủ đồ nhận ${q.reward}💎`); } }
+/* ====== 🎪 SỰ KIỆN: lễ hội 5 ngày + thử thách bất ngờ trong ngày ====== */
+const FESTS=[
+  {id:'trungthu',icon:'🏮',name:'Tết Trung thu',tok:'🏮',tname:'Đèn lồng',cat:['banh','trai'],fa:'#ffe2a8',fb:'#ffc4b0',desc:'Bánh kẹo và trái cây được săn lùng, trẻ con rủ nhau đi rước đèn.',items:['ev_dec_moon','ev_aw_moon','ev_hc_moon']},
+  {id:'tet',icon:'🧧',name:'Chợ Tết',tok:'🧧',tname:'Lì xì',cat:['kho','uong','giavi'],fa:'#ffd1c4',fb:'#ffe98a',desc:'Nhà nhà sắm Tết: gạo, đồ khô, gia vị và nước ngọt bán chạy.',items:['ev_dec_tet','ev_aw_tet','ev_uni_tet']},
+  {id:'fruit',icon:'🍉',name:'Lễ hội trái cây',tok:'🍉',tname:'Dưa hấu',cat:['trai','uong'],fa:'#ffd0da',fb:'#c9f1cf',desc:'Mùa trái chín rộ, trái cây và đồ uống giải nhiệt đắt hàng.',items:['ev_dec_fruit','ev_aw_fruit','ev_hc_fruit']},
+  {id:'green',icon:'🌿',name:'Tuần lễ Sống xanh',tok:'🌿',tname:'Lá xanh',cat:['rau','hoa'],fa:'#d5f3dc',fb:'#eef8c9',desc:'Phong trào ăn xanh sống sạch: rau củ và hóa phẩm sinh học lên ngôi.',items:['ev_dec_green','ev_aw_green','ev_uni_green']},
+];
+const FMAP=Object.fromEntries(FESTS.map(f=>[f.id,f]));
+const FEST_LEN=5, FEST_CYCLE=10, FEST_OFF=2;
+const FEST_MILES=[{pts:100,gems:15},{pts:400,item:0},{pts:800,gems:30,money:3e6},{pts:1300,item:1},{pts:2000,item:2,gems:40}];
+const FEST_MIS=[
+  {k:'sell',n:200,pts:100,t:F=>`Bán 200 món ${F.cat.map(c=>CATS[c].icon+' '+CATS[c].name).join(', ')}`},
+  {k:'hand',n:120,pts:100,t:()=>'Tự tay phục vụ 120 khách'},
+  {k:'chal',n:3,pts:150,t:()=>'Hoàn thành 3 thử thách bất ngờ'}];
+function festAt(day){ const k=(day-1)%FEST_CYCLE; if(k<FEST_OFF||k>=FEST_OFF+FEST_LEN) return null; const st=day-(k-FEST_OFF); return {f:FESTS[Math.floor((day-1)/FEST_CYCLE)%FESTS.length],start:st,end:st+FEST_LEN-1}; }
+function nextFest(day){ for(let d=day;d<=day+FEST_CYCLE;d++){ const a=festAt(d); if(a) return {...a,inDays:d-day}; } return null; }
+const festOn=()=>!!(S&&S.fest&&!S.fest.closed&&S.fest.start<=S.day&&S.day<=S.fest.end);
+const festDef=()=>FMAP[S.fest.id];
+function festMorning(){
+  if(S.fest&&!S.fest.closed&&S.fest.end<S.day) festClose();
+  const a=festAt(S.day);
+  if(a&&(!S.fest||S.fest.start!==a.start)){ S.fest={id:a.f.id,start:a.start,end:a.end,pts:0,got:{},prog:{sell:0,hand:0,chal:0},mis:{},closed:false}; S.festNote=`<b>${a.f.icon} ${a.f.name}</b> bắt đầu hôm nay! Xem tab 🎪 Sự kiện để biết cách nhận ${a.f.tok} ${a.f.tname} và quà độc quyền.`; }
+}
+function festGrant(i){ const F=festDef(), m=FEST_MILES[i], out=[]; S.fest.got[i]=true;
+  if(m.gems){ S.gems+=m.gems; out.push(`${m.gems}💎`); } if(m.money){ S.money+=m.money; out.push(fmtS(m.money)); }
+  if(m.item!=null){ const it=WMAP[F.items[m.item]]; S.owned[it.id]=true; out.push(`${it.icon||'🎨'} ${it.name}`); }
+  return out.join(' + '); }
+function festClose(){ const F=festDef(), got=[]; FEST_MILES.forEach((m,i)=>{ if(S.fest.pts>=m.pts&&!S.fest.got[i]) got.push(festGrant(i)); }); S.fest.closed=true;
+  S.festNote=`${F.icon} ${F.name} đã kết thúc với <b>${S.fest.pts} ${F.tok}</b>.`+(got.length?` Quà chưa nhận đã được cộng tự động: ${got.join(', ')}.`:''); }
+function festPts(n){ if(!festOn()||!n) return; const before=S.fest.pts; S.fest.pts+=n; const m=FEST_MILES.find(m=>before<m.pts&&S.fest.pts>=m.pts); if(m) toast(`🎪 Đạt mốc ${m.pts} ${festDef().tok}! Vào tab Sự kiện nhận quà`); }
+function festMis(k,v){ if(!festOn()) return; S.fest.prog[k]=(S.fest.prog[k]||0)+v; const d=FEST_MIS.find(x=>x.k===k); if(d&&!S.fest.mis[k]&&S.fest.prog[k]>=d.n){ S.fest.mis[k]=true; toast(`🎪 Xong nhiệm vụ lễ hội: +${d.pts} ${festDef().tok}`); festPts(d.pts); } }
+function festClaimable(){ if(!S||!S.fest||S.fest.closed) return 0; return FEST_MILES.filter((m,i)=>S.fest.pts>=m.pts&&!S.fest.got[i]).length; }
+window.festClaim=function(i){ if(!S.fest||S.fest.closed||S.fest.got[i]||S.fest.pts<FEST_MILES[i].pts) return; const r=festGrant(i); toast(`🎁 Nhận: ${r}`); autosaveSoft(); refreshAll(); };
+function festLine(){ if(festOn()){ const F=festDef(), left=S.fest.end-S.day; return `<p class="festline">🎪 <b>${F.icon} ${F.name}</b> đang diễn ra (${left?`còn ${left+1} ngày`:'ngày cuối'}) · ${S.fest.pts} ${F.tok}</p>`; }
+  const n=nextFest(S.day); return n?`<p class="festline muted">🎪 ${n.f.icon} ${n.f.name} bắt đầu sau ${n.inDays} ngày.</p>`:''; }
+function mileReward(F,m){ const r=[]; if(m.gems) r.push(`💎 ${m.gems}`); if(m.money) r.push(`💵 ${fmtS(m.money)}`); if(m.item!=null){ const it=WMAP[F.items[m.item]]; r.push(`${it.icon||'🎨'} ${it.name}`); } return r; }
+function renderEventTab(){
+  const box=$('#evBody'); let h='<h3 class="sec">🎪 Sự kiện</h3>';
+  if(festOn()){ const F=festDef(), f=S.fest, left=f.end-S.day, nxt=FEST_MILES.find(m=>f.pts<m.pts), prev=[...FEST_MILES].reverse().find(m=>f.pts>=m.pts);
+    h+=`<div class="fest-hero" style="--fa:${F.fa};--fb:${F.fb}"><div class="big">${F.icon} ${F.name}</div><div>${F.desc}</div>
+      <div style="margin-top:6px;font-size:13px">📅 Ngày ${f.start}–${f.end} · <b>${left?`còn ${left+1} ngày`:'hôm nay là ngày cuối!'}</b><br>🔥 Hàng được săn đón (+50% khách mua): ${F.cat.map(c=>CATS[c].icon+' '+CATS[c].name).join(', ')}</div>
+      <div class="pts">${F.tok} ${f.pts} <span style="font-size:14px">${F.tname}</span></div>
+      ${nxt?`<div class="bar"><i style="width:${Math.round((f.pts-(prev?prev.pts:0))/(nxt.pts-(prev?prev.pts:0))*100)}%"></i></div><div style="font-size:12px">Mốc tiếp theo: ${nxt.pts} ${F.tok}</div>`:'<div>🏆 Đã đạt mọi mốc!</div>'}</div>`;
+    h+=`<h3 class="sec">🎁 Mốc thưởng</h3>`+FEST_MILES.map((m,i)=>{ const got=f.got[i], ready=!got&&f.pts>=m.pts;
+      return `<div class="mile${got?' done':ready?' ready':''}"><div class="mp">${F.tok} ${m.pts}</div><div><div class="thumbs">${mileReward(F,m).map(x=>`<span>${x}</span>`).join('')}</div>${m.item!=null?'<small class="muted">Đồ độc quyền, không bán trong Tủ đồ</small>':''}</div>
+        ${got?'<span class="muted">✓ Đã nhận</span>':ready?`<button class="primary sm" onclick="festClaim(${i})">Nhận</button>`:`<span class="muted">${f.pts}/${m.pts}</span>`}</div>`; }).join('');
+    h+=`<h3 class="sec">📋 Nhiệm vụ lễ hội</h3>`+FEST_MIS.map(d=>{ const pr=Math.min(d.n,f.prog[d.k]||0), done=!!f.mis[d.k];
+      return `<div class="quest"><span>${done?'✅':'⬜'} ${d.t(F)}<br><small class="muted">${pr} / ${d.n} · thưởng ${d.pts} ${F.tok}</small></span><span class="muted">${done?'Xong':''}</span><div class="qb"><i style="width:${Math.round(pr/d.n*100)}%"></i></div></div>`; }).join('');
+    h+=`<h3 class="sec">💡 Cách kiếm ${F.tok} ${F.tname}</h3><ul style="font-size:13px;margin:0 0 8px;padding-left:18px">
+      <li>Mỗi món ${F.cat.map(c=>CATS[c].name.toLowerCase()).join(', ')} bán ra: <b>+1</b></li><li>Tự tay phục vụ một khách: <b>+2</b></li>
+      <li>Mỗi đánh giá 5 sao: <b>+3</b></li><li>Hoàn thành thử thách bất ngờ: <b>+50</b> (hoàn thành một phần: +15)</li><li>Xong nhiệm vụ lễ hội: <b>+100 đến +150</b></li></ul>
+      <p class="muted" style="font-size:12.5px">Hết lễ hội, quà ở các mốc đã đạt mà chưa nhận sẽ được cộng tự động.</p>`;
+  } else { const n=nextFest(S.day);
+    if(n){ const F=n.f; h+=`<div class="fest-hero" style="--fa:${F.fa};--fb:${F.fb}"><div style="font-size:13px">Lễ hội tiếp theo</div><div class="big">${F.icon} ${F.name}</div><div>${F.desc}</div>
+      <div style="margin-top:6px"><b>Bắt đầu sau ${n.inDays} ngày</b> (ngày ${n.start}–${n.end})</div>
+      <div class="thumbs" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">${F.items.map(id=>`<span style="background:rgba(255,255,255,.7);border-radius:8px;padding:1px 8px;font-size:12px">${WMAP[id].icon||'🎨'} ${WMAP[id].name}${S.owned[id]?' ✓':''}</span>`).join('')}</div>
+      <div style="font-size:12px;margin-top:6px">Mẹo: nhập sẵn nhiều ${F.cat.map(c=>CATS[c].name.toLowerCase()).join(', ')} trước ngày lễ hội.</div></div>`; }
+  }
+  h+=`<h3 class="sec">⚡ Thử thách bất ngờ</h3><p class="muted" style="font-size:13px;margin:0 0 8px">Có thể xuất hiện bất cứ lúc nào khi tiệm mở cửa (trong lễ hội gần như ngày nào cũng có). Đã hoàn thành: <b>${S.chalDone||0}</b>.</p>
+    <div class="chal-types"><div>📦 <b>Đơn đặt hàng lớn</b>: trường học, công ty… đặt nhiều món, trả thêm 30%. Nhận đơn rồi bấm <b>Giao đơn</b> trước hạn khi đủ hàng. Trễ hạn bị trừ uy tín.</div>
+    <div>⭐ <b>Khách VIP</b>: food reviewer ghé quầy của bạn. Tự tay phục vụ để được 5 sao, +3 uy tín và +5💎. Để khách bỏ về sẽ mất 4 uy tín.</div>
+    <div>🚌 <b>Giờ cao điểm</b>: xe du lịch ghé, khách đông gấp đôi trong 45 phút. Giữ không quá 2 khách bỏ về để thắng.</div></div>`;
+  box.innerHTML=h;
+}
+// ----- thử thách trong ngày -----
+const CHAL_WHO=['Trường mầm non Hoa Sen','Công ty Minh Phát','Chùa Phước Hải','Nhóm từ thiện Áo Xanh','Đám cưới nhà cô Tư','Tiệc tất niên công ty Sao Việt','Bếp ăn xưởng may Thành Công'];
+function chalRoll(){ return Math.random()<(festOn()?0.85:0.45)?{t:rand(500,1000),type:pick(['order','order','vip','rush']),state:'wait'}:null; }
+function chalFire(){ const C=R.chal; C.state='ask'; R.paused=true;
+  if(C.type==='order'){
+    const pool=PRODUCTS.filter(p=>!catLocked(p.cat)&&p.life>=5), items=[];
+    while(items.length<rint(2,3)){ const p=wsample(pool,x=>x.dem); if(!items.some(i=>i.id===p.id)) items.push({id:p.id,q:rint(5,12)}); }
+    C.items=items; C.who=pick(CHAL_WHO); C.due=Math.min(R.t+rint(180,270),CLOSE-15);
+    C.pay=round(items.reduce((a,i)=>a+S.market[i.id].ref*i.q,0)*1.3,1000);
+    modal(`<h3>📦 Đơn đặt hàng lớn</h3><p><b>${C.who}</b> gọi điện đặt:</p><ul>${items.map(i=>`<li>${PMAP[i.id].icon} ${PMAP[i.id].name} × <b>${i.q}</b> <small class="muted">(kho còn ${stockOf(i.id)})</small></li>`).join('')}</ul>
+      <p>Trả <b>${fmt(C.pay)}</b> (cao hơn giá thường 30%). Hạn giao: <b>${hhmm(C.due)}</b>. Nhận thì phải giao đúng hạn, trễ bị trừ 3 uy tín.</p><p class="muted" style="font-size:12.5px">Thiếu hàng thì vào tab 📦 Kho nhập thêm (nhập được cả khi đang mở cửa), rồi bấm <b>Giao đơn</b> ở màn hình Tiệm.</p>
+      <div class="row"><button onclick="chalAns(false)">Từ chối</button><button class="primary" onclick="chalAns(true)">Nhận đơn</button></div>`);
+  } else if(C.type==='vip'){
+    modal(`<h3>⭐ Khách VIP sắp tới!</h3><p>Một <b>food reviewer</b> nổi tiếng đang ghé tiệm. Khách sẽ vào thẳng quầy của bạn, nhân viên không phục vụ thay.</p><p>Tự tay phục vụ nhanh để nhận <b>5 sao, +3 uy tín, +5💎</b>. Nếu để khách bỏ về sẽ <b>mất 4 uy tín</b>.</p><div class="row"><button class="primary" onclick="chalAns(true)">Sẵn sàng!</button></div>`);
+  } else {
+    modal(`<h3>🚌 Giờ cao điểm!</h3><p>Một xe du lịch vừa dừng trước tiệm. Trong <b>45 phút</b> tới khách sẽ đông gấp đôi.</p><p>Giữ <b>không quá 2 khách bỏ về</b> để nhận <b>+5💎</b>. Mẹo: tự tay phục vụ và để thu ngân cùng làm.</p><div class="row"><button class="primary" onclick="chalAns(true)">Chiến thôi!</button></div>`);
+  } }
+window.chalAns=function(yes){ const C=R&&R.chal; closeModal(); if(!C||C.state!=='ask'){ if(R) R.paused=false; return; } R.paused=false;
+  if(C.type==='order'){ if(yes){ C.state='active'; logMsg(`📦 Nhận đơn của ${C.who}, hạn ${hhmm(C.due)}.`,'ok'); } else { C.state='done'; logMsg('📦 Bạn đã từ chối đơn đặt hàng lớn.'); } }
+  else if(C.type==='vip'){ C.state='active'; const c=makeCustomer(); c.vip=true; c.name=c.name+' (food reviewer)'; c.patience*=0.85; c.line=orderHTML(c); R.queue.unshift(c); R.st.visitors++; logMsg('⭐ Khách VIP đã vào hàng, đứng đầu hàng chờ.','ok'); }
+  else { C.state='active'; R.rush={until:R.t+45,bad0:R.st.angry+R.st.missLeft}; logMsg('🚌 Giờ cao điểm bắt đầu! 45 phút khách đông gấp đôi.','ok'); }
+  refreshAll(); };
+function chalDone(ok,msg){ const C=R.chal; if(!C||C.state==='done') return; C.state='done'; C.ok=ok;
+  if(ok===true){ S.chalDone=(S.chalDone||0)+1; S.gems+=5; festPts(50); festMis('chal',1); } else if(ok==='part') festPts(15);
+  logMsg(msg,ok===false?'warn':'ok'); toast(msg); }
+function vipResult(c,paid){ if(!R||!R.chal||R.chal.type!=='vip'||R.chal.state!=='active') return;
+  if(!paid){ S.rep=clamp(S.rep-4,0,100); return chalDone(false,'⭐ Khách VIP bỏ về không vui. Uy tín -4.'); }
+  if(c.byYou){ c.vipWin=true; S.rep=clamp(S.rep+3,0,100); makeReview(c,'paid'); chalDone(true,'⭐ Food reviewer khen tiệm hết lời: 5 sao, +3 uy tín, +5💎!'); }
+  else { makeReview(c,'paid'); chalDone('part','⭐ Khách VIP được phục vụ tự động, hơi tiếc vì bạn không tự tay tiếp.'); } }
+window.chalDeliver=function(){ const C=R&&R.chal; if(!C||C.type!=='order'||C.state!=='active') return;
+  const lack=C.items.filter(i=>stockOf(i.id)<i.q); if(lack.length) return toast('Chưa đủ hàng: '+lack.map(i=>`${PMAP[i.id].icon} còn ${stockOf(i.id)}/${i.q}`).join(', '));
+  let cogs=0; for(const i of C.items){ const r=take(i.id,i.q); cogs+=r.cogs; R.sold[i.id]=(R.sold[i.id]||0)+i.q; }
+  R.st.rev+=C.pay; R.st.cogs+=cogs; S.money+=C.pay; S.rep=clamp(S.rep+2,0,100); moneyFloat('+'+fmtS(C.pay));
+  const fq=festOn()?C.items.filter(i=>festDef().cat.includes(PMAP[i.id].cat)).reduce((a,i)=>a+i.q,0):0; if(fq){ festPts(fq); festMis('sell',fq); }
+  chalDone(true,`📦 Đã giao đơn cho ${C.who}: +${fmtS(C.pay)}, +2 uy tín, +5💎!`); refreshAll(); };
+function chalTick(){ const C=R.chal; if(!C||C.state!=='active') return;
+  if(C.type==='order'&&R.t>=C.due){ S.rep=clamp(S.rep-3,0,100); chalDone(false,`📦 Trễ hạn đơn của ${C.who}. Uy tín -3.`); }
+  if(C.type==='rush'&&R.rush&&R.t>=R.rush.until){ const bad=R.st.angry+R.st.missLeft-R.rush.bad0; R.rush=null;
+    if(bad<=2) chalDone(true,`🚌 Qua giờ cao điểm êm đẹp (${bad} khách bỏ về): +5💎!`); else chalDone('part',`🚌 Giờ cao điểm kết thúc, ${bad} khách bỏ về. Lần sau cố lên!`); } }
+function renderChalBox(){ const el=$('#chalBox'); if(!el) return; const C=R&&R.chal;
+  if(!C||C.state!=='active'){ setHTML(el,''); return; }
+  let h='';
+  if(C.type==='order'){ const ok=C.items.every(i=>stockOf(i.id)>=i.q);
+    h=`<div class="chal"><span class="ci">📦</span><div class="cb"><b>Đơn ${esc(C.who)}</b> · hạn ${hhmm(C.due)}<br>${C.items.map(i=>`${PMAP[i.id].icon}${Math.min(stockOf(i.id),i.q)}/${i.q}`).join(' · ')}</div><button class="${ok?'primary':''}" onclick="chalDeliver()">Giao đơn</button></div>`; }
+  else if(C.type==='vip') h=`<div class="chal"><span class="ci">⭐</span><div class="cb"><b>Khách VIP</b> đang chờ ở quầy của bạn. Tự tay phục vụ nhé!</div></div>`;
+  else if(R.rush) h=`<div class="chal"><span class="ci">🚌</span><div class="cb"><b>Giờ cao điểm</b> · còn ${Math.max(0,Math.ceil(R.rush.until-R.t))} phút · ${R.st.angry+R.st.missLeft-R.rush.bad0}/2 khách bỏ về</div></div>`;
+  setHTML(el,h); }
 function drawWardrobePreview(){
   const cv=$('#wdCv'); if(!cv) return; const w=cv.clientWidth, h=cv.clientHeight; if(!w) return;
   const d=window.devicePixelRatio||1; cv.width=Math.round(w*d); cv.height=Math.round(h*d);
@@ -1669,7 +1810,7 @@ function renderWardrobe(){
   $('#wdSlots').innerHTML=Object.entries(SLOTS).map(([k,n])=>`<button data-slot="${k}" class="${wdSlot===k?'on':''}">${n}</button>`).join('');
   $('#wdItems').innerHTML=WARDROBE.filter(w=>w.slot===wdSlot).map(w=>{ const own=owns(w.id), worn=S.wear[w.slot]===w.id;
     return `<div class="wd-item${worn?' worn':''}${wdPreview===w.id?' sel':''}" data-prev="${w.id}">${worn?'<span class="tagw">Đang dùng</span>':''}${w.slot==='hair'||w.slot==='haircolor'?`<img class="thumb" alt="" src="${avatar(ownerView({[w.slot]:w.id,hat:'hat_none',acc:'acc_none'}))}">`:`<span class="ic">${w.icon}</span>`}<span class="nm">${w.name}</span>
-      ${worn?'<button disabled>✓ Đang dùng</button>':own?`<button data-wear="${w.id}">Dùng</button>`:`<button class="primary" data-buy="${w.id}" ${S.gems<w.price?'disabled':''}>💎 ${w.price}</button>`}</div>`; }).join('');
+      ${worn?'<button disabled>✓ Đang dùng</button>':own?`<button data-wear="${w.id}">Dùng</button>`:w.ev?`<button disabled>🎪 Quà sự kiện</button>`:`<button class="primary" data-buy="${w.id}" ${S.gems<w.price?'disabled':''}>💎 ${w.price}</button>`}</div>`; }).join('');
   $('#wdQuests').innerHTML=(S.q||[]).map((q,i)=>{ const Q=QUESTS.find(x=>x.type===q.type), done=q.prog>=q.target;
     return `<div class="quest"><span>${done&&!q.claimed?'✅':q.claimed?'🎁':'⬜'} ${Q.t(q.target)}<br><small class="muted">${q.type==='rev'?fmtS(q.prog)+' / '+fmtS(q.target):q.prog+' / '+q.target}</small></span>
       ${q.claimed?'<span class="muted">Đã nhận</span>':`<button class="sm ${done?'primary':''}" data-claim="${i}" ${done?'':'disabled'}>+${q.reward}💎</button>`}
@@ -1827,6 +1968,7 @@ function makeReview(c,kind){
     const ops=c.ops||[]; s+=Math.min(0.6,ops.filter(o=>o.good).length*0.3)-Math.min(1.2,ops.filter(o=>!o.good).length*0.5);
     s=clamp(Math.round(s),1,5);
     reason=wp>0.8?'wait':mp>0?'missing':pi>1.08?'price':(pi<0.96&&Math.random()<0.5)?'cheap':s>=5?'great':s===4?'good':s===3?'ok':'meh';
+    if(c.vipWin){ s=5; reason='great'; }
   }
   let text=pick(RV_TEXT[reason]).replace('{n}',Math.max(1,Math.round(c.waited))).replace('{p}',pname);
   if(kind==='paid'&&!(c.ops&&c.ops.length)&&c.basket.length&&Math.random()<0.6){
@@ -1838,7 +1980,7 @@ function makeReview(c,kind){
   if(op&&!text.includes(op.text)) text+=' '+op.text+(/[!.…?]$/.test(op.text)?'':'.');
   const tags=[]; for(const o of ops) if(!tags.some(t=>t.id===o.id)) tags.push({id:o.id,good:o.good});
   const rv={id:++S.nextId, day:S.day, t:R.t, name:c.name, look:c.look, stars:s, text, tags:tags.slice(0,3), reply:null};
-  if(s===5){ questProg('five',1); if(c.byYou) S.gems+=1; }
+  if(s===5){ questProg('five',1); festPts(3); }
   S.reviews.unshift(rv); if(S.reviews.length>200) S.reviews.pop();
   R.reviews.push(rv);
 }
@@ -1897,7 +2039,7 @@ function fireIncident(id){
 }
 window.staffHair=function(id){ const s=S.staff.find(x=>x.id==id); if(!s) return;
   const cell=(kind,it,thumbLook,label)=>{ const cur=kind==='hair'?(s.hair||''):(s.hc||''), val=it?it.id:'', own=!it||owns(it.id);
-    return `<div class="wd-item${cur===val?' worn':''}" ${own?`onclick="setStaffHair(${s.id},'${kind}','${val}')"`:''}>${cur===val?'<span class="tagw">Đang dùng</span>':''}<img class="thumb" src="${avatar(thumbLook)}" alt=""><div class="nm">${label}</div>${own?'':`<div class="muted" style="font-size:11px">🔒 ${it.price}💎 · mua ở Tủ đồ</div>`}</div>`; };
+    return `<div class="wd-item${cur===val?' worn':''}" ${own?`onclick="setStaffHair(${s.id},'${kind}','${val}')"`:''}>${cur===val?'<span class="tagw">Đang dùng</span>':''}<img class="thumb" src="${avatar(thumbLook)}" alt=""><div class="nm">${label}</div>${own?'':`<div class="muted" style="font-size:11px">${it.ev?'🎪 Quà sự kiện':`🔒 ${it.price}💎 · mua ở Tủ đồ`}</div>`}</div>`; };
   const hairs=WARDROBE.filter(w=>w.slot==='hair'&&w.hs), cols=WARDROBE.filter(w=>w.slot==='haircolor'&&w.hc);
   modal(`<h3>💇 Kiểu tóc của ${esc(s.name)}</h3><p class="muted">Chọn từ những kiểu tóc & màu tóc tiệm đã mua trong 👗 Tủ đồ.</p>
     <h4>Kiểu tóc</h4><div class="wd-items">${cell('hair',null,staffLook(s,'',s.hc),'Tóc gốc')}${hairs.map(w=>cell('hair',w,staffLook(s,w.id,s.hc),esc(w.name))).join('')}</div>
@@ -2149,6 +2291,7 @@ function showReport(rec,x){
     ${row('⭐ Đánh giá hôm nay',x.nrev?`${x.avg.toFixed(1)} sao (${x.nrev} lượt)`:'chưa có')}
     ${row('💚 Uy tín',`${Math.round(rec.rep)} (${x.repDelta>=0?'+':''}${x.repDelta.toFixed(1)})`,x.repDelta>=0?'good':'bad')}
   </table>`;
+  if(S.festNote){ html+=`<p>🎪 ${S.festNote}</p>`; S.festNote=''; }
   if(S.pendingGemNote){ html+=`<p>🎁 Nhiệm vụ hôm qua đã xong: <b>+${S.pendingGemNote}💎</b> được cộng tự động.</p>`; S.pendingGemNote=0; }
   if(x.top.length) html+=`<p><b>🔥 Bán chạy:</b> ${x.top.join(', ')}</p>`;
   if(x.missed.length) html+=`<p class="bad"><b>❌ Khách hỏi mà hết:</b> ${x.missed.join(', ')}</p>`;
@@ -2331,10 +2474,11 @@ function renderHeader(){
   $('#sRep').textContent=Math.round(S.rep); $('#sGems').textContent=S.gems||0; applyAwning();
   const unread=S.reviews.filter(r=>!r.reply&&r.stars<=2).length;
   $('#revBadge').hidden=!unread; $('#revBadge').textContent=unread;
+  const evn=festClaimable(); $('#evBadge').hidden=!evn; $('#evBadge').textContent=evn||'';
   $('#btnPause').textContent=R&&!userPaused?'⏸':'☰';
 }
 let activeTab='store';
-function renderActive(){ ({wardrobe:renderWardrobe,kho:renderKho,staff:renderStaff,reviews:renderReviews,equip:renderEquip,ads:renderAds,svc:renderSvc,report:renderReport})[activeTab]?.(); }
+function renderActive(){ ({event:renderEventTab,wardrobe:renderWardrobe,kho:renderKho,staff:renderStaff,reviews:renderReviews,equip:renderEquip,ads:renderAds,svc:renderSvc,report:renderReport})[activeTab]?.(); }
 function refreshAll(){ renderHeader(); renderLive(); renderActive(); }
 function gotoTab(t){
   activeTab=t;
