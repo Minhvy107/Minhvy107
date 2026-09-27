@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chợ Lá Xanh – Mô phỏng kinh doanh tạp hóa</title>
+<style>
+:root{
+  --bg:#f3f7f2; --panel:#ffffff; --panel2:#eef5ec; --ink:#1d2b1f; --muted:#5f6f61;
+  --line:#d7e3d5; --brand:#0b8a3e; --brand2:#07642c; --accent:#f5b400; --bad:#d6383a; --good:#0b8a3e;
+  --floor:#f7f2e6; --shelf:#dfeedd; --shadow:0 2px 10px rgba(0,40,10,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1712; --panel:#17221a; --panel2:#1d2c21; --ink:#e4eee5; --muted:#9db0a0;
+    --line:#2b3d2f; --brand:#27b35d; --brand2:#1b8c47; --accent:#ffc933; --bad:#ff6b6b; --good:#3fd07a;
+    --floor:#2a2a24; --shelf:#233a29; --shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --panel:#17221a; --panel2:#1d2c21; --ink:#e4eee5; --muted:#9db0a0;
+  --line:#2b3d2f; --brand:#27b35d; --brand2:#1b8c47; --accent:#ffc933; --bad:#ff6b6b; --good:#3fd07a;
+  --floor:#2a2a24; --shelf:#233a29; --shadow:0 2px 10px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 12px}
+button:hover:not(:disabled){border-color:var(--brand)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+button.primary:hover:not(:disabled){background:var(--brand2)}
+button.sm{padding:2px 8px;font-size:13px}
+button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+input[type=number]{font:inherit;width:64px;padding:3px 4px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);text-align:right}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+header{background:var(--brand);color:#fff;box-shadow:var(--shadow);position:sticky;top:0;z-index:5}
+header .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-top:10px;padding-bottom:10px}
+.logo{font-weight:800;font-size:20px;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
+.logo small{font-weight:500;opacity:.85;font-size:12px}
+.stats{display:flex;flex-wrap:wrap;gap:6px 16px;margin-left:auto;font-size:14px}
+.stats b{font-variant-numeric:tabular-nums}
+.repbar{display:inline-block;width:60px;height:7px;background:rgba(255,255,255,.3);border-radius:4px;vertical-align:middle;overflow:hidden}
+.repbar i{display:block;height:100%;background:var(--accent)}
+
+nav.tabs{display:flex;gap:4px;margin:14px 0 10px;overflow-x:auto}
+nav.tabs button{border-radius:8px 8px 0 0;border-bottom:none;white-space:nowrap}
+nav.tabs button.on{background:var(--panel);color:var(--brand);border-color:var(--line);font-weight:700}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.tab{display:none}.tab.show{display:block}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.muted{color:var(--muted)}
+.good{color:var(--good)}.bad{color:var(--bad)}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+
+.event{display:flex;gap:12px;align-items:flex-start;background:var(--panel2);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.event .big{font-size:28px;line-height:1}
+.forecast{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;margin-top:4px}
+
+.stage{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+canvas{display:block;width:100%;height:auto}
+.clock{position:absolute;top:32px;right:10px;background:rgba(0,0,0,.6);color:#fff;border-radius:8px;padding:3px 10px;font-weight:700;font-variant-numeric:tabular-nums}
+.live{position:absolute;top:32px;left:10px;background:rgba(0,0,0,.6);color:#fff;border-radius:8px;padding:3px 10px;font-size:13px}
+.controls{margin-top:10px}
+.speed button{padding:4px 10px}
+label.toggle{display:flex;gap:6px;align-items:center;font-size:14px;cursor:pointer}
+
+.log{height:330px;overflow-y:auto;font-size:13px;display:flex;flex-direction:column;gap:3px}
+.log div{padding:3px 6px;border-radius:6px;background:var(--panel2)}
+.log .warn{background:rgba(214,56,58,.12)}
+.log .ok{background:rgba(11,138,62,.12)}
+
+.tblwrap{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;background:var(--panel)}
+td:first-child,th:first-child{text-align:left}
+tr.cathead td{background:var(--panel2);font-weight:700;text-align:left;font-size:13px}
+.pill{display:inline-block;font-size:11px;padding:1px 6px;border-radius:10px;background:var(--panel2);color:var(--muted);margin-left:4px}
+.pill.bad{background:rgba(214,56,58,.14);color:var(--bad)}
+.pill.good{background:rgba(11,138,62,.14);color:var(--good)}
+.stepper{display:inline-flex;align-items:center;gap:3px}
+.stepper button{padding:0 7px;font-size:14px;line-height:22px}
+.chips button{border-radius:20px;padding:3px 12px;font-size:13px}
+.buybar{position:sticky;bottom:0;background:var(--panel);border-top:1px solid var(--line);margin:10px -14px -14px;padding:10px 14px;border-radius:0 0 12px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.buybar .total{font-size:17px;font-weight:700;margin-right:auto}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2);display:flex;flex-direction:column;gap:6px}
+.card h4{margin:0;font-size:16px}
+.card .lv{font-size:12px;color:var(--muted)}
+.card .dots i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--line);margin-right:3px}
+.card .dots i.f{background:var(--brand)}
+.card .foot{margin-top:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:var(--panel2);border-radius:10px;padding:10px}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+.modal.show{display:flex}
+.modal .box{background:var(--panel);color:var(--ink);border-radius:14px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.modal h3{margin:0 0 10px}
+.modal table td{padding:4px 2px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+footer{padding:20px 0;font-size:12px;color:var(--muted);text-align:center}
+h3.sec{margin:0 0 8px;font-size:16px}
+@media (max-width:600px){header{position:static}.logo small{display:none}.stats{margin-left:0;font-size:13px}.clock,.live{top:28px;font-size:11px;padding:2px 6px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="logo">🍃 Chợ Lá Xanh <small>mô phỏng kinh doanh tạp hóa</small></div>
+    <div class="stats">
+      <span>📅 <b id="sDay"></b></span>
+      <span>💵 <b id="sMoney"></b></span>
+      <span>⭐ Uy tín <b id="sRep"></b> <span class="repbar"><i id="sRepBar"></i></span></span>
+      <span>🏪 <b id="sStores"></b> CH</span>
+      <span>👥 <b id="sStaff"></b> NV</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="tabs" id="tabs">
+    <button data-tab="store" class="on">🏪 Cửa hàng</button>
+    <button data-tab="buy">📦 Nhập hàng & Giá bán</button>
+    <button data-tab="upgrade">🔧 Đầu tư</button>
+    <button data-tab="report">📊 Báo cáo</button>
+    <button data-tab="help">❓ Hướng dẫn</button>
+  </nav>
+
+  <!-- STORE -->
+  <section class="tab show" id="tab-store">
+    <div class="grid2">
+      <div class="panel">
+        <div class="event" id="eventBox"></div>
+        <div class="stage">
+          <canvas id="cv" width="720" height="300"></canvas>
+          <div class="clock" id="clock">06:00</div>
+          <div class="live" id="live">Chưa mở cửa</div>
+        </div>
+        <div class="row controls">
+          <button class="primary" id="btnOpen">▶ Mở cửa bán hàng</button>
+          <span class="row speed" id="speed">
+            <span class="muted">Tốc độ:</span>
+            <button data-s="1" class="on">1x</button><button data-s="2">2x</button><button data-s="4">4x</button>
+          </span>
+          <button id="btnSkip" disabled>⏩ Kết thúc ngày nhanh</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label class="toggle"><input type="checkbox" id="flash"> Xả hàng tươi sống sắp hết hạn từ 18h (giảm 30%)</label>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 class="sec">📋 Nhật ký trong ngày</h3>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUY -->
+  <section class="tab" id="tab-buy">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <div class="row chips" id="chips"></div>
+        <div class="row">
+          <button id="btnSuggest" title="Tự tính số lượng nên nhập theo dự báo khách hôm nay">🤖 Gợi ý nhập</button>
+          <button id="btnClear">🗑 Xóa giỏ</button>
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px;font-size:13px">
+        <span class="muted">Đặt giá hàng loạt:</span>
+        <button class="sm" data-bulk="0.95">-5% giá TT</button>
+        <button class="sm" data-bulk="1">= giá thị trường</button>
+        <button class="sm" data-bulk="1.05">+5% giá TT</button>
+        <button class="sm" data-bulk="1.1">+10% giá TT</button>
+      </div>
+      <p class="muted" id="buyLock" style="display:none;margin:8px 0 0">⏳ Cửa hàng đang mở – chỉ nhập hàng và đổi giá được vào buổi sáng.</p>
+      <div class="tblwrap">
+        <table>
+          <thead><tr>
+            <th>Sản phẩm</th><th>Tồn kho</th><th>Giá nhập</th><th>Giá TT</th><th>Giá bán của bạn</th><th>Lãi/sp</th><th>Nhập thêm</th><th>Thành tiền</th>
+          </tr></thead>
+          <tbody id="buyBody"></tbody>
+        </table>
+      </div>
+      <div class="buybar">
+        <span class="total">Giỏ nhập: <span id="cartTotal">0đ</span></span>
+        <span class="muted" id="cartNote"></span>
+        <button class="primary" id="btnBuy">📥 Nhập hàng</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPGRADES -->
+  <section class="tab" id="tab-upgrade">
+    <div class="panel">
+      <p class="muted" id="upLock" style="display:none;margin:0 0 8px">⏳ Chỉ đầu tư được khi cửa hàng chưa mở cửa.</p>
+      <div class="cards" id="cards"></div>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section class="tab" id="tab-report">
+    <div class="panel">
+      <div class="kpis" id="kpis"></div>
+      <h3 class="sec">Kết quả từng ngày</h3>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>Ngày</th><th>Khách</th><th>Doanh thu</th><th>Giá vốn</th><th>Hàng hủy</th><th>Chi phí</th><th>Lãi ròng</th><th>Uy tín</th><th>Sự kiện</th></tr></thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button id="btnNew" style="border-color:var(--bad);color:var(--bad)">🔄 Chơi lại từ đầu</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section class="tab" id="tab-help">
+    <div class="panel">
+      <h3 class="sec">🎯 Mục tiêu</h3>
+      <p>Bạn vừa mở một cửa hàng tạp hóa – thực phẩm tươi sống nhỏ với <b>30 triệu đồng</b>. Hãy phát triển thành chuỗi cửa hàng và đạt <b>tổng tài sản 500 triệu đồng</b>. Nếu cuối ngày bị âm tiền <b>3 ngày liên tiếp</b>, bạn phá sản.</p>
+      <h3 class="sec">🔁 Vòng lặp mỗi ngày</h3>
+      <ol>
+        <li><b>Buổi sáng</b>: xem dự báo (thời tiết, sự kiện, số khách dự kiến). Vào tab <i>Nhập hàng</i> để nhập hàng và đặt giá bán.</li>
+        <li><b>Mở cửa (6h–22h)</b>: khách vào mua. Giờ cao điểm là sáng sớm và 17h–19h. Hết hàng = mất khách & giảm uy tín.</li>
+        <li><b>Cuối ngày</b>: hàng tươi sống quá hạn bị hủy. Trả tiền thuê mặt bằng, lương, điện nước.</li>
+      </ol>
+      <h3 class="sec">💡 Mẹo</h3>
+      <ul>
+        <li><b>Rau, thịt, cá</b> chỉ để được 1–2 ngày: nhập vừa đủ, bật <i>xả hàng từ 18h</i> để giảm hàng hủy.</li>
+        <li><b>Đồ khô, hóa phẩm</b> để lâu – có thể nhập nhiều khi nhà cung cấp giảm giá.</li>
+        <li>Bán rẻ hơn giá thị trường → uy tín tăng → khách đông hơn. Bán đắt → lãi/sp cao nhưng ít khách.</li>
+        <li>Mỗi nhân viên phục vụ được khoảng 100 khách/ngày. Thiếu nhân viên thì khách bỏ về.</li>
+        <li>Cuối tuần (Thứ 7, CN) khách đông hơn 20%.</li>
+        <li>Mở chi nhánh để nhân số khách – nhưng nhớ thuê thêm nhân viên!</li>
+      </ul>
+      <p class="muted">Trò chơi tự lưu trên trình duyệt sau mỗi ngày.</p>
+    </div>
+  </section>
+  <footer>Chợ Lá Xanh – trò chơi mô phỏng, lấy cảm hứng từ mô hình chuỗi cửa hàng thực phẩm tươi sống ở Việt Nam. Các con số chỉ mang tính minh họa.</footer>
+</div>
+
+<div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+// ====================== DỮ LIỆU ======================
+const CATS = {
+  rau:  {name:'Rau củ',     icon:'🥬', e:2.0},
+  trai: {name:'Trái cây',   icon:'🍌', e:1.8},
+  tuoi: {name:'Thịt cá',    icon:'🥩', e:1.8},
+  sua:  {name:'Trứng sữa',  icon:'🥚', e:1.5},
+  kho:  {name:'Đồ khô',     icon:'🍚', e:1.3},
+  hoa:  {name:'Hóa phẩm',   icon:'🧴', e:1.2},
+};
+// cost: giá nhập, ref: giá bán thị trường, life: số ngày để được, dem: số sp bán / 100 khách
+const PRODUCTS = [
+  {id:'raumuong', name:'Rau muống',      unit:'bó',     icon:'🥬', cat:'rau',  cost:6000,   ref:9000,   life:2,   dem:20},
+  {id:'caingot',  name:'Cải ngọt',       unit:'bó',     icon:'🥗', cat:'rau',  cost:8000,   ref:12000,  life:2,   dem:14},
+  {id:'cachua',   name:'Cà chua',        unit:'kg',     icon:'🍅', cat:'rau',  cost:15000,  ref:22000,  life:4,   dem:12},
+  {id:'khoaitay', name:'Khoai tây',      unit:'kg',     icon:'🥔', cat:'rau',  cost:18000,  ref:26000,  life:10,  dem:8},
+  {id:'chuoi',    name:'Chuối',          unit:'nải',    icon:'🍌', cat:'trai', cost:20000,  ref:30000,  life:4,   dem:9},
+  {id:'cam',      name:'Cam sành',       unit:'kg',     icon:'🍊', cat:'trai', cost:30000,  ref:42000,  life:7,   dem:7},
+  {id:'tao',      name:'Táo',            unit:'kg',     icon:'🍎', cat:'trai', cost:45000,  ref:65000,  life:10,  dem:6},
+  {id:'thitheo',  name:'Thịt heo',       unit:'500g',   icon:'🥩', cat:'tuoi', cost:60000,  ref:80000,  life:1,   dem:16},
+  {id:'ca',       name:'Cá basa',        unit:'500g',   icon:'🐟', cat:'tuoi', cost:35000,  ref:50000,  life:1,   dem:8},
+  {id:'ga',       name:'Gà ta',          unit:'kg',     icon:'🍗', cat:'tuoi', cost:90000,  ref:125000, life:1,   dem:5},
+  {id:'trung',    name:'Trứng gà',       unit:'vỉ 10',  icon:'🥚', cat:'sua',  cost:28000,  ref:36000,  life:14,  dem:12},
+  {id:'sua',      name:'Sữa tươi',       unit:'lốc 4',  icon:'🥛', cat:'sua',  cost:28000,  ref:34000,  life:20,  dem:10},
+  {id:'gao',      name:'Gạo thơm',       unit:'túi 5kg',icon:'🍚', cat:'kho',  cost:90000,  ref:115000, life:180, dem:5},
+  {id:'mi',       name:'Mì gói',         unit:'lốc 5',  icon:'🍜', cat:'kho',  cost:18000,  ref:23000,  life:180, dem:14},
+  {id:'nuocmam',  name:'Nước mắm',       unit:'chai',   icon:'🫙', cat:'kho',  cost:30000,  ref:40000,  life:365, dem:4},
+  {id:'dauan',    name:'Dầu ăn',         unit:'chai 1L',icon:'🛢️', cat:'kho',  cost:45000,  ref:58000,  life:365, dem:4},
+  {id:'nuocngot', name:'Nước ngọt',      unit:'lốc 6',  icon:'🥤', cat:'kho',  cost:48000,  ref:60000,  life:180, dem:7},
+  {id:'nuocgiat', name:'Nước giặt',      unit:'túi 2kg',icon:'🧴', cat:'hoa',  cost:80000,  ref:105000, life:999, dem:3},
+  {id:'kemdr',    name:'Kem đánh răng',  unit:'tuýp',   icon:'🪥', cat:'hoa',  cost:25000,  ref:35000,  life:999, dem:3},
+];
+const PMAP = Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
+
+const EVENTS = [
+  {id:'rain',    icon:'🌧️', name:'Mưa lớn cả ngày',              desc:'Khách đến ít hơn 30% (app online bù lại một phần).', cust:0.7},
+  {id:'payday',  icon:'💰', name:'Ngày lĩnh lương',              desc:'Khách đông hơn 30%.', cust:1.3},
+  {id:'storm',   icon:'🌪️', name:'Bão miền Tây – rau khan hiếm', desc:'Giá nhập rau củ +40%, giá thị trường +25%.', costCat:{rau:1.4}, refCat:{rau:1.25}},
+  {id:'flu',     icon:'🐔', name:'Tin đồn cúm gia cầm',          desc:'Nhu cầu gà -70%, trứng -40%, cá +30%.', dem:{ga:0.3,trung:0.6,ca:1.3}},
+  {id:'ram',     icon:'🌕', name:'Ngày Rằm',                     desc:'Trái cây bán chạy gấp đôi.', demCat:{trai:2}},
+  {id:'rival',   icon:'🏬', name:'Đối thủ khai trương khuyến mãi', desc:'Khách giảm 20% hôm nay.', cust:0.8},
+  {id:'pork',    icon:'🐷', name:'Giá heo hơi tăng mạnh',        desc:'Giá nhập thịt heo +30%, giá thị trường +20%.', cost:{thitheo:1.3}, ref:{thitheo:1.2}},
+  {id:'heat',    icon:'☀️', name:'Nắng nóng gay gắt',            desc:'Nước ngọt +60%, sữa +40% nhu cầu.', dem:{nuocngot:1.6,sua:1.4}},
+  {id:'press',   icon:'📰', name:'Được báo địa phương khen ngợi', desc:'Uy tín +5, khách tăng 15%.', cust:1.15, rep:5},
+  {id:'supplier',icon:'🚚', name:'Nhà cung cấp xả kho',          desc:'Giá nhập đồ khô & hóa phẩm -15%.', costCat:{kho:0.85,hoa:0.85}},
+  {id:'party',   icon:'🎉', name:'Mùa cưới hỏi trong khu phố',   desc:'Thịt, cá, gà bán chạy +50%.', demCat:{tuoi:1.5}},
+];
+
+const UPGRADES = [
+  {id:'fridge', icon:'❄️', name:'Tủ mát & kho lạnh', max:2, cost:[15e6,40e6],
+   desc:'Hàng tươi sống (≤ 4 ngày) để được lâu thêm 1 ngày mỗi cấp. Tiền điện +100k/ngày/cấp/cửa hàng.'},
+  {id:'pos',    icon:'🧾', name:'Máy POS tính tiền nhanh', max:2, cost:[8e6,20e6],
+   desc:'Mỗi nhân viên phục vụ thêm 25% khách mỗi cấp.'},
+  {id:'ads',    icon:'📣', name:'Quảng cáo & tờ rơi', max:3, cost:[5e6,12e6,25e6],
+   desc:'+15% khách mỗi cấp, uy tín tăng dần. Chi phí duy trì 300k/ngày/cấp.'},
+  {id:'app',    icon:'📱', name:'App đặt hàng online', max:3, cost:[20e6,50e6,100e6],
+   desc:'+20% khách (đơn online) mỗi cấp, đỡ ảnh hưởng khi trời mưa. Phí vận hành 250k/ngày/cấp.'},
+];
+
+const HOURS = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];
+const HOUR_W = [4,7,7,5,4,5,6,4,3,4,6,9,10,9,6,3];
+const HW_SUM = HOUR_W.reduce((a,b)=>a+b,0);
+const DOW = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
+const GOAL = 500e6;
+const START_MONEY = 30e6;
+const BASE_CUST = 200;
+const STAFF_CAP = 100;
+const SAVE_KEY = 'cholaxanh-save-v1';
+
+// ====================== TIỆN ÍCH ======================
+const $ = s=>document.querySelector(s);
+const $$ = s=>[...document.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rand=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const sround=x=>{const f=Math.floor(x);return f+(Math.random()<x-f?1:0);};
+const round=(v,step)=>Math.max(step,Math.round(v/step)*step);
+const fmt=n=>(n<0?'-':'')+Math.round(Math.abs(n)).toLocaleString('vi-VN')+'đ';
+function fmtS(n){
+  const a=Math.abs(n), s=n<0?'-':'';
+  if(a>=1e9) return s+(a/1e9).toFixed(2).replace('.',',')+' tỷ';
+  if(a>=1e6) return s+(a/1e6).toFixed(1).replace('.',',')+' tr';
+  if(a>=1e3) return s+Math.round(a/1e3)+'k';
+  return s+Math.round(a)+'đ';
+}
+const isFresh=p=>p.life<=4;
+const dowOf=d=>(d-1)%7;
+const isWeekend=d=>dowOf(d)>=5;
+
+// ====================== TRẠNG THÁI ======================
+let S, cart={}, run=null, catFilter='all', speed=1;
+
+function newGame(){
+  S = {day:1, money:START_MONEY, rep:50, stores:1, staff:2,
+       up:{fridge:0,pos:0,ads:0,app:0}, inv:{}, price:{}, market:{},
+       hist:[], flash:true, event:null, negDays:0, over:false, won:false, miles:{}};
+  PRODUCTS.forEach(p=>S.inv[p.id]=[]);
+  rollMorning();
+  PRODUCTS.forEach(p=>S.price[p.id]=S.market[p.id].ref);
+}
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+function load(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY); if(!raw) return false;
+    const d=JSON.parse(raw); if(!d||!d.day||!d.market) return false;
+    S=d;
+    PRODUCTS.forEach(p=>{ if(!S.inv[p.id]) S.inv[p.id]=[]; if(!S.market[p.id]) S.market[p.id]={cost:p.cost,ref:p.ref}; if(!S.price[p.id]) S.price[p.id]=S.market[p.id].ref; });
+    return true;
+  }catch(e){ return false; }
+}
+
+function rollMorning(){
+  S.event = Math.random()<0.4 ? {...pick(EVENTS)} : null;
+  // Không lặp sự kiện "báo khen" quá thường xuyên
+  if(S.event && S.event.rep) S.rep = clamp(S.rep + S.event.rep, 0, 100);
+  const ev = S.event||{};
+  PRODUCTS.forEach(p=>{
+    const cm = (ev.cost?.[p.id]??1)*(ev.costCat?.[p.cat]??1);
+    const rm = (ev.ref?.[p.id]??1)*(ev.refCat?.[p.cat]??1);
+    const drift = rand(0.93,1.07);
+    const cost = round(p.cost*drift*cm, 100);
+    let ref = round(p.ref*rand(0.97,1.03)*rm, 500);
+    if(ref < cost*1.08) ref = round(cost*1.12, 500);
+    S.market[p.id] = {cost, ref};
+  });
+}
+
+const stockOf = id => S.inv[id].reduce((a,b)=>a+b.q,0);
+const invValue = () => PRODUCTS.reduce((a,p)=>a+S.inv[p.id].reduce((x,b)=>x+b.q*b.c,0),0);
+const netWorth = () => S.money + invValue();
+function lifeOf(p){ return p.life + (isFresh(p)?S.up.fridge:0); }
+function demMult(p){ const ev=S.event||{}; return (ev.dem?.[p.id]??1)*(ev.demCat?.[p.cat]??1); }
+function priceFactor(p, price){ return clamp(Math.pow(S.market[p.id].ref/price, CATS[p.cat].e), 0, 3); }
+
+function expectedCustomers(){
+  const ev=S.event||{};
+  let f = BASE_CUST*S.stores*(0.4+S.rep/100*1.2)*(1+0.15*S.up.ads)*(1+0.2*S.up.app);
+  if(isWeekend(S.day)) f*=1.2;
+  f *= (ev.cust||1);
+  if(ev.id==='rain') f *= 1+0.1*S.up.app;
+  return f;
+}
+const capacity = () => S.staff*STAFF_CAP*(1+0.25*S.up.pos);
+function dailyCosts(){
+  const rent=1e6*S.stores, wage=300e3*S.staff,
+        util=(120e3+100e3*S.up.fridge)*S.stores, mkt=300e3*S.up.ads+250e3*S.up.app;
+  return {rent,wage,util,mkt,total:rent+wage+util+mkt};
+}
+
+// ====================== MÔ PHỎNG NGÀY ======================
+function take(id, n){
+  const bs=S.inv[id]; let got=0, cogs=0;
+  while(n>0 && bs.length){
+    const b=bs[0], k=Math.min(n,b.q);
+    b.q-=k; n-=k; got+=k; cogs+=k*b.c;
+    if(b.q<=0) bs.shift();
+  }
+  return {got,cogs};
+}
+
+function startDay(){
+  if(run || S.over) return;
+  const total = expectedCustomers()*rand(0.9,1.1);
+  const cap = capacity();
+  run = {h:0, acc:0, total, served:Math.min(total,cap), lost:Math.max(0,total-cap),
+         cust:0, rev:0, cogs:0, soldUnits:0, missedUnits:0, flashRev:0,
+         sold:{}, missed:{}, outNote:{}};
+  $('#log').innerHTML='';
+  addLog(`🔓 Mở cửa ${DOW[dowOf(S.day)]}, ngày ${S.day}. Dự kiến ~${Math.round(total)} khách.`,'ok');
+  if(run.lost>0) addLog(`⚠️ Thiếu nhân viên! Chỉ phục vụ được ~${Math.round(cap)} khách/ngày.`,'warn');
+  const empty = PRODUCTS.filter(p=>stockOf(p.id)===0);
+  if(empty.length) addLog(`⚠️ Kệ trống: ${empty.map(p=>p.name).join(', ')}`,'warn');
+  refresh();
+}
+
+function simulateHour(){
+  const h=HOURS[run.h];
+  const custH = run.served*HOUR_W[run.h]/HW_SUM;
+  run.cust += custH;
+  let hourRev=0;
+  for(const p of PRODUCTS){
+    let base = custH*p.dem/100*demMult(p)*rand(0.8,1.2);
+    const price = S.price[p.id];
+    // Xả hàng sắp hết hạn cuối ngày
+    if(S.flash && h>=18 && isFresh(p)){
+      const expiring = S.inv[p.id].filter(b=>b.d<=1).reduce((a,b)=>a+b.q,0);
+      if(expiring>0){
+        const dp = round(price*0.7,100);
+        const want = sround(base*priceFactor(p,dp));
+        const {got,cogs} = take(p.id, Math.min(want,expiring));
+        const r=got*dp; hourRev+=r; run.flashRev+=r; run.cogs+=cogs; run.soldUnits+=got;
+        run.sold[p.id]=(run.sold[p.id]||0)+got;
+        if(want>0) base *= Math.max(0,1-got/want);
+      }
+    }
+    const want = sround(base*priceFactor(p,price));
+    if(want<=0) continue;
+    const {got,cogs} = take(p.id, want);
+    hourRev += got*price; run.cogs+=cogs; run.soldUnits+=got;
+    run.sold[p.id]=(run.sold[p.id]||0)+got;
+    const miss=want-got;
+    if(miss>0){
+      run.missedUnits+=miss; run.missed[p.id]=(run.missed[p.id]||0)+miss;
+      if(!run.outNote[p.id]){ run.outNote[p.id]=1; addLog(`${pad(h)}:00 ❌ Hết ${p.name}! Khách hỏi mua mà không có.`,'warn'); }
+    }
+  }
+  run.rev += hourRev; S.money += hourRev;
+  addLog(`${pad(h)}:00 · ${Math.round(custH)} khách · +${fmtS(hourRev)}`);
+  spawnVisitors(custH, hourRev);
+  run.h++;
+  if(run.h>=HOURS.length) endDay();
+  else refreshStats();
+}
+const pad=n=>String(n).padStart(2,'0');
+
+function endDay(){
+  const r=run;
+  // Hủy hàng quá hạn
+  let spoil=0, spoilList=[];
+  for(const p of PRODUCTS){
+    const bs=S.inv[p.id]; let lost=0;
+    bs.forEach(b=>b.d--);
+    for(const b of bs) if(b.d<=0){ lost+=b.q; spoil+=b.q*b.c; }
+    S.inv[p.id]=bs.filter(b=>b.d>0 && b.q>0);
+    if(lost>0) spoilList.push(`${p.icon} ${p.name} ×${lost}`);
+  }
+  const costs=dailyCosts();
+  S.money -= costs.total;
+  const profit = r.rev - r.cogs - spoil - costs.total;
+
+  // Uy tín
+  let wsum=0, isum=0;
+  PRODUCTS.forEach(p=>{ wsum+=p.dem; isum+=p.dem*S.price[p.id]/S.market[p.id].ref; });
+  const pi=isum/wsum;
+  let d = clamp((1-pi)*30, -5, 3);
+  const tot=r.soldUnits+r.missedUnits;
+  if(tot>0) d -= (r.missedUnits/tot)*12;
+  if(r.total>0) d -= (r.lost/r.total)*10;
+  d += 0.4*S.up.ads + 0.6;
+  if(d>0) d *= Math.min(1,(100-S.rep)/40);
+  const repBefore=S.rep;
+  S.rep = clamp(S.rep+d, 0, 100);
+
+  const rec = {day:S.day, cust:Math.round(r.served), lost:Math.round(r.lost), rev:r.rev, cogs:r.cogs,
+               spoil, ops:costs.total, profit, rep:S.rep, ev:S.event?S.event.icon+' '+S.event.name:''};
+  S.hist.push(rec);
+  if(S.hist.length>120) S.hist.shift();
+
+  S.negDays = S.money<0 ? S.negDays+1 : 0;
+  if(S.negDays>=3) S.over=true;
+
+  // Top bán chạy
+  const top = Object.entries(r.sold).sort((a,b)=>b[1]*S.price[b[0]]-a[1]*S.price[a[0]]).slice(0,3)
+      .map(([id,q])=>`${PMAP[id].icon} ${PMAP[id].name} ×${q}`);
+  const missed = Object.entries(r.missed).sort((a,b)=>b[1]-a[1]).slice(0,5)
+      .map(([id,q])=>`${PMAP[id].icon} ${PMAP[id].name} (${q})`);
+
+  run=null; visitors=[];
+  addLog(`🔒 Đóng cửa. Lãi ròng: ${fmt(profit)}`, profit>=0?'ok':'warn');
+  S.day++;
+  rollMorning();
+  save();
+  refresh();
+  showReport(rec, {costs, top, missed, spoilList, repDelta:S.rep-repBefore, flashRev:r.flashRev});
+}
+
+// ====================== GIAO DIỆN ======================
+function addLog(msg, cls=''){
+  const el=document.createElement('div'); el.textContent=msg; if(cls) el.className=cls;
+  const log=$('#log'); log.prepend(el);
+  while(log.children.length>80) log.lastChild.remove();
+}
+let toastT;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
+
+function modal(html){ $('#modalBox').innerHTML=html; $('#modal').classList.add('show'); }
+function closeModal(){ $('#modal').classList.remove('show'); }
+
+function refreshStats(){
+  $('#sDay').textContent=`Ngày ${S.day} · ${DOW[dowOf(S.day)]}`;
+  $('#sMoney').textContent=fmt(S.money);
+  $('#sMoney').style.color = S.money<0?'#ffd1d1':'';
+  $('#sRep').textContent=Math.round(S.rep);
+  $('#sRepBar').style.width=S.rep+'%';
+  $('#sStores').textContent=S.stores;
+  $('#sStaff').textContent=S.staff;
+  $('#live').textContent = run ? `👥 ${Math.round(run.cust)} khách · 💵 ${fmtS(run.rev)}` : (S.over?'Đã phá sản':'Chưa mở cửa');
+}
+
+function renderEvent(){
+  const ev=S.event;
+  const exp=expectedCustomers(), cap=capacity();
+  const capWarn = exp*1.1>cap ? `<span class="bad">⚠️ Cần thêm ~${Math.ceil((exp*1.1-cap)/(STAFF_CAP*(1+0.25*S.up.pos)))} nhân viên</span>` : `<span class="good">✓ Đủ nhân viên</span>`;
+  $('#eventBox').innerHTML = `
+    <div class="big">${ev?ev.icon:(isWeekend(S.day)?'🛍️':'🌤️')}</div>
+    <div>
+      <b>${ev?ev.name:(isWeekend(S.day)?'Cuối tuần – khách đông hơn':'Ngày bình thường')}</b>
+      <div class="muted" style="font-size:13px">${ev?ev.desc:(isWeekend(S.day)?'Khách tăng 20% so với ngày thường.':'Không có sự kiện đặc biệt.')}</div>
+      <div class="forecast">
+        <span>👥 Dự báo: <b>~${Math.round(exp)}</b> khách</span>
+        <span>🧑‍💼 Phục vụ tối đa: <b>${Math.round(cap)}</b></span>
+        ${capWarn}
+        <span>💸 Chi phí cố định: <b>${fmtS(dailyCosts().total)}</b>/ngày</span>
+      </div>
+    </div>`;
+}
+
+function renderChips(){
+  const opts=[['all','Tất cả']].concat(Object.entries(CATS).map(([k,c])=>[k,c.icon+' '+c.name]));
+  $('#chips').innerHTML = opts.map(([k,n])=>`<button data-cat="${k}" class="${catFilter===k?'on':''}">${n}</button>`).join('');
+}
+
+function renderBuy(){
+  const locked=!!run||S.over;
+  $('#buyLock').style.display = run?'block':'none';
+  let html='';
+  for(const [ck,c] of Object.entries(CATS)){
+    if(catFilter!=='all' && catFilter!==ck) continue;
+    html+=`<tr class="cathead"><td colspan="8">${c.icon} ${c.name}</td></tr>`;
+    for(const p of PRODUCTS.filter(x=>x.cat===ck)){
+      const m=S.market[p.id], price=S.price[p.id], st=stockOf(p.id);
+      const bs=S.inv[p.id];
+      const nearest = bs.length ? Math.min(...bs.map(b=>b.d)) : null;
+      const expTag = st===0 ? '<span class="pill bad">hết</span>' :
+        (nearest!=null && p.life<100 ? `<span class="pill ${nearest<=1?'bad':''}">còn ${nearest} ngày</span>`:'');
+      const diff=(price/m.ref-1)*100;
+      const dTag = Math.abs(diff)<0.5 ? '<span class="pill">= TT</span>' :
+        `<span class="pill ${diff<0?'good':'bad'}">${diff>0?'+':''}${diff.toFixed(0)}%</span>`;
+      const q=cart[p.id]||0;
+      const margin=price-m.cost;
+      const bulkStep = p.dem>=10?20:10;
+      html+=`<tr>
+        <td>${p.icon} <b>${p.name}</b> <span class="muted" style="font-size:12px">/${p.unit}</span>
+          <div class="muted" style="font-size:11px">để được ${lifeOf(p)>=100?'lâu':lifeOf(p)+' ngày'}</div></td>
+        <td>${st} ${expTag}</td>
+        <td>${fmt(m.cost)}</td>
+        <td class="muted">${fmt(m.ref)}</td>
+        <td><span class="stepper">
+          <button data-act="p-" data-id="${p.id}" ${locked?'disabled':''}>−</button>
+          <b style="min-width:70px;display:inline-block">${fmt(price)}</b>
+          <button data-act="p+" data-id="${p.id}" ${locked?'disabled':''}>+</button></span> ${dTag}</td>
+        <td class="${margin>0?'good':'bad'}">${fmt(margin)}</td>
+        <td><span class="stepper">
+          <button data-act="q-" data-id="${p.id}" ${locked?'disabled':''}>−</button>
+          <input type="number" min="0" value="${q}" data-id="${p.id}" ${locked?'disabled':''}>
+          <button data-act="q+" data-id="${p.id}" ${locked?'disabled':''}>+</button>
+          <button class="sm" data-act="qb" data-id="${p.id}" ${locked?'disabled':''}>+${bulkStep}</button></span></td>
+        <td>${q?fmt(q*m.cost):'<span class="muted">–</span>'}</td>
+      </tr>`;
+    }
+  }
+  $('#buyBody').innerHTML=html;
+  const total=cartTotal();
+  $('#cartTotal').textContent=fmt(total);
+  $('#cartNote').textContent = total>S.money ? '⚠️ Không đủ tiền' : (total?`Còn lại sau nhập: ${fmt(S.money-total)}`:'');
+  $('#cartNote').className = total>S.money ? 'bad' : 'muted';
+  $('#btnBuy').disabled = locked || total<=0 || total>S.money;
+  $$('[data-bulk]').forEach(b=>b.disabled=locked);
+  $('#btnSuggest').disabled=locked; $('#btnClear').disabled=locked;
+}
+const cartTotal=()=>Object.entries(cart).reduce((a,[id,q])=>a+q*S.market[id].cost,0);
+const priceStep=p=>S.market[p.id].ref>=50000?1000:500;
+
+function renderUpgrades(){
+  const locked=!!run||S.over;
+  $('#upLock').style.display=run?'block':'none';
+  let html='';
+  const capPer=STAFF_CAP*(1+0.25*S.up.pos);
+  html+=`<div class="card"><h4>🧑‍💼 Nhân viên</h4>
+    <div class="lv">Đang có ${S.staff} người · phục vụ ${Math.round(capacity())} khách/ngày</div>
+    <div>Mỗi người phục vụ ~${Math.round(capPer)} khách/ngày. Lương 300k/ngày. Phí tuyển & đào tạo 1 triệu.</div>
+    <div class="foot"><button class="primary" data-up="hire" ${locked||S.money<1e6?'disabled':''}>+ Tuyển (1 tr)</button>
+    <button data-up="fire" ${locked||S.staff<=1?'disabled':''}>− Cho nghỉ</button></div></div>`;
+  const bc=branchCost();
+  html+=`<div class="card"><h4>🏪 Mở chi nhánh mới</h4>
+    <div class="lv">Đang có ${S.stores} cửa hàng</div>
+    <div>Thêm ${BASE_CUST} khách nền/ngày (nhân với uy tín). Thuê mặt bằng 1 tr/ngày + điện nước. Nhớ tuyển thêm ~2 nhân viên!</div>
+    <div class="foot"><button class="primary" data-up="branch" ${locked||S.money<bc?'disabled':''}>Mở (${fmtS(bc)})</button></div></div>`;
+  for(const u of UPGRADES){
+    const lv=S.up[u.id], max=lv>=u.max, c=u.cost[lv];
+    html+=`<div class="card"><h4>${u.icon} ${u.name}</h4>
+      <div class="dots">${Array.from({length:u.max},(_,i)=>`<i class="${i<lv?'f':''}"></i>`).join('')} <span class="lv">Cấp ${lv}/${u.max}</span></div>
+      <div>${u.desc}</div>
+      <div class="foot">${max?'<span class="good">✓ Đã tối đa</span>':
+        `<button class="primary" data-up="${u.id}" ${locked||S.money<c?'disabled':''}>Nâng cấp (${fmtS(c)})</button>`}</div></div>`;
+  }
+  $('#cards').innerHTML=html;
+}
+const branchCost=()=>50e6*S.stores;
+
+function renderReport(){
+  const h=S.hist, last7=h.slice(-7);
+  const sum=(a,k)=>a.reduce((x,r)=>x+r[k],0);
+  const nw=netWorth();
+  $('#kpis').innerHTML = [
+    ['Tổng tài sản', fmtS(nw), `${(nw/GOAL*100).toFixed(1)}% mục tiêu 500 tr`],
+    ['Tiền mặt', fmtS(S.money), ''],
+    ['Giá trị hàng tồn', fmtS(invValue()), ''],
+    ['Lãi 7 ngày gần nhất', fmtS(sum(last7,'profit')), last7.length?`TB ${fmtS(sum(last7,'profit')/last7.length)}/ngày`:''],
+    ['Doanh thu 7 ngày', fmtS(sum(last7,'rev')), ''],
+    ['Hàng hủy 7 ngày', fmtS(sum(last7,'spoil')), ''],
+  ].map(([l,v,s])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="l">${s}</div></div>`).join('');
+  $('#histBody').innerHTML = h.slice().reverse().slice(0,60).map(r=>`<tr>
+    <td>${r.day}</td><td>${r.cust}${r.lost?` <span class="pill bad">-${r.lost}</span>`:''}</td>
+    <td>${fmtS(r.rev)}</td><td>${fmtS(r.cogs)}</td><td class="${r.spoil?'bad':''}">${fmtS(r.spoil)}</td>
+    <td>${fmtS(r.ops)}</td><td class="${r.profit>=0?'good':'bad'}"><b>${fmtS(r.profit)}</b></td>
+    <td>${Math.round(r.rep)}</td><td style="text-align:left">${r.ev||''}</td></tr>`).join('')
+    || '<tr><td colspan="9" class="muted" style="text-align:center">Chưa có dữ liệu – hãy mở cửa ngày đầu tiên!</td></tr>';
+}
+
+function refreshControls(){
+  $('#btnOpen').disabled = !!run || S.over;
+  $('#btnSkip').disabled = !run;
+  $('#flash').checked = S.flash;
+  $('#flash').disabled = !!run;
+}
+function refresh(){
+  refreshStats(); renderEvent(); renderBuy(); renderUpgrades(); renderReport(); refreshControls();
+}
+
+function showReport(r, x){
+  const row=(l,v,cls='')=>`<tr><td>${l}</td><td style="text-align:right" class="${cls}">${v}</td></tr>`;
+  let html=`<h3>📒 Tổng kết ngày ${r.day}</h3><table style="width:100%">
+    ${row('👥 Khách được phục vụ', r.cust)}
+    ${r.lost?row('😞 Khách bỏ về (thiếu NV)', r.lost,'bad'):''}
+    ${row('💵 Doanh thu', fmt(r.rev),'good')}
+    ${x.flashRev?row('&nbsp;&nbsp;trong đó xả hàng cuối ngày', fmt(x.flashRev),'muted'):''}
+    ${row('📦 Giá vốn hàng bán', '-'+fmt(r.cogs))}
+    ${row('🗑️ Hàng hủy do hết hạn', '-'+fmt(r.spoil), r.spoil?'bad':'')}
+    ${row('🏠 Mặt bằng', '-'+fmt(x.costs.rent))}
+    ${row('🧑‍💼 Lương nhân viên', '-'+fmt(x.costs.wage))}
+    ${row('💡 Điện nước', '-'+fmt(x.costs.util))}
+    ${x.costs.mkt?row('📣 Marketing & app', '-'+fmt(x.costs.mkt)):''}
+    <tr><td colspan="2"><hr style="border:none;border-top:1px solid var(--line)"></td></tr>
+    ${row('<b>Lãi ròng</b>', '<b>'+fmt(r.profit)+'</b>', r.profit>=0?'good':'bad')}
+    ${row('⭐ Uy tín', `${Math.round(r.rep)} (${x.repDelta>=0?'+':''}${x.repDelta.toFixed(1)})`, x.repDelta>=0?'good':'bad')}
+  </table>`;
+  if(x.top.length) html+=`<p><b>🔥 Bán chạy:</b> ${x.top.join(', ')}</p>`;
+  if(x.missed.length) html+=`<p class="bad"><b>❌ Hết hàng:</b> ${x.missed.join(', ')}</p>`;
+  if(x.spoilList.length) html+=`<p class="bad"><b>🗑️ Hủy:</b> ${x.spoilList.join(', ')}</p>`;
+  if(S.money<0 && !S.over) html+=`<p class="bad"><b>⚠️ Bạn đang âm tiền (${S.negDays}/3 ngày)! Cắt giảm chi phí ngay.</b></p>`;
+  if(S.over){
+    html+=`<h3 class="bad">💥 Phá sản!</h3><p>Cửa hàng âm tiền 3 ngày liên tiếp. Bạn đã trụ được ${r.day} ngày.</p>
+      <div class="row"><button class="primary" onclick="restart()">🔄 Chơi lại</button></div>`;
+  } else {
+    html+=`<div class="row" style="margin-top:10px"><button class="primary" onclick="closeModal();checkMiles();gotoTab('buy')">☀️ Sang ngày ${S.day} – Nhập hàng</button>
+      <button onclick="closeModal();checkMiles()">Đóng</button></div>`;
+  }
+  modal(html);
+}
+
+const MILES=[
+  ['p1', ()=>S.hist.some(r=>r.profit>=1e6), '🎉 Ngày đầu tiên lãi trên 1 triệu!'],
+  ['r80', ()=>S.rep>=80, '⭐ Uy tín đạt 80 – khách hàng rất tin tưởng bạn!'],
+  ['s2', ()=>S.stores>=2, '🏪 Chuỗi cửa hàng đầu tiên: 2 chi nhánh!'],
+  ['w100', ()=>netWorth()>=100e6, '💰 Tài sản vượt 100 triệu!'],
+  ['s5', ()=>S.stores>=5, '🏬 5 chi nhánh – bạn đã là một chuỗi thực thụ!'],
+  ['w250', ()=>netWorth()>=250e6, '💎 Tài sản vượt 250 triệu – đã đi được nửa chặng đường!'],
+];
+function checkMiles(){
+  for(const [k,f,msg] of MILES) if(!S.miles[k] && f()){ S.miles[k]=1; toast(msg); save(); return; }
+  if(!S.won && netWorth()>=GOAL){
+    S.won=true; save();
+    modal(`<h3>🏆 Chiến thắng!</h3><p>Tổng tài sản của bạn đã đạt <b>${fmt(netWorth())}</b> sau ${S.day-1} ngày với ${S.stores} chi nhánh.</p>
+      <p>Bạn đã xây dựng thành công chuỗi cửa hàng thực phẩm xanh! Bạn có thể tiếp tục kinh doanh.</p>
+      <div class="row"><button class="primary" onclick="closeModal()">Tiếp tục kinh doanh</button><button onclick="restart()">Chơi lại</button></div>`);
+  }
+}
+
+function restart(){ closeModal(); run=null; visitors=[]; cart={}; newGame(); save(); $('#log').innerHTML=''; addLog('🌱 Bắt đầu kinh doanh! Hãy vào tab Nhập hàng trước khi mở cửa.','ok'); refresh(); gotoTab('buy'); }
+window.restart=restart; window.closeModal=closeModal; window.checkMiles=checkMiles;
+
+function gotoTab(t){
+  $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $$('.tab').forEach(s=>s.classList.toggle('show',s.id==='tab-'+t));
+  if(t==='store') resizeCanvas();
+}
+window.gotoTab=gotoTab;
+
+// ====================== SỰ KIỆN NÚT ======================
+$('#tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) gotoTab(b.dataset.tab); });
+$('#chips').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; catFilter=b.dataset.cat; renderChips(); renderBuy(); });
+$('#buyBody').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-act]'); if(!b||run) return;
+  const p=PMAP[b.dataset.id], a=b.dataset.act;
+  if(a==='p+'||a==='p-'){
+    const st=priceStep(p), m=S.market[p.id];
+    S.price[p.id]=clamp(S.price[p.id]+(a==='p+'?st:-st), round(m.cost*0.5,100), round(m.ref*2,500));
+  } else {
+    const step = a==='qb' ? (p.dem>=10?20:10) : 1;
+    cart[p.id]=Math.max(0,(cart[p.id]||0)+(a==='q-'?-step:step));
+  }
+  renderBuy(); save();
+});
+$('#buyBody').addEventListener('change',e=>{
+  const i=e.target; if(i.tagName!=='INPUT'||run) return;
+  cart[i.dataset.id]=Math.max(0,Math.floor(+i.value||0)); renderBuy();
+});
+$$('[data-bulk]').forEach(b=>b.addEventListener('click',()=>{
+  if(run) return;
+  const k=+b.dataset.bulk;
+  PRODUCTS.forEach(p=>{ if(catFilter==='all'||catFilter===p.cat) S.price[p.id]=round(S.market[p.id].ref*k, priceStep(p)); });
+  renderBuy(); save(); toast('Đã cập nhật giá bán');
+}));
+$('#btnSuggest').addEventListener('click',()=>{
+  const served=Math.min(expectedCustomers(),capacity());
+  PRODUCTS.forEach(p=>{
+    if(catFilter!=='all'&&catFilter!==p.cat) return;
+    const exp=served*p.dem/100*demMult(p)*priceFactor(p,S.price[p.id]);
+    const life=lifeOf(p), days = life<=2?1 : life<=7?2 : 3;
+    // hàng tươi 1 ngày: chỉ tính hàng còn dùng được hôm nay
+    cart[p.id]=Math.max(0, Math.ceil(exp*days*1.08) - stockOf(p.id));
+  });
+  renderBuy();
+  toast(cartTotal()>S.money?'Gợi ý vượt quá số tiền bạn có – hãy bớt vài mặt hàng':'Đã điền số lượng gợi ý');
+});
+$('#btnClear').addEventListener('click',()=>{ cart={}; renderBuy(); });
+$('#btnBuy').addEventListener('click',()=>{
+  const total=cartTotal(); if(run||total<=0||total>S.money) return;
+  for(const [id,q] of Object.entries(cart)){
+    if(q<=0) continue;
+    const p=PMAP[id];
+    S.inv[id].push({q, d:lifeOf(p), c:S.market[id].cost});
+    S.inv[id].sort((a,b)=>a.d-b.d);
+  }
+  S.money-=total; cart={};
+  addLog(`📥 Đã nhập hàng: ${fmt(total)}`,'ok');
+  save(); refresh(); toast('Nhập hàng thành công! Sẵn sàng mở cửa.');
+});
+$('#cards').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-up]'); if(!b||run) return;
+  const k=b.dataset.up;
+  if(k==='hire'){ if(S.money<1e6) return; S.money-=1e6; S.staff++; toast('Đã tuyển thêm 1 nhân viên'); }
+  else if(k==='fire'){ if(S.staff<=1) return; S.staff--; toast('Đã cho 1 nhân viên nghỉ'); }
+  else if(k==='branch'){
+    const c=branchCost(); if(S.money<c) return;
+    S.money-=c; S.stores++; toast(`🎉 Khai trương chi nhánh thứ ${S.stores}!`); addLog(`🏪 Khai trương chi nhánh thứ ${S.stores}`,'ok');
+  } else {
+    const u=UPGRADES.find(x=>x.id===k), lv=S.up[k]; if(lv>=u.max||S.money<u.cost[lv]) return;
+    S.money-=u.cost[lv]; S.up[k]++;
+    if(k==='fridge') PRODUCTS.filter(isFresh).forEach(p=>S.inv[p.id].forEach(b=>b.d++));
+    toast(`${u.icon} ${u.name} lên cấp ${S.up[k]}`);
+  }
+  save(); refresh(); checkMiles();
+});
+$('#btnOpen').addEventListener('click',()=>{
+  if(PRODUCTS.every(p=>stockOf(p.id)===0)){
+    modal(`<h3>📦 Kệ hàng đang trống!</h3><p>Bạn chưa nhập hàng. Mở cửa bây giờ khách sẽ không mua được gì và uy tín giảm mạnh.</p>
+      <div class="row"><button class="primary" onclick="closeModal();gotoTab('buy')">Đi nhập hàng</button><button onclick="closeModal();forceOpen()">Vẫn mở cửa</button></div>`);
+    return;
+  }
+  startDay();
+});
+window.forceOpen=startDay;
+$('#btnSkip').addEventListener('click',()=>{ while(run) simulateHour(); });
+$('#speed').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; speed=+b.dataset.s; $$('#speed button').forEach(x=>x.classList.toggle('on',x===b)); });
+$('#flash').addEventListener('change',e=>{ S.flash=e.target.checked; save(); });
+$('#btnNew').addEventListener('click',()=>{
+  modal(`<h3>Chơi lại từ đầu?</h3><p>Toàn bộ tiến trình hiện tại sẽ bị xóa.</p>
+    <div class="row"><button class="primary" style="background:var(--bad);border-color:var(--bad)" onclick="restart()">Xóa & chơi lại</button><button onclick="closeModal()">Hủy</button></div>`);
+});
+$('#modal').addEventListener('click',e=>{ if(e.target.id==='modal' && !S.over) closeModal(); });
+
+// ====================== HOẠT HỌA CỬA HÀNG ======================
+const cv=$('#cv'), ctx=cv.getContext('2d');
+const W=720, H=300;
+const SHELVES = Object.keys(CATS).map((k,i)=>({cat:k, x:40+(i%3)*125, y:50+Math.floor(i/3)*95, w:105, h:42}));
+const PEOPLE=['👩','👨','👵','👴','🧑','👩‍🦱','👨‍🦱','🧕','👱‍♀️','🧒','👩‍🦳','🧔'];
+const DOOR={x:30,y:282}, EXIT={x:700,y:282};
+let visitors=[], floats=[], spawnQ=[], scooters=[];
+
+function counters(){ const n=clamp(S.staff,1,4); return Array.from({length:n},(_,i)=>({x:450+i*65,y:215})); }
+
+function spawnVisitors(custH, rev){
+  const n=clamp(Math.round(custH/(4*S.stores)),0,14);
+  if(!n) return;
+  const per=rev/n, dur=hourMs();
+  for(let i=0;i<n;i++) spawnQ.push({t:performance.now()+Math.random()*dur, amt:per});
+  if(S.up.app && Math.random()<0.5+0.15*S.up.app) scooters.push({x:520,y:268,vx:0.15});
+}
+function makeVisitor(amt){
+  const path=[];
+  const k=1+Math.floor(Math.random()*3);
+  const shelves=[...SHELVES].sort(()=>Math.random()-0.5).slice(0,k);
+  shelves.forEach(s=>path.push({x:s.x+10+Math.random()*(s.w-20), y:s.y+s.h+14, wait:250+Math.random()*350}));
+  const cs=counters(), c=pick(cs);
+  path.push({x:c.x, y:c.y+40, wait:400, pay:true});
+  path.push({...EXIT, wait:0, exit:true});
+  visitors.push({x:DOOR.x, y:DOOR.y, path, wait:0, e:pick(PEOPLE), amt});
+}
+const hourMs=()=>1500/speed;
+
+function updateAnim(dt){
+  const now=performance.now();
+  spawnQ = spawnQ.filter(s=>{ if(s.t<=now){ if(run||visitors.length<40) makeVisitor(s.amt); return false;} return true; });
+  if(!run){ spawnQ=[]; }
+  const v=0.11*speed*dt;
+  visitors = visitors.filter(p=>{
+    if(p.wait>0){ p.wait-=dt*speed; return true; }
+    const t=p.path[0]; if(!t) return false;
+    const dx=t.x-p.x, dy=t.y-p.y, d=Math.hypot(dx,dy);
+    if(d<=v){ p.x=t.x; p.y=t.y; p.path.shift(); p.wait=t.wait;
+      if(t.pay) floats.push({x:t.x,y:t.y-30,txt:'+'+fmtS(p.amt),life:1100});
+      return !t.exit; }
+    p.x+=dx/d*v; p.y+=dy/d*v; return true;
+  });
+  floats = floats.filter(f=>{ f.life-=dt; f.y-=dt*0.025; return f.life>0; });
+  scooters = scooters.filter(s=>{ s.x+=s.vx*speed*dt; return s.x<W+30; });
+}
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+let colors={};
+function readColors(){ colors={floor:css('--floor'),shelf:css('--shelf'),line:css('--line'),ink:css('--ink'),brand:css('--brand'),muted:css('--muted'),panel:css('--panel')}; }
+
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // sàn
+  ctx.fillStyle=colors.floor; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=colors.line; ctx.lineWidth=1; ctx.globalAlpha=.5;
+  for(let x=0;x<W;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(let y=0;y<H;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  ctx.globalAlpha=1;
+  // bảng hiệu
+  ctx.fillStyle=colors.brand; ctx.fillRect(0,0,W,24);
+  ctx.fillStyle='#fff'; ctx.font='bold 14px system-ui'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(`🍃 CHỢ LÁ XANH – Cửa hàng số ${S.stores>1?'1 (+'+(S.stores-1)+' chi nhánh)':'1'}`,10,12);
+  // kệ hàng
+  ctx.textAlign='center';
+  for(const s of SHELVES){
+    const c=CATS[s.cat];
+    ctx.fillStyle=colors.shelf; rr(s.x,s.y,s.w,s.h,6); ctx.fill();
+    ctx.strokeStyle=colors.brand; ctx.lineWidth=1.5; ctx.stroke();
+    const items=PRODUCTS.filter(p=>p.cat===s.cat);
+    const inStock=items.filter(p=>stockOf(p.id)>0);
+    ctx.font='16px system-ui';
+    items.slice(0,4).forEach((p,i)=>{ ctx.globalAlpha=stockOf(p.id)>0?1:.2; ctx.fillText(p.icon, s.x+16+i*24, s.y+17); });
+    ctx.globalAlpha=1;
+    ctx.font='11px system-ui'; ctx.fillStyle=colors.ink;
+    ctx.fillText(c.name+(inStock.length<items.length?` (${inStock.length}/${items.length})`:''), s.x+s.w/2, s.y+34);
+  }
+  // quầy thu ngân
+  const cs=counters();
+  for(const c of cs){
+    ctx.fillStyle=colors.panel; rr(c.x-25,c.y-8,50,26,5); ctx.fill();
+    ctx.strokeStyle=colors.muted; ctx.lineWidth=1; ctx.stroke();
+    ctx.font='18px system-ui'; ctx.fillText('🧑‍💼',c.x,c.y-18);
+    ctx.font='14px system-ui'; ctx.fillText('🧾',c.x,c.y+5);
+  }
+  ctx.font='11px system-ui'; ctx.fillStyle=colors.muted;
+  ctx.fillText('Quầy thu ngân', 450+(cs.length-1)*65/2, 185-20);
+  // kho lạnh
+  if(S.up.fridge){ ctx.font='22px system-ui'; ctx.fillText('❄️'.repeat(S.up.fridge), 470, 75); ctx.font='11px system-ui'; ctx.fillText('Kho lạnh',470,98); }
+  if(S.up.ads){ ctx.font='20px system-ui'; ctx.fillText('📣',640,75); }
+  // cửa
+  ctx.fillStyle=colors.brand; ctx.fillRect(0,H-6,80,6); ctx.fillRect(W-80,H-6,80,6);
+  ctx.font='10px system-ui'; ctx.fillStyle=colors.muted; ctx.fillText('LỐI VÀO',40,H-14); ctx.fillText('LỐI RA',W-40,H-14);
+  // khách
+  ctx.font='22px system-ui';
+  visitors.slice().sort((a,b)=>a.y-b.y).forEach(p=>{ ctx.fillText(p.e,p.x,p.y); if(p.path.length<=2){ ctx.font='12px system-ui'; ctx.fillText('🛒',p.x+12,p.y+8); ctx.font='22px system-ui'; } });
+  scooters.forEach(s=>{ ctx.font='22px system-ui'; ctx.fillText('🛵',s.x,s.y); });
+  // tiền bay lên
+  ctx.font='bold 12px system-ui';
+  floats.forEach(f=>{ ctx.globalAlpha=clamp(f.life/600,0,1); ctx.fillStyle=colors.brand; ctx.fillText(f.txt,f.x,f.y); });
+  ctx.globalAlpha=1;
+  // trời tối
+  let hour = run ? 6+run.h+run.acc/hourMs() : 6;
+  if(run && hour>=18){ ctx.fillStyle=`rgba(10,20,60,${clamp((hour-18)/4,0,1)*0.28})`; ctx.fillRect(0,0,W,H); }
+  if(!run){
+    ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#fff'; ctx.font='bold 26px system-ui';
+    ctx.fillText(S.over?'💥 ĐÃ PHÁ SẢN':'🔒 ĐANG ĐÓNG CỬA', W/2, H/2-8);
+    ctx.font='14px system-ui'; ctx.fillText(S.over?'Vào tab Báo cáo để chơi lại':'Nhập hàng rồi bấm "Mở cửa bán hàng"', W/2, H/2+20);
+  }
+  const hh=Math.floor(hour), mm=Math.floor((hour-hh)*60);
+  $('#clock').textContent = run ? `${pad(Math.min(hh,22))}:${pad(hh>=22?0:mm)}` : '06:00';
+}
+
+function resizeCanvas(){
+  const dpr=window.devicePixelRatio||1;
+  const w=cv.clientWidth||W;
+  cv.width=Math.round(w*dpr); cv.height=Math.round(w*H/W*dpr);
+  ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0);
+  readColors();
+}
+window.addEventListener('resize',resizeCanvas);
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',readColors); }catch(e){}
+
+let last=performance.now();
+function loop(t){
+  const dt=Math.min(60,t-last); last=t;
+  if(run){
+    run.acc+=dt;
+    while(run && run.acc>=hourMs()){ run.acc-=hourMs(); simulateHour(); }
+  }
+  updateAnim(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ====================== KHỞI ĐỘNG ======================
+if(!load()){ newGame(); }
+renderChips();
+resizeCanvas();
+refresh();
+if(S.day===1 && !S.hist.length){
+  addLog('🌱 Chào mừng! Bạn có 30 triệu để mở cửa hàng đầu tiên.','ok');
+  addLog('👉 Vào tab "Nhập hàng", bấm 🤖 Gợi ý nhập rồi 📥 Nhập hàng, sau đó quay lại mở cửa.');
+} else addLog(`📂 Đã tải tiến trình: ngày ${S.day}.`,'ok');
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
