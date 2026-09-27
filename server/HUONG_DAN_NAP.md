@@ -32,6 +32,7 @@ Trong `index.html`, tìm `const PAY_CFG` và điền:
 const PAY_CFG={bin:'970422',acct:'SO_TAI_KHOAN',holder:'TEN CHU TK IN HOA',api:'https://cholaxanh-nap.<tên>.workers.dev'};
 ```
 `bin` là mã ngân hàng, xem `PAY_BANKS` ngay bên dưới: Vietcombank 970436, MB 970422, Techcombank 970407, BIDV 970418…
+Nếu ngân hàng yêu cầu tiền tố trong nội dung (VietinBank + SePay cần `SEVQR`), thêm `memo:'SEVQR'`. Nội dung chuyển khoản sẽ thành `SEVQR CLX…`.
 Những thông tin này không phải bí mật, vì khi chuyển khoản người chơi cũng thấy chúng.
 
 ## 5. Thử
