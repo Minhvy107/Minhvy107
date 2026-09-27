@@ -163,6 +163,14 @@ label.toggle{display:flex;gap:6px;align-items:center;font-size:13px;cursor:point
 .packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .pack{background:linear-gradient(#f4f9ff,#e3f0fd);border:2px solid #a9cdf0;border-radius:14px;padding:10px 6px;text-align:center;position:relative}
 .pack .g{font:800 20px var(--display);color:#2f6aa3}
+.pack{cursor:pointer}.pack:hover{border-color:#6fa8dc}.pack .bonus{font-size:11px;font-weight:800;color:#d9534f}
+.pay-pending{grid-column:1/-1;background:#fff6d6;border:2px dashed #e0b84a;border-radius:12px;padding:8px;font-size:13px;text-align:center;cursor:pointer}
+.payqr{display:grid;place-items:center;background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px;margin:8px auto;width:max-content;max-width:100%}
+.payqr img,.payqr canvas{width:220px;height:220px;image-rendering:pixelated}
+.paytbl{width:100%;font-size:13.5px;border-collapse:collapse}.paytbl td{padding:4px 2px;border-bottom:1px dashed var(--line)}.paytbl td:first-child{color:var(--muted);white-space:nowrap}.paytbl b{word-break:break-all}
+.paytbl button{font-size:11px;padding:1px 7px;margin-left:4px}
+.paydemo{background:#ffe3e3;border:2px solid #e5534b;color:#a52a2a;border-radius:12px;padding:6px 8px;font-size:12.5px;font-weight:700;text-align:center}
+.paystat{text-align:center;font-weight:700;margin:6px 0}
 .pack .soon{position:absolute;inset:0;border-radius:12px;background:rgba(255,255,255,.55);display:grid;place-items:center;font:800 13px var(--display);color:#6b7a8c}
 .tray{position:relative}
 .tray .owner{position:absolute;top:-22px;right:-12px;width:40px;height:40px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);background:#fff;padding:0;cursor:pointer}
@@ -324,7 +332,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: tự tay phục vụ nhanh (+1), khách ở quầy của bạn chấm 5 sao (+1), đạt mốc thành tích (+20).</p>
     <h3 class="sec" style="margin-top:14px">💳 Nạp kim cương</h3>
     <div class="packs" id="wdPacks"></div>
-    <p class="muted" style="font-size:12.5px">Nạp tiền thật sẽ mở khi tiệm có máy chủ, cổng thanh toán và giấy phép phát hành. Hiện tại bạn kiếm kim cương hoàn toàn miễn phí bằng cách chơi.</p>
+    <p class="muted" style="font-size:12.5px">Quét mã VietQR bằng app ngân hàng bất kỳ. Kim cương được cộng tự động khi tiền về. Bạn vẫn có thể kiếm kim cương miễn phí bằng cách chơi.</p>
   </section>
 
   <section class="tab panel" id="tab-kho">
@@ -1659,9 +1667,66 @@ function renderWardrobe(){
     return `<div class="quest"><span>${done&&!q.claimed?'✅':q.claimed?'🎁':'⬜'} ${Q.t(q.target)}<br><small class="muted">${q.type==='rev'?fmtS(q.prog)+' / '+fmtS(q.target):q.prog+' / '+q.target}</small></span>
       ${q.claimed?'<span class="muted">Đã nhận</span>':`<button class="sm ${done?'primary':''}" data-claim="${i}" ${done?'':'disabled'}>+${q.reward}💎</button>`}
       <div class="qb"><i style="width:${Math.round(q.prog/q.target*100)}%"></i></div></div>`; }).join('')||'<p class="muted">Nhiệm vụ sẽ có vào sáng mai.</p>';
-  $('#wdPacks').innerHTML=[[60,'22.000đ'],[320,'99.000đ'],[700,'199.000đ']].map(([g,p])=>`<div class="pack"><div class="g">💎 ${g}</div><div>${p}</div><div class="soon">🔒 Sắp ra mắt</div></div>`).join('');
+  $('#wdPacks').innerHTML=GEM_PACKS.map(p=>`<div class="pack" onclick="payOpen('${p.id}')" role="button" tabindex="0"><div class="g">💎 ${p.gems}</div>${p.bonus?`<div class="bonus">+${p.bonus} tặng</div>`:''}<div>${fmtVND(p.vnd)}</div></div>`).join('')
+    +(S.payOrder?`<div class="pay-pending" onclick="payShow()">⏳ Đơn ${S.payOrder.code} đang chờ thanh toán · bấm để xem</div>`:'');
   drawWardrobePreview();
 }
+/* ====== 💳 Nạp kim cương qua chuyển khoản VietQR ======
+   Chủ game điền thông tin dưới đây (không phải bí mật, ai xem mã nguồn cũng thấy):
+   - bin: mã ngân hàng (xem PAY_BANKS), acct: số tài khoản, holder: tên chủ tài khoản (IN HOA, không dấu)
+   - api: địa chỉ máy chủ nạp (thư mục server/, Cloudflare Worker). Để trống = chế độ thử nghiệm. */
+const PAY_CFG={bin:'',acct:'',holder:'',api:''};
+const PAY_BANKS={'970436':'Vietcombank','970415':'VietinBank','970418':'BIDV','970405':'Agribank','970422':'MB Bank','970407':'Techcombank','970416':'ACB','970423':'TPBank','970432':'VPBank','970403':'Sacombank','970441':'VIB','970443':'SHB'};
+const GEM_PACKS=[{id:'p1',gems:60,bonus:0,vnd:22000},{id:'p2',gems:320,bonus:30,vnd:99000},{id:'p3',gems:700,bonus:100,vnd:199000}];
+const PAY_LIVE=()=>!!(PAY_CFG.bin&&PAY_CFG.acct&&PAY_CFG.api);
+const PAY_TEST=/[?&]paytest=1/.test(location.search);
+const fmtVND=v=>v.toLocaleString('vi-VN')+'đ';
+function tlv(id,v){ return id+String(v.length).padStart(2,'0')+v; }
+function crc16(str){ let c=0xFFFF; for(let i=0;i<str.length;i++){ c^=str.charCodeAt(i)<<8; for(let k=0;k<8;k++) c=c&0x8000?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF; } return c.toString(16).toUpperCase().padStart(4,'0'); }
+function vietQR(bin,acct,amount,memo){ // chuẩn EMVCo / NAPAS VietQR
+  const mai=tlv('00','A000000727')+tlv('01',tlv('00',bin)+tlv('01',acct))+tlv('02','QRIBFTTA');
+  const body=tlv('00','01')+tlv('01','12')+tlv('38',mai)+tlv('53','704')+tlv('54',String(amount))+tlv('58','VN')+tlv('62',tlv('08',memo))+'6304';
+  return body+crc16(body); }
+let qrLib=null;
+function loadQR(){ if(qrLib) return qrLib; qrLib=new Promise((ok,no)=>{ if(window.qrcode) return ok(window.qrcode); const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'; sc.onload=()=>ok(window.qrcode); sc.onerror=()=>{ qrLib=null; no(); }; document.head.appendChild(sc); }); return qrLib; }
+function payId(){ if(!S.pid){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; S.pid=Array.from({length:6},()=>A[Math.random()*A.length|0]).join(''); } return S.pid; }
+async function payApi(path,body){ const r=await fetch(PAY_CFG.api.replace(/\/$/,'')+path,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+window.payOpen=async function(packId){
+  if(S.payOrder&&S.payOrder.pack!==packId){ if(!confirm(`Bạn còn đơn ${S.payOrder.code} chưa thanh toán. Hủy đơn đó và tạo đơn mới?`)) return payShow(); }
+  else if(S.payOrder) return payShow();
+  const p=GEM_PACKS.find(x=>x.id===packId); if(!p) return;
+  const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', code='CLX'+payId()+Array.from({length:4},()=>A[Math.random()*A.length|0]).join('');
+  const o={code,pack:p.id,gems:p.gems+p.bonus,vnd:p.vnd,at:Date.now()};
+  if(PAY_LIVE()){ try{ await payApi('/order',{code,pack:p.id}); } catch(e){ return modal(`<h3>💳 Không kết nối được máy chủ nạp</h3><p>Vui lòng thử lại sau ít phút. (${esc(e.message)})</p><div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>`); } }
+  S.payOrder=o; autosaveSoft(); payShow(); };
+window.payShow=function(){ const o=S.payOrder; if(!o) return; const live=PAY_LIVE();
+  const bin=live?PAY_CFG.bin:'970436', acct=live?PAY_CFG.acct:'0000000000', holder=live?PAY_CFG.holder:'TAI KHOAN THU NGHIEM';
+  const cp=v=>`<button onclick="navigator.clipboard&&navigator.clipboard.writeText('${v}');toast('Đã sao chép')">Chép</button>`;
+  modal(`<h3>💳 Nạp ${o.gems}💎 · ${fmtVND(o.vnd)}</h3>
+    ${live?'':`<div class="paydemo">⚠️ CHẾ ĐỘ THỬ NGHIỆM – cổng nạp chưa được cấu hình. Đừng chuyển tiền vào tài khoản này.</div>`}
+    <div class="payqr" id="payQr"><span class="muted">Đang tạo mã QR…</span></div>
+    <table class="paytbl"><tr><td>Ngân hàng</td><td><b>${PAY_BANKS[bin]||bin}</b></td></tr>
+      <tr><td>Số tài khoản</td><td><b>${acct}</b>${cp(acct)}</td></tr><tr><td>Chủ tài khoản</td><td><b>${esc(holder)}</b></td></tr>
+      <tr><td>Số tiền</td><td><b>${fmtVND(o.vnd)}</b>${cp(o.vnd)}</td></tr><tr><td>Nội dung</td><td><b style="color:#d9534f">${o.code}</b>${cp(o.code)}</td></tr></table>
+    <p class="muted" style="font-size:12.5px">Quét mã bằng app ngân hàng, giữ nguyên <b>số tiền</b> và <b>nội dung</b>. Kim cương được cộng tự động trong khoảng 1 phút sau khi tiền về. Có thể đóng bảng này, đơn vẫn được giữ.</p>
+    <div class="paystat" id="payStat">${live?'⏳ Đang chờ tiền về…':'Chế độ thử: không có tiền thật được xử lý.'}</div>
+    <div class="row">${!live&&PAY_TEST?`<button onclick="payDemoPaid()">🧪 Giả lập đã nhận tiền</button>`:''}<button class="danger" onclick="payCancel()">Hủy đơn</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
+  const data=vietQR(bin,acct,o.vnd,o.code);
+  loadQR().then(qr=>{ const q=qr(0,'M'); q.addData(data); q.make(); const el=$('#payQr'); if(el) el.innerHTML=q.createImgTag(6,8); })
+    .catch(()=>{ const el=$('#payQr'); if(el) el.innerHTML='<span class="muted">Không tải được mã QR. Bạn chuyển khoản thủ công theo thông tin bên dưới.</span>'; });
+  if(live) payPoll(); };
+let payBusy=false, payLast=0;
+async function payTick(){ const o=S&&S.payOrder; if(!o||!PAY_LIVE()||payBusy) return; payBusy=true; payLast=Date.now();
+  try{ const r=await payApi('/order/'+o.code);
+    if(r.status==='paid'){ const c=await payApi('/order/'+o.code+'/claim',{}); if(c.gems&&S.payOrder&&S.payOrder.code===o.code) payCredit(c.gems); }
+    else if(r.status==='expired'||r.status==='missing'){ if(S.payOrder&&S.payOrder.code===o.code){ S.payOrder=null; autosaveSoft(); refreshAll(); } const st=$('#payStat'); if(st) st.textContent='Đơn đã hết hạn, vui lòng tạo đơn mới.'; }
+  } catch(e){} finally{ payBusy=false; } }
+function payPoll(){ payTick(); }
+setInterval(()=>{ if(Date.now()-payLast>=(document.hidden?30000:5000)) payTick(); },2500);
+function payCredit(g){ const code=S.payOrder&&S.payOrder.code; S.gems+=g; (S.payLog=S.payLog||[]).push({code,g,at:Date.now()}); S.payOrder=null; autosave(); refreshAll();
+  modal(`<h3>🎉 Nạp thành công!</h3><p>Đơn <b>${code}</b> đã thanh toán. Bạn nhận được <b>${g}💎</b>. Cảm ơn bạn đã ủng hộ tiệm!</p><div class="row"><button class="primary" onclick="closeModal()">Tuyệt vời</button></div>`); }
+window.payDemoPaid=function(){ if(PAY_LIVE()||!PAY_TEST||!S.payOrder) return; payCredit(S.payOrder.gems); };
+window.payCancel=function(){ if(!confirm('Hủy đơn này? Nếu bạn ĐÃ chuyển khoản, đừng hủy – hãy đợi kim cương được cộng.')) return; S.payOrder=null; autosaveSoft(); closeModal(); refreshAll(); };
 $('#tab-wardrobe').addEventListener('click',e=>{
   const sl=e.target.closest('[data-slot]'); if(sl){ wdSlot=sl.dataset.slot; wdPreview=null; renderWardrobe(); return; }
   const b=e.target.closest('button');
