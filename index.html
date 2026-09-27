@@ -48,8 +48,8 @@ input[type=text],textarea{font:inherit;padding:8px 12px;border:2px solid var(--l
 .hstars{text-align:right;line-height:1.15;font-size:12.5px;color:var(--muted)}
 .hstars .stars{font-size:17px;display:block}
 .stars{color:var(--sun);letter-spacing:1px;-webkit-text-stroke:.5px #c9922b}
-.awning{height:22px;background:repeating-linear-gradient(90deg,var(--aw1,#6fc18a) 0 32px,var(--aw2,#ffffff) 32px 64px);position:relative;border-top:2px solid #9fcfad}
-.awning::after{content:"";position:absolute;left:0;right:0;top:100%;height:14px;background:radial-gradient(circle at 16px 0,var(--aw1,#6fc18a) 15px,transparent 16px) 0 0/64px 14px repeat-x,radial-gradient(circle at 48px 0,var(--aw2,#ffffff) 15px,transparent 16px) 0 0/64px 14px repeat-x;filter:drop-shadow(0 2px 0 rgba(90,58,50,.12))}
+.awning{height:22px;background:var(--awg,repeating-linear-gradient(90deg,#6fc18a 0 32px,#ffffff 32px 64px));position:relative;border-top:2px solid #9fcfad}
+.awning::after{content:"";position:absolute;left:0;right:0;top:100%;height:14px;background:var(--aws,radial-gradient(circle at 16px 0,#6fc18a 15px,transparent 16px) 0 0/64px 14px repeat-x);filter:drop-shadow(0 2px 0 rgba(90,58,50,.12))}
 
 /* ---------- Bottom nav ---------- */
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#ffffff;border-top:2px solid var(--line);display:flex;overflow-x:auto;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:8;scrollbar-width:none}
@@ -560,12 +560,12 @@ const EQUIP=[
   {id:'fridge',    icon:'❄️', name:'Tủ mát trữ tươi sống', max:2, cost:[12e6,30e6], desc:'Rau, thịt, cá để thêm 1 ngày mỗi cấp. Qua kiểm tra VSATTP. Điện +100k/ngày/cấp.'},
   {id:'freezer',   icon:'🧊', name:'Tủ đông', max:1, cost:[15e6], desc:'Mở khóa nhóm hàng đông lạnh (xúc xích, chả giò, kem). Điện +120k/ngày.'},
   {id:'shelves',   icon:'🗄️', name:'Kệ trưng bày đẹp', max:2, cost:[10e6,25e6], desc:'Khách tìm hàng nhanh hơn, tiệm hút khách hơn 6% mỗi cấp.'},
-  {id:'aircon',    icon:'🌬️', name:'Máy lạnh', max:1, cost:[18e6], desc:'Khách kiên nhẫn hơn 25%, chấm sao cao hơn. Điện +150k/ngày.'},
+  {id:'aircon',    icon:'🌬️', name:'Máy lạnh', max:1, cost:[18e6], gems:20, desc:'Khách kiên nhẫn hơn 25%, chấm sao cao hơn. Điện +150k/ngày.'},
   {id:'wifi',      icon:'📶', name:'Wifi miễn phí', max:1, cost:[3e6], desc:'Khách lướt điện thoại lúc chờ, kiên nhẫn hơn 15%.'},
-  {id:'led',       icon:'💡', name:'Bảng hiệu LED', max:1, cost:[12e6], desc:'Nổi bật cả phố, thêm 10% khách.'},
+  {id:'led',       icon:'💡', name:'Bảng hiệu LED', max:1, cost:[12e6], gems:15, desc:'Nổi bật cả phố, thêm 10% khách.'},
   {id:'camera',    icon:'📹', name:'Camera an ninh', max:1, cost:[10e6], desc:'Kẻ trộm ngại ra tay, dễ bắt hơn. Giảm nguy cơ đột nhập ban đêm.'},
   {id:'alarm',     icon:'🔔', name:'Chuông báo trộm', max:1, cost:[5e6], desc:'Giảm mạnh nguy cơ bị đột nhập ban đêm.'},
-  {id:'generator', icon:'🔋', name:'Máy phát điện', max:1, cost:[20e6], desc:'Cúp điện vẫn bán hàng bình thường.'},
+  {id:'generator', icon:'🔋', name:'Máy phát điện', max:1, cost:[20e6], gems:25, desc:'Cúp điện vẫn bán hàng bình thường.'},
 ];
 
 const ADS=[
@@ -573,20 +573,20 @@ const ADS=[
   {id:'loa',    icon:'📢', name:'Băng rôn & xe loa',          cost:1.5e6, days:3, cust:0.12, rep:0, desc:'Cả phường đều biết tiệm đang khuyến mãi.'},
   {id:'zalo',   icon:'💬', name:'Zalo OA & tin nhắn ưu đãi',  cost:2e6,   days:4, cust:0.12, rep:1, desc:'Nhắc khách quen quay lại.'},
   {id:'fb',     icon:'📘', name:'Quảng cáo Facebook',         cost:3e6,   days:5, cust:0.18, rep:0, desc:'Nhắm người sống trong bán kính 3 km.'},
-  {id:'press',  icon:'📰', name:'Bài PR trên báo điện tử',    cost:6e6,   days:7, cust:0.15, rep:4, desc:'Tăng uy tín bền vững.'},
-  {id:'tiktok', icon:'🎥', name:'Thuê KOL TikTok review',     cost:9e6,   days:3, cust:0.35, rep:5, desc:'Bùng nổ khách trong vài ngày.'},
-  {id:'event',  icon:'🎪', name:'Tài trợ lễ hội phường',      cost:4e6,   days:1, cust:0.25, rep:8, desc:'Một ngày đông vui, uy tín tăng mạnh.'},
+  {id:'press',  icon:'📰', name:'Bài PR trên báo điện tử',    cost:6e6,   days:7, cust:0.15, rep:4, gems:10, desc:'Tăng uy tín bền vững.'},
+  {id:'tiktok', icon:'🎥', name:'Thuê KOL TikTok review',     cost:9e6,   days:3, cust:0.35, rep:5, gems:20, desc:'Bùng nổ khách trong vài ngày.'},
+  {id:'event',  icon:'🎪', name:'Tài trợ lễ hội phường',      gems:10, cost:4e6,   days:1, cust:0.25, rep:8, desc:'Một ngày đông vui, uy tín tăng mạnh.'},
 ];
 
 const SERVICES=[
   {id:'topup',    icon:'📱', name:'Nạp thẻ & thu hộ hóa đơn', cost:5e6,  rep:20, daily:50e3,  cust:0.08, desc:'Thu hộ tiền điện, nước, nạp thẻ. Thêm khách ghé, mỗi lượt có phí nhỏ.', addon:{chance:0.12,price:4000,margin:1}},
   {id:'breakfast',icon:'🥖', name:'Bánh mì & xôi buổi sáng', cost:8e6,  rep:30, daily:80e3,  cust:0.06, desc:'6:30–9:30 khách mua kèm bữa sáng.', addon:{from:390,to:570,chance:0.45,price:20000,margin:0.5,icon:'🥖'}},
-  {id:'coffee',   icon:'☕', name:'Cà phê mang đi',           cost:12e6, rep:40, daily:100e3, cust:0.05, desc:'Ly cà phê sữa đá cho khách cả ngày.', addon:{chance:0.2,price:25000,margin:0.6,icon:'🧋'}},
-  {id:'delivery', icon:'🛵', name:'Giao hàng tận nhà',        cost:15e6, rep:40, daily:150e3, cust:0,    desc:'Nhận đơn qua điện thoại & app. Cần thuê nhân viên giao hàng (mỗi người ~18 đơn/ngày).'},
-  {id:'member',   icon:'💳', name:'Thẻ thành viên tích điểm', cost:10e6, rep:50, daily:60e3,  cust:0.10, desc:'Khách quen quay lại nhiều hơn, chấm sao cao hơn.'},
-  {id:'butcher',  icon:'🔪', name:'Quầy sơ chế thịt cá',      cost:20e6, rep:55, daily:120e3, cust:0.03, desc:'Làm sạch, cắt sẵn. Thịt cá bán chạy hơn 30%.', demCat:{tuoi:1.3}},
-  {id:'bakery',   icon:'🎂', name:'Quầy bánh ngọt',           cost:18e6, rep:50, daily:100e3, cust:0.04, desc:'Bánh bông lan, bánh kem nhỏ.', addon:{chance:0.14,price:30000,margin:0.5,icon:'🍰'}},
-  {id:'lunch',    icon:'🍱', name:'Cơm hộp trưa văn phòng',   cost:25e6, rep:60, daily:150e3, cust:0.08, desc:'10:30–13:00 bán cơm hộp cho dân văn phòng.', addon:{from:630,to:780,chance:0.5,price:35000,margin:0.45,icon:'🍱'}},
+  {id:'coffee',   icon:'☕', name:'Cà phê mang đi',           gems:15, cost:12e6, rep:40, daily:100e3, cust:0.05, desc:'Ly cà phê sữa đá cho khách cả ngày.', addon:{chance:0.2,price:25000,margin:0.6,icon:'🧋'}},
+  {id:'delivery', icon:'🛵', name:'Giao hàng tận nhà',        gems:20, cost:15e6, rep:40, daily:150e3, cust:0,    desc:'Nhận đơn qua điện thoại & app. Cần thuê nhân viên giao hàng (mỗi người ~18 đơn/ngày).'},
+  {id:'member',   icon:'💳', name:'Thẻ thành viên tích điểm', gems:25, cost:10e6, rep:50, daily:60e3,  cust:0.10, desc:'Khách quen quay lại nhiều hơn, chấm sao cao hơn.'},
+  {id:'butcher',  icon:'🔪', name:'Quầy sơ chế thịt cá',      gems:30, cost:20e6, rep:55, daily:120e3, cust:0.03, desc:'Làm sạch, cắt sẵn. Thịt cá bán chạy hơn 30%.', demCat:{tuoi:1.3}},
+  {id:'bakery',   icon:'🎂', name:'Quầy bánh ngọt',           gems:30, cost:18e6, rep:50, daily:100e3, cust:0.04, desc:'Bánh bông lan, bánh kem nhỏ.', addon:{chance:0.14,price:30000,margin:0.5,icon:'🍰'}},
+  {id:'lunch',    icon:'🍱', name:'Cơm hộp trưa văn phòng',   gems:40, cost:25e6, rep:60, daily:150e3, cust:0.08, desc:'10:30–13:00 bán cơm hộp cho dân văn phòng.', addon:{from:630,to:780,chance:0.5,price:35000,margin:0.45,icon:'🍱'}},
 ];
 
 const INCIDENTS=['power','fridge','pipe','fall','police','vsattp','pccc','qltt','spill'];
@@ -641,7 +641,7 @@ function makeStaff(role){
 }
 function ownerLook(){ const p=genPerson(true).look; return {...p, shirt:'#ffb703', apron:'#ffffff', cap:'#e0a82e', bow:null}; }
 function newGame(name){
-  S={ver:3, maidV1:true, owner:ownerLook(), fb:{}, gems:30, owned:{}, wear:{...DEFAULT_WEAR}, q:[], autoPay:false, autoUnlocked:false, manualServed:0, name, day:1, money:START_MONEY, rep:50, staff:[], eq:{}, svc:{}, ads:[], branches:0,
+  S={ver:3, maidV1:true, unlocks:{}, owner:ownerLook(), fb:{}, gems:50, owned:{}, wear:{...DEFAULT_WEAR}, q:[], autoPay:false, autoUnlocked:false, manualServed:0, name, day:1, money:START_MONEY, rep:50, staff:[], eq:{}, svc:{}, ads:[], branches:0,
      inv:{}, price:{}, market:{}, reviews:[], hist:[], weekRev:0, event:null, cands:[], negDays:0,
      over:false, won:false, miles:{}, flash:true, nextId:1, lastSeenRev:0};
   EQUIP.forEach(e=>S.eq[e.id]=0);
@@ -705,7 +705,7 @@ function drawBust(g,x,y,r,L,o={}){
   g.save(); g.lineJoin='round'; g.lineCap='round'; g.lineWidth=lw; g.strokeStyle=OL;
   if(L.hat==='maid') curlyTail(g,x,y,r,L.hair,lw);
   // thân
-  if(maid) maidBody(g,x,y,r,lw);
+  if(maid) maidBody(g,x,y,r,lw,L.gc);
   else {
     g.fillStyle=L.shirt; g.beginPath();
     g.moveTo(x-r*1.18,y+r*2.3); g.quadraticCurveTo(x-r*1.15,y+r*1.02,x-r*0.36,y+r*0.92); g.lineTo(x+r*0.36,y+r*0.92);
@@ -796,18 +796,22 @@ function drawBust(g,x,y,r,L,o={}){
   else { const mw=mood==='happy'?0.18:0.12, md=mood==='happy'?0.86:0.76;
     g.fillStyle='#b8444f'; g.beginPath(); g.moveTo(x-r*mw,y+r*0.6); g.quadraticCurveTo(x,y+r*0.63,x+r*mw,y+r*0.6); g.quadraticCurveTo(x,y+r*md,x-r*mw,y+r*0.6); g.closePath(); g.fill(); g.stroke();
     g.fillStyle='#f28b99'; ell(g,x,y+r*(md-0.07),r*mw*0.5,r*0.045); g.fill(); }
+  if(L.mask){ g.fillStyle='#ffffff'; g.strokeStyle=OL; g.lineWidth=lw*0.8; rr(g,x-r*0.42,y+r*0.4,r*0.84,r*0.42,r*0.14); g.fill(); g.stroke(); g.beginPath(); g.moveTo(x-r*0.42,y+r*0.48); g.lineTo(x-r*0.92,y+r*0.2); g.moveTo(x+r*0.42,y+r*0.48); g.lineTo(x+r*0.92,y+r*0.2); g.stroke(); g.strokeStyle='#dfe6ea'; g.beginPath(); g.moveTo(x-r*0.3,y+r*0.56); g.lineTo(x+r*0.3,y+r*0.56); g.moveTo(x-r*0.3,y+r*0.66); g.lineTo(x+r*0.3,y+r*0.66); g.stroke(); }
+  if(L.phones){ g.strokeStyle='#3b3f58'; g.lineWidth=lw*2.2; g.beginPath(); g.arc(x,y-r*0.05,r*1.08,Math.PI*1.05,Math.PI*1.95); g.stroke(); g.lineWidth=lw; g.strokeStyle=OL; g.fillStyle='#f7a6c0'; for(const sd of [-1,1]){ rr(g,x+sd*r*1.02-r*0.17,y-r*0.12,r*0.34,r*0.46,r*0.12); g.fill(); g.stroke(); } }
+  if(L.clip){ g.font=`${r*0.42}px system-ui`; g.textAlign='center'; g.textBaseline='middle'; g.fillText(L.clip,x+r*0.6,y-r*0.72); }
   if(mood==='angry'){ g.font=`${r*0.4}px sans-serif`; g.textAlign='center'; g.textBaseline='middle'; g.fillText('💢',x+r*0.8,y-r*0.75); }
   g.restore();
 }
 let _ging=null;
-function gingham(g){
-  if(!_ging){ const c=document.createElement('canvas'); c.width=c.height=12; const q=c.getContext('2d');
-    q.fillStyle='#fbe3e3'; q.fillRect(0,0,12,12); q.fillStyle='rgba(201,50,63,.55)'; q.fillRect(0,0,6,12); q.fillRect(0,0,12,6); q.fillStyle='#c9323f'; q.fillRect(0,0,6,6); _ging=c; }
-  return g.createPattern(_ging,'repeat');
+function gingham(g,gc){
+  const [c1,c2]=gc||['#c9323f','#fbe3e3'], k=c1+c2; _ging=_ging||{};
+  if(!_ging[k]){ const c=document.createElement('canvas'); c.width=c.height=12; const q=c.getContext('2d');
+    q.fillStyle=c2; q.fillRect(0,0,12,12); q.globalAlpha=0.55; q.fillStyle=c1; q.fillRect(0,0,6,12); q.fillRect(0,0,12,6); q.globalAlpha=1; q.fillRect(0,0,6,6); _ging[k]=c; }
+  return g.createPattern(_ging[k],'repeat');
 }
-function maidBody(g,x,y,r,lw){
+function maidBody(g,x,y,r,lw,gc){
   // váy caro
-  g.fillStyle=gingham(g); g.beginPath();
+  g.fillStyle=gingham(g,gc); g.beginPath();
   g.moveTo(x-r*1.18,y+r*2.3); g.quadraticCurveTo(x-r*1.15,y+r*1.02,x-r*0.36,y+r*0.92); g.lineTo(x+r*0.36,y+r*0.92);
   g.quadraticCurveTo(x+r*1.15,y+r*1.02,x+r*1.18,y+r*2.3); g.closePath(); g.fill(); g.stroke();
   // tay phồng
@@ -840,6 +844,12 @@ function drawHat(g,x,y,r,h,lw,hair){
   else if(h==='crown'){ g.fillStyle='#ffd23f'; g.beginPath(); g.moveTo(x-r*0.6,y-r*0.78); g.lineTo(x-r*0.62,y-r*1.38); g.lineTo(x-r*0.3,y-r*1.08); g.lineTo(x,y-r*1.48); g.lineTo(x+r*0.3,y-r*1.08); g.lineTo(x+r*0.62,y-r*1.38); g.lineTo(x+r*0.6,y-r*0.78); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#e0476e'; ell(g,x,y-r*0.98,r*0.09,r*0.09); g.fill(); g.fillStyle='#5aa9e6'; ell(g,x-r*0.35,y-r*0.92,r*0.07,r*0.07); g.fill(); ell(g,x+r*0.35,y-r*0.92,r*0.07,r*0.07); g.fill(); }
   else if(h==='ears'){ g.strokeStyle=OL; g.lineWidth=lw*1.4; g.beginPath(); g.arc(x,y-r*0.05,r*1.02,Math.PI*1.12,Math.PI*1.88); g.stroke(); g.lineWidth=lw;
     for(const sd of [-1,1]){ g.fillStyle='#fdf6ee'; g.beginPath(); g.moveTo(x+sd*r*0.25,y-r*0.95); g.lineTo(x+sd*r*0.62,y-r*1.45); g.lineTo(x+sd*r*0.85,y-r*0.72); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#f7a6b8'; g.beginPath(); g.moveTo(x+sd*r*0.4,y-r*0.93); g.lineTo(x+sd*r*0.62,y-r*1.28); g.lineTo(x+sd*r*0.74,y-r*0.83); g.closePath(); g.fill(); } }
+  else if(h==='party'){ g.fillStyle='#8ab4f8'; g.beginPath(); g.moveTo(x-r*0.35,y-r*0.86); g.lineTo(x+r*0.45,y-r*0.82); g.lineTo(x+r*0.18,y-r*1.75); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#fbbc04'; g.beginPath(); g.moveTo(x-r*0.18,y-r*1.12); g.lineTo(x+r*0.36,y-r*1.1); g.lineTo(x+r*0.28,y-r*1.32); g.lineTo(x-r*0.08,y-r*1.34); g.closePath(); g.fill(); g.fillStyle='#f28b82'; ell(g,x+r*0.18,y-r*1.8,r*0.12,r*0.12); g.fill(); g.stroke(); }
+  else if(h==='beanie'){ g.fillStyle='#f7a8c0'; g.beginPath(); g.moveTo(x-r*1.06,y-r*0.28); g.arc(x,y-r*0.28,r*1.06,Math.PI,0); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#f28fb0'; rr(g,x-r*1.1,y-r*0.42,r*2.2,r*0.3,r*0.12); g.fill(); g.stroke(); g.strokeStyle='rgba(90,58,50,.35)'; g.lineWidth=lw*0.6; for(let k=-4;k<=4;k++){ g.beginPath(); g.moveTo(x+k*r*0.22,y-r*0.4); g.lineTo(x+k*r*0.22,y-r*0.15); g.stroke(); } g.strokeStyle=OL; g.lineWidth=lw; g.fillStyle='#ffffff'; ell(g,x,y-r*1.36,r*0.22,r*0.22); g.fill(); g.stroke(); }
+  else if(h==='nonla'){ g.fillStyle='#ecd9a0'; g.beginPath(); g.moveTo(x-r*1.5,y-r*0.5); g.quadraticCurveTo(x,y-r*0.35,x+r*1.5,y-r*0.5); g.lineTo(x,y-r*1.62); g.closePath(); g.fill(); g.stroke(); g.strokeStyle='rgba(150,110,50,.55)'; g.lineWidth=lw*0.6; for(const k of [-0.75,-0.25,0.25,0.75]){ g.beginPath(); g.moveTo(x,y-r*1.55); g.lineTo(x+k*r*1.45,y-r*0.46); g.stroke(); } g.strokeStyle=OL; g.lineWidth=lw; }
+  else if(h==='bear'){ for(const sd of [-1,1]){ g.fillStyle='#8b5e3c'; ell(g,x+sd*r*0.66,y-r*0.86,r*0.3,r*0.3); g.fill(); g.stroke(); g.fillStyle='#e8b48c'; ell(g,x+sd*r*0.66,y-r*0.86,r*0.15,r*0.15); g.fill(); } g.strokeStyle='#8b5e3c'; g.lineWidth=lw*1.6; g.beginPath(); g.arc(x,y-r*0.02,r*0.98,Math.PI*1.15,Math.PI*1.85); g.stroke(); g.strokeStyle=OL; g.lineWidth=lw; }
+  else if(h==='bunny'){ for(const sd of [-1,1]){ g.fillStyle='#ffffff'; ell(g,x+sd*r*0.38,y-r*1.42,r*0.2,r*0.62,sd*0.2); g.fill(); g.stroke(); g.fillStyle='#f7a6c0'; ell(g,x+sd*r*0.38,y-r*1.4,r*0.09,r*0.45,sd*0.2); g.fill(); } g.strokeStyle='#f7a6c0'; g.lineWidth=lw*1.6; g.beginPath(); g.arc(x,y-r*0.02,r*0.98,Math.PI*1.15,Math.PI*1.85); g.stroke(); g.strokeStyle=OL; g.lineWidth=lw; }
+  else if(h==='flower'){ const cols=['#f7a6c0','#ffe08a','#ffffff','#c5b3f0','#f7a6c0','#ffe08a','#ffffff']; for(let k=0;k<7;k++){ const a=Math.PI*(1.12+k*0.76/6), fx=x+Math.cos(a)*r*1.0, fy=y-r*0.02+Math.sin(a)*r*1.0; g.fillStyle=cols[k]; for(let p=0;p<5;p++){ const pa=p*Math.PI*2/5; ell(g,fx+Math.cos(pa)*r*0.09,fy+Math.sin(pa)*r*0.09,r*0.08,r*0.08); g.fill(); } g.fillStyle='#f5b942'; ell(g,fx,fy,r*0.05,r*0.05); g.fill(); } g.fillStyle='#7cc58f'; ell(g,x-r*0.95,y-r*0.3,r*0.12,r*0.06,0.6); g.fill(); ell(g,x+r*0.95,y-r*0.3,r*0.12,r*0.06,-0.6); g.fill(); }
   else if(h==='maid'){
     for(const sd of [-1,1]){ g.fillStyle=hair||'#3b2a20'; g.beginPath(); g.moveTo(x+sd*r*0.3,y-r*0.92); g.lineTo(x+sd*r*0.62,y-r*1.5); g.lineTo(x+sd*r*0.86,y-r*0.7); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#f5a3b5'; g.beginPath(); g.moveTo(x+sd*r*0.45,y-r*0.92); g.lineTo(x+sd*r*0.62,y-r*1.3); g.lineTo(x+sd*r*0.75,y-r*0.8); g.closePath(); g.fill(); }
     g.fillStyle='#ffffff'; for(let k=0;k<7;k++){ const a=Math.PI*(1.15+k*0.7/6); ell(g,x+Math.cos(a)*r*1.02,y-r*0.02+Math.sin(a)*r*1.02,r*0.13,r*0.13); g.fill(); g.stroke(); }
@@ -879,6 +889,9 @@ function drawCat(g,x,y,s,awake,t,acc){
   if(acc==='bow'){ g.fillStyle='#e5534b'; for(const sd of [-1,1]){ g.beginPath(); g.moveTo(x-28*s,y-22*s); g.lineTo(x-28*s+sd*8*s,y-27*s); g.lineTo(x-28*s+sd*8*s,y-17*s); g.closePath(); g.fill(); g.stroke(); } ell(g,x-28*s,y-22*s,2.5*s,2.5*s); g.fill(); g.stroke(); }
   if(acc==='scarf'){ g.fillStyle='#e5534b'; ell(g,x-14*s,y+0.5*s,13*s,4*s,0.15); g.fill(); g.stroke(); rr(g,x-6*s,y,5*s,11*s,2*s); g.fill(); g.stroke(); g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.moveTo(x-22*s,y-1*s); g.lineTo(x-20*s,y+3*s); g.moveTo(x-14*s,y-1*s); g.lineTo(x-12*s,y+3.5*s); g.stroke(); g.strokeStyle=OL; g.lineWidth=1.8*s; }
   if(acc==='party'){ g.fillStyle='#7fb8e6'; g.beginPath(); g.moveTo(x-27*s,y-23*s); g.lineTo(x-13*s,y-23*s); g.lineTo(x-21*s,y-44*s); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#ffd23f'; g.beginPath(); g.moveTo(x-24*s,y-30*s); g.lineTo(x-16*s,y-30*s); g.lineTo(x-17.5*s,y-35*s); g.lineTo(x-22.5*s,y-35*s); g.closePath(); g.fill(); g.fillStyle='#f7a6b8'; ell(g,x-21*s,y-45*s,3*s,3*s); g.fill(); g.stroke(); }
+  if(acc==='bell'){ g.strokeStyle='#e5534b'; g.lineWidth=3*s; g.beginPath(); g.ellipse(x-17*s,y-1*s,12*s,3.5*s,0.1,0.1*Math.PI,0.9*Math.PI); g.stroke(); g.strokeStyle=OL; g.lineWidth=1.5*s; g.fillStyle='#f5c542'; ell(g,x-17*s,y+3.5*s,3.4*s,3.4*s); g.fill(); g.stroke(); g.lineWidth=1.8*s; }
+  if(acc==='glasses'){ g.lineWidth=1.3*s; for(const ex2 of [-24,-12]){ ell(g,x+ex2*s,y-12*s,4.6*s,4.2*s); g.stroke(); } g.beginPath(); g.moveTo(x-19.4*s,y-12*s); g.lineTo(x-16.6*s,y-12*s); g.stroke(); g.lineWidth=1.8*s; }
+  if(acc==='crown'){ g.fillStyle='#ffd23f'; g.beginPath(); g.moveTo(x-26*s,y-22*s); g.lineTo(x-27*s,y-31*s); g.lineTo(x-22*s,y-26*s); g.lineTo(x-18*s,y-33*s); g.lineTo(x-14*s,y-26*s); g.lineTo(x-9*s,y-31*s); g.lineTo(x-10*s,y-22*s); g.closePath(); g.fill(); g.stroke(); }
   if(!awake){ g.fillStyle='#8f7a8a'; g.font=`800 ${12*s}px "Baloo 2",sans-serif`; g.textAlign='center'; const k=(t*0.6)%1; g.globalAlpha=1-k; g.fillText('z',x-2*s+k*10*s,y-32*s-k*14*s); g.globalAlpha=Math.max(0,1-((k+0.5)%1)); g.fillText('Z',x+4*s+((k+0.5)%1)*10*s,y-40*s-((k+0.5)%1)*14*s); }
   g.restore();
 }
@@ -1261,23 +1274,24 @@ function renderLive(){
   const ev=S.event, ads=S.ads.map(a=>ADS.find(d=>d.id===a.id)).filter(Boolean);
   const chip=$('#evChip'); const t=(ev?ev.icon+' '+ev.name:'')+(ads.length?' '+ads.map(a=>a.icon).join(''):'');
   chip.hidden=!t; chip.textContent=t;
-  $('#flash').checked=S.flash; renderAutoBox();
+  $('#flash').checked=S.flash; renderAutoBox(); renderSpeedBtns();
 }
 function renderEvent(){}
-const AUTO_COST=8e6, AUTO_SERVED=30, AUTO_REP=45;
+const AUTO_COST=8e6, AUTO_SERVED=30, AUTO_REP=45, AUTO_GEMS=60;
 const autoOn=()=>!!(S.autoUnlocked&&S.autoPay);
 function autoReqs(){ return [
   {ok:(S.manualServed||0)>=AUTO_SERVED, t:`Tự tay phục vụ ${AUTO_SERVED} khách (${Math.min(S.manualServed||0,AUTO_SERVED)}/${AUTO_SERVED})`},
   {ok:S.rep>=AUTO_REP, t:`Uy tín từ ${AUTO_REP} (hiện ${Math.round(S.rep)})`},
   {ok:S.eq.pos>=1, t:'Có Máy POS (tab Nâng cấp)'},
   {ok:S.money>=AUTO_COST, t:`Đủ ${fmtS(AUTO_COST)} để mở khóa`},
+  {ok:S.gems>=AUTO_GEMS, t:`Có ${AUTO_GEMS}💎 (hiện ${S.gems})`},
 ]; }
 function renderAutoBox(){
   let h;
   if(S.autoUnlocked) h=`<label class="toggle"><input type="checkbox" id="autoPay" ${S.autoPay?'checked':''}> 🤖 Tự động phục vụ khách ở quầy của bạn</label>`;
   else { const rq=autoReqs(), ok=rq.every(r=>r.ok);
     h=`<div class="lockbox"><b>🔒 Tự động phục vụ quầy của bạn</b><ul>${rq.map(r=>`<li class="${r.ok?'good':''}">${r.ok?'✅':'⬜'} ${r.t}</li>`).join('')}</ul>
-       <button class="primary sm" id="btnUnlockAuto" ${ok?'':'disabled'}>Mở khóa (${fmtS(AUTO_COST)})</button></div>`; }
+       <button class="primary sm" id="btnUnlockAuto" ${ok?'':'disabled'}>Mở khóa (${fmtS(AUTO_COST)} + ${AUTO_GEMS}💎)</button></div>`; }
   setHTML($('#autoBox'),h);
 }
 
@@ -1351,6 +1365,12 @@ const WARDROBE=[
   {id:'hat_straw',slot:'hat',name:'Nón rơm',icon:'👒',price:60,hat:'straw'},
   {id:'hat_ears',slot:'hat',name:'Bờm tai mèo',icon:'🐱',price:80,hat:'ears'},
   {id:'hat_chef',slot:'hat',name:'Mũ đầu bếp',icon:'🧑‍🍳',price:90,hat:'chef'},
+  {id:'hat_party',slot:'hat',name:'Mũ tiệc',icon:'🎉',price:50,hat:'party'},
+  {id:'hat_beanie',slot:'hat',name:'Mũ len hồng',icon:'🧶',price:70,hat:'beanie'},
+  {id:'hat_nonla',slot:'hat',name:'Nón lá',icon:'🎋',price:90,hat:'nonla'},
+  {id:'hat_bear',slot:'hat',name:'Bờm tai gấu',icon:'🐻',price:100,hat:'bear'},
+  {id:'hat_bunny',slot:'hat',name:'Bờm tai thỏ',icon:'🐰',price:110,hat:'bunny'},
+  {id:'hat_flower',slot:'hat',name:'Vòng hoa',icon:'🌼',price:130,hat:'flower'},
   {id:'hat_crown',slot:'hat',name:'Vương miện',icon:'👑',price:200,hat:'crown'},
   {id:'fit_maid',slot:'outfit',name:'Váy caro phục vụ',icon:'👗',price:0,outfit:'maid'},
   {id:'fit_apron',slot:'outfit',name:'Tạp dề xanh',icon:'🥬',price:0,shirt:'#9fd8b0',apron:'#ffffff'},
@@ -1359,43 +1379,74 @@ const WARDROBE=[
   {id:'fit_denim',slot:'outfit',name:'Áo yếm jean',icon:'👖',price:70,shirt:'#fff3e0',apron:'#6f9fd8'},
   {id:'fit_chef',slot:'outfit',name:'Áo đầu bếp',icon:'🥼',price:90,shirt:'#ffffff',apron:'#e8eef0'},
   {id:'fit_aodai',slot:'outfit',name:'Áo dài đỏ',icon:'🧧',price:120,shirt:'#d9434e'},
+  {id:'fit_sweater',slot:'outfit',name:'Áo len kem',icon:'🧥',price:60,shirt:'#f3e3c3'},
+  {id:'fit_baba',slot:'outfit',name:'Áo bà ba nâu',icon:'🤎',price:80,shirt:'#8b5e3c'},
+  {id:'fit_maid_mint',slot:'outfit',name:'Váy caro bạc hà',icon:'💚',price:150,outfit:'maid',gc:['#3fa37a','#e3f6ec']},
+  {id:'fit_maid_blue',slot:'outfit',name:'Váy caro xanh biển',icon:'💙',price:150,outfit:'maid',gc:['#3f7fc9','#e3eefb']},
+  {id:'fit_suit',slot:'outfit',name:'Vest lịch lãm',icon:'🤵',price:180,shirt:'#34435e'},
+  {id:'fit_princess',slot:'outfit',name:'Váy công chúa hồng',icon:'👸',price:220,outfit:'maid',gc:['#f28fb0','#fde3ec']},
   {id:'acc_none',slot:'acc',name:'Không đeo',icon:'🙂',price:0},
   {id:'acc_glass',slot:'acc',name:'Kính tròn',icon:'👓',price:25,glasses:true},
   {id:'acc_bow',slot:'acc',name:'Nơ hồng',icon:'🎀',price:35,bow:'#ff5d8f'},
   {id:'acc_shades',slot:'acc',name:'Kính râm',icon:'🕶️',price:70,shades:true},
+  {id:'acc_mask',slot:'acc',name:'Khẩu trang',icon:'😷',price:30,mask:true},
+  {id:'acc_star',slot:'acc',name:'Kẹp tóc ngôi sao',icon:'⭐',price:40,clip:'⭐'},
+  {id:'acc_heart',slot:'acc',name:'Kẹp tóc trái tim',icon:'💗',price:40,clip:'💗'},
+  {id:'acc_flower',slot:'acc',name:'Hoa anh đào cài tóc',icon:'🌸',price:45,clip:'🌸'},
+  {id:'acc_phones',slot:'acc',name:'Tai nghe',icon:'🎧',price:90,phones:true},
   {id:'aw_green',slot:'awning',name:'Mái hiên xanh lá',icon:'🟢',price:0,aw:['#6fc18a','#ffffff']},
   {id:'aw_pink',slot:'awning',name:'Mái hiên hồng',icon:'🩷',price:50,aw:['#ee8fa5','#fff6ec']},
   {id:'aw_blue',slot:'awning',name:'Mái hiên xanh biển',icon:'🔵',price:50,aw:['#7fb8e6','#ffffff']},
   {id:'aw_orange',slot:'awning',name:'Mái hiên cam',icon:'🟠',price:50,aw:['#f4a261','#fff7ea']},
   {id:'aw_purple',slot:'awning',name:'Mái hiên tím',icon:'🟣',price:80,aw:['#b39ddb','#ffffff']},
+  {id:'aw_red',slot:'awning',name:'Mái hiên đỏ trắng',icon:'🔴',price:60,aw:['#e5534b','#ffffff']},
+  {id:'aw_lemon',slot:'awning',name:'Mái hiên vàng chanh',icon:'🍋',price:60,aw:['#f6d55c','#ffffff']},
+  {id:'aw_mint',slot:'awning',name:'Mái hiên bạc hà',icon:'🌿',price:70,aw:['#9ee6cf','#ffffff']},
+  {id:'aw_rainbow',slot:'awning',name:'Mái hiên cầu vồng',icon:'🌈',price:150,aw:['#f28b82','#fbbc04','#81c995','#8ab4f8','#c58af9']},
   {id:'cat_none',slot:'cat',name:'Mèo tự nhiên',icon:'🐱',price:0},
   {id:'cat_bow',slot:'cat',name:'Nơ đỏ',icon:'🎀',price:30,cat:'bow'},
   {id:'cat_scarf',slot:'cat',name:'Khăn quàng',icon:'🧣',price:45,cat:'scarf'},
   {id:'cat_party',slot:'cat',name:'Mũ sinh nhật',icon:'🥳',price:60,cat:'party'},
+  {id:'cat_bell',slot:'cat',name:'Vòng cổ chuông',icon:'🔔',price:40,cat:'bell'},
+  {id:'cat_glasses',slot:'cat',name:'Kính tròn cho mèo',icon:'🤓',price:60,cat:'glasses'},
+  {id:'cat_crown',slot:'cat',name:'Vương miện mèo',icon:'👑',price:120,cat:'crown'},
   {id:'uni_green',slot:'uniform',name:'Đồng phục gốc',icon:'🟩',price:0},
   {id:'uni_pink',slot:'uniform',name:'Đồng phục hồng',icon:'🩷',price:60,uni:'#f19cb4'},
   {id:'uni_blue',slot:'uniform',name:'Đồng phục xanh biển',icon:'🟦',price:60,uni:'#7fb8e6'},
   {id:'uni_orange',slot:'uniform',name:'Đồng phục cam',icon:'🟧',price:60,uni:'#f4a261'},
   {id:'uni_maid',slot:'uniform',name:'Váy caro đỏ',icon:'👗',price:80,uniMaid:true},
+  {id:'uni_mint',slot:'uniform',name:'Váy caro bạc hà',icon:'💚',price:120,uniMaid:true,gc:['#3fa37a','#e3f6ec']},
+  {id:'uni_cafe',slot:'uniform',name:'Áo nâu cà phê',icon:'☕',price:70,uni:'#8b5e3c'},
+  {id:'dec_plant',slot:'decor',name:'Chậu cây xanh',icon:'🪴',price:0,decor:['🪴']},
+  {id:'dec_flowers',slot:'decor',name:'Bó hoa tươi',icon:'💐',price:50,decor:['💐']},
+  {id:'dec_sunflower',slot:'decor',name:'Lọ hướng dương',icon:'🌻',price:40,decor:['🌻']},
+  {id:'dec_bear',slot:'decor',name:'Gấu bông',icon:'🧸',price:60,decor:['🧸']},
+  {id:'dec_lantern',slot:'decor',name:'Đèn lồng đỏ',icon:'🏮',price:70,decor:['🏮']},
+  {id:'dec_cake',slot:'decor',name:'Bánh kem trưng bày',icon:'🎂',price:80,decor:['🎂']},
+  {id:'dec_lucky',slot:'decor',name:'Lì xì & tiền vàng',icon:'🧧',price:90,decor:['🧧','🪙']},
+  {id:'dec_tet',slot:'decor',name:'Cây nêu ngày Tết',icon:'🎍',price:120,decor:['🎍','🧧']},
 ];
 const WMAP=Object.fromEntries(WARDROBE.map(w=>[w.id,w]));
-const SLOTS={hat:'👒 Mũ',outfit:'👕 Trang phục',acc:'🎀 Phụ kiện',awning:'🏪 Mái hiên',cat:'🐱 Mèo',uniform:'👥 Đồng phục NV'};
-const DEFAULT_WEAR={hat:'hat_maid',outfit:'fit_maid',acc:'acc_none',awning:'aw_green',cat:'cat_none',uniform:'uni_green'};
+const SLOTS={hat:'👒 Mũ',outfit:'👕 Trang phục',acc:'🎀 Phụ kiện',awning:'🏪 Mái hiên',decor:'🪴 Trang trí quầy',cat:'🐱 Mèo',uniform:'👥 Đồng phục NV'};
+const DEFAULT_WEAR={decor:'dec_plant',hat:'hat_maid',outfit:'fit_maid',acc:'acc_none',awning:'aw_green',cat:'cat_none',uniform:'uni_green'};
 let wdSlot='hat', wdPreview=null;
 function wornItem(slot){ return WMAP[(S&&S.wear&&S.wear[slot])||DEFAULT_WEAR[slot]]||WMAP[DEFAULT_WEAR[slot]]; }
 const owns=id=>WMAP[id].price===0||!!(S.owned&&S.owned[id]);
 function ownerView(over){
-  const wear={...(S.wear||DEFAULT_WEAR),...(over||{})}, L={...S.owner,cap:null,cap2:null,hat:null,bow:null,glasses:false,shades:false,apron:null,outfit:null};
+  const wear={...(S.wear||DEFAULT_WEAR),...(over||{})}, L={...S.owner,cap:null,cap2:null,hat:null,bow:null,glasses:false,shades:false,apron:null,outfit:null,gc:null,clip:null,mask:false,phones:false};
   for(const slot of ['hat','outfit','acc']){ const it=WMAP[wear[slot]]||WMAP[DEFAULT_WEAR[slot]];
     if(it.cap){ L.cap=it.cap[0]; L.cap2=it.cap[1]; } if(it.hat) L.hat=it.hat; if(it.shirt) L.shirt=it.shirt; if(it.apron) L.apron=it.apron;
-    if(it.glasses) L.glasses=true; if(it.bow) L.bow=it.bow; if(it.shades) L.shades=true; if(it.outfit) L.outfit=it.outfit; }
+    if(it.glasses) L.glasses=true; if(it.bow) L.bow=it.bow; if(it.shades) L.shades=true; if(it.outfit){ L.outfit=it.outfit; L.gc=it.gc||null; } if(it.clip) L.clip=it.clip; if(it.mask) L.mask=true; if(it.phones) L.phones=true; }
   if(L.hat==='maid'){ L.hs='bob'; L.f=true; if(/#[cde]/.test(L.hair)) L.hair='#4a2c22'; }
   if(L.outfit==='maid') L.f=true;
   return L;
 }
-function uniLook(look,role,it){ if(!(role==='cashier'||role==='stocker')) return look; if(it.uniMaid) return {...look,outfit:'maid',apron:null,cap:null,f:true}; return it.uni?{...look,shirt:it.uni,cap:it.uni}:look; }
+function uniLook(look,role,it){ if(!(role==='cashier'||role==='stocker')) return look; if(it.uniMaid) return {...look,outfit:'maid',gc:it.gc||null,apron:null,cap:null,f:true}; return it.uni?{...look,shirt:it.uni,cap:it.uni}:look; }
 function staffLook(s){ return uniLook(s.look,s.role,wornItem('uniform')); }
-function applyAwning(){ const aw=S?wornItem('awning').aw:['#6fc18a','#ffffff'], st=document.documentElement.style; if(st.getPropertyValue('--aw1')!==aw[0]){ st.setProperty('--aw1',aw[0]); st.setProperty('--aw2',aw[1]); } }
+function applyAwning(){ const aw=S?wornItem('awning').aw:['#6fc18a','#ffffff'], st=document.documentElement.style, key=aw.join(',');
+  if(applyAwning.k===key) return; applyAwning.k=key; const n=aw.length*32;
+  st.setProperty('--awg',`repeating-linear-gradient(90deg,${aw.map((c,i)=>`${c} ${i*32}px ${(i+1)*32}px`).join(',')})`);
+  st.setProperty('--aws',aw.map((c,i)=>`radial-gradient(circle at ${i*32+16}px 0,${c} 15px,transparent 16px) 0 0/${n}px 14px repeat-x`).join(',')); }
 const QUESTS=[
   {type:'hand',t:n=>`Tự tay phục vụ ${n} khách`,n:()=>rint(6,12),reward:15},
   {type:'fast',t:n=>`Phục vụ nhanh ${n} khách (thanh kiên nhẫn còn trên 60%)`,n:()=>rint(4,8),reward:15},
@@ -1412,11 +1463,12 @@ function drawWardrobePreview(){
   const over=wdPreview?{[WMAP[wdPreview].slot]:wdPreview}:{};
   const aw=(WMAP[over.awning||S.wear.awning]||WMAP.aw_green).aw, catAcc=(WMAP[over.cat||S.wear.cat]||WMAP.cat_none).cat, uniIt=(WMAP[over.uniform||S.wear.uniform]||WMAP.uni_green);
   g.drawImage(stageBg(w,h,d),0,0,w,h);
-  const sw=w/10; for(let i=0;i<10;i++){ g.fillStyle=i%2?aw[1]:aw[0]; g.strokeStyle=OL; g.lineWidth=2; g.beginPath(); g.moveTo(i*sw,0); g.lineTo(i*sw+sw,0); g.lineTo(i*sw+sw,18); g.arc(i*sw+sw/2,18,sw/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
+  const sw=w/10; for(let i=0;i<10;i++){ g.fillStyle=aw[i%aw.length]; g.strokeStyle=OL; g.lineWidth=2; g.beginPath(); g.moveTo(i*sw,0); g.lineTo(i*sw+sw,0); g.lineTo(i*sw+sw,18); g.arc(i*sw+sw/2,18,sw/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
   g.fillStyle='#e7c39c'; g.strokeStyle=OL; g.lineWidth=2.5; rr(g,-4,h-30,w+8,36,6); g.fill(); g.stroke();
   const r=Math.min(44,h*0.22); drawBust(g,w*0.3,h-30-r*1.25,r,ownerView(over),{mood:'happy'});
   const st=S.staff.find(x=>x.role==='cashier'||x.role==='stocker');
   if(st){ const L=uniLook(st.look,st.role,uniIt); drawBust(g,w*0.56,h-30-r*0.95,r*0.7,L,{}); }
+  g.font='24px system-ui'; g.textAlign='center'; g.textBaseline='alphabetic'; (WMAP[over.decor||S.wear.decor]||WMAP.dec_plant).decor.forEach((e2,k)=>g.fillText(e2,w*0.72+k*28,h-26));
   drawCat(g,w-62,h-36,0.9,true,performance.now()/1000,catAcc);
 }
 function renderWardrobe(){
@@ -1462,7 +1514,7 @@ function drawStage(now){
   g.fillStyle='#d4a47a'; g.fillRect(0,h-34,w,6);
   g.strokeStyle='rgba(90,58,50,.25)'; g.lineWidth=1.5; for(let x=30;x<w;x+=60){ g.beginPath(); g.moveTo(x,h-22); g.quadraticCurveTo(x+14,h-18,x+28,h-22); g.stroke(); }
   // chậu cây & mèo
-  g.font='26px system-ui'; g.textAlign='center'; g.fillText('🪴',w*0.33,h-30);
+  g.font='26px system-ui'; g.textAlign='center'; wornItem('decor').decor.forEach((e2,k)=>g.fillText(e2,w*0.33+k*30,h-30));
   drawCat(g,w-70,h-40,0.95,!!(R&&R.cur),t,wornItem('cat').cat);
   if(night){ g.fillStyle=`rgba(60,40,90,${night*0.22})`; g.fillRect(0,0,w,h); }
   if(R&&R.t<R.blackoutUntil){ g.fillStyle='rgba(0,0,0,.55)'; g.fillRect(0,0,w,h); g.fillStyle='#fff'; g.font='800 26px "Baloo 2",sans-serif'; g.fillText('⚡ CÚP ĐIỆN',w/2,h/2); }
@@ -1626,6 +1678,7 @@ function renderChips(){
 }
 const priceStep=p=>S.market[p.id].ref>=50000?1000:500;
 function renderKho(){
+  $('#btnSuggest').textContent=hasU('suggest')?'🤖 Nhập theo gợi ý':'🔒 Nhập theo gợi ý (40💎)';
   let html='';
   for(const ck of CAT_KEYS){
     if(catFilter!=='all'&&catFilter!==ck) continue;
@@ -1666,7 +1719,9 @@ function renderStaff(){
     <div>Lương: <b>${fmt(s.wage)}</b>/ngày</div>
     <div class="foot">${hire?`<button class="primary" data-hire="${s.id}" ${R||S.money<500e3?'disabled':''}>Tuyển (500k)</button>`:`<button class="danger" data-fire="${s.id}" ${R?'disabled':''}>Cho nghỉ (trả ${fmtS(s.wage)})</button>`}</div></div>`;
   $('#staffCards').innerHTML=S.staff.map(s=>card(s,false)).join('')||'<p class="bad">Tiệm chưa có nhân viên nào.</p>';
-  $('#candCards').innerHTML=S.cands.map(s=>card(s,true)).join('')||'<p class="muted">Hết ứng viên hôm nay, sáng mai sẽ có người mới.</p>';
+  $('#candCards').innerHTML=`<div class="card"><h4>⭐ Săn ứng viên 5 sao</h4><div class="desc">Nhờ trung tâm giới thiệu việc làm tìm ngay một người tay nghề cao nhất.</div>
+    <div class="foot">${Object.entries(ROLES).map(([k,r])=>`<button class="sm" data-hunt="${k}" ${S.gems<HUNT_GEMS?'disabled':''}>${r.icon} ${r.name} · ${HUNT_GEMS}💎</button>`).join('')}</div></div>`+
+    (S.cands.map(s=>card(s,true)).join('')||'<p class="muted">Hết ứng viên hôm nay, sáng mai sẽ có người mới.</p>');
 }
 
 function renderReviews(){
@@ -1711,7 +1766,7 @@ function renderEquip(){
     return `<div class="card ${lv?'active':''}"><h4>${e.icon} ${e.name}</h4>
       ${e.max>1?`<div class="dots">${Array.from({length:e.max},(_,i)=>`<i class="${i<lv?'f':''}"></i>`).join('')} <span class="lv">Cấp ${lv}/${e.max}</span></div>`:`<div class="lv">${lv?'✓ Đã có':'Chưa có'}</div>`}
       <div class="desc">${e.desc}</div>
-      <div class="foot">${max?'<span class="good">✓ Đã trang bị</span>':`<button class="primary" data-eq="${e.id}" ${S.money<c?'disabled':''}>Mua (${fmtS(c)})</button>`}</div></div>`;
+      <div class="foot">${max?'<span class="good">✓ Đã trang bị</span>':`<button class="primary" data-eq="${e.id}" ${S.money<c||S.gems<gemOf(e,lv)?'disabled':''}>Mua (${fmtS(c)}${gemTxt(gemOf(e,lv))})</button>`}</div></div>`;
   }).join('');
 }
 function renderAds(){
@@ -1721,23 +1776,43 @@ function renderAds(){
     return `<div class="card ${on?'active':''}"><h4>${a.icon} ${a.name}</h4>
       <div class="lv">${a.days} ngày · hút khách +${Math.round(a.cust*100)}%${a.rep?` · uy tín +${a.rep}`:''}</div>
       <div class="desc">${a.desc}</div>
-      <div class="foot">${on?`<span class="good">▶ Đang chạy – còn ${on.left} ngày</span>`:`<button class="primary" data-ad="${a.id}" ${S.money<a.cost?'disabled':''}>Thuê (${fmtS(a.cost)})</button>`}</div></div>`;
+      <div class="foot">${on?`<span class="good">▶ Đang chạy – còn ${on.left} ngày</span>`:`<button class="primary" data-ad="${a.id}" ${S.money<a.cost||S.gems<(a.gems||0)?'disabled':''}>Thuê (${fmtS(a.cost)}${gemTxt(a.gems)})</button>`}</div></div>`;
   }).join('');
 }
 const branchCost=()=>100e6*(S.branches+1);
+const BRANCH_GEMS=50;
+const gemTxt=n=>n?` + ${n}💎`:'';
+const gemOf=(e,lv)=>lv===0?(e.gems||0):0;
+const UNLOCKS={
+  suggest:{name:'🤖 Nhập theo gợi ý',price:40,desc:'Tự tính số lượng cần nhập cho cả kho chỉ với 1 lần bấm.'},
+  speed2:{name:'⏩ Tốc độ 2x',price:30,desc:'Cho thời gian trong ngày trôi nhanh gấp đôi.'},
+  speed4:{name:'⏩⏩ Tốc độ 4x',price:60,need:'speed2',desc:'Thời gian trôi nhanh gấp 4 lần.'},
+  slot2:{name:'💾 Ô lưu số 2',price:25,desc:'Thêm một ô để lưu thời điểm đang chơi.'},
+  slot3:{name:'💾 Ô lưu số 3',price:40,need:'slot2',desc:'Thêm ô lưu thứ ba.'},
+};
+const hasU=id=>!!(S&&S.unlocks&&S.unlocks[id]);
+function askUnlock(id,after){
+  const u=UNLOCKS[id]; userPaused=false;
+  if(u.need&&!hasU(u.need)){ toast(`Cần mở ${UNLOCKS[u.need].name} trước`); return; }
+  const poor=S.gems<u.price;
+  modal(`<h3>🔒 ${u.name}</h3><p>${u.desc}</p><p>Cần <b>${u.price}💎</b> để mở khóa vĩnh viễn. Bạn đang có <b>${S.gems}💎</b>.</p>
+    ${poor?'<p class="bad">Chưa đủ kim cương. Làm nhiệm vụ hằng ngày trong tab Tủ đồ để kiếm thêm.</p>':''}
+    <div class="row"><button class="primary" id="doUnlock" ${poor?'disabled':''}>Mở khóa (${u.price}💎)</button><button data-close="1">Để sau</button></div>`);
+  $('#doUnlock').onclick=()=>{ if(S.gems<u.price) return; S.gems-=u.price; S.unlocks[id]=true; closeModal(); toast(`🔓 Đã mở ${u.name}!`); autosaveSoft(); refreshAll(); if(after) after(); };
+}
 function renderSvc(){
   let html=SERVICES.map(s=>{
     const on=S.svc[s.id], okRep=S.rep>=s.rep;
     return `<div class="card ${on?'active':okRep?'':'locked'}"><h4>${s.icon} ${s.name}</h4>
       <div class="lv">${on?'✓ Đã mở':`Yêu cầu uy tín ${s.rep}${okRep?' ✓':` <span class="bad">(hiện ${Math.round(S.rep)})</span>`}`} · Vận hành ${fmtS(s.daily)}/ngày</div>
       <div class="desc">${s.desc}</div>
-      <div class="foot">${on?'<span class="good">✓ Đang hoạt động</span>':`<button class="primary" data-svc="${s.id}" ${!okRep||S.money<s.cost||R?'disabled':''}>${okRep?'🔓':'🔒'} Mở khóa (${fmtS(s.cost)})</button>`}</div></div>`;
+      <div class="foot">${on?'<span class="good">✓ Đang hoạt động</span>':`<button class="primary" data-svc="${s.id}" ${!okRep||S.money<s.cost||S.gems<(s.gems||0)||R?'disabled':''}>${okRep?'🔓':'🔒'} Mở khóa (${fmtS(s.cost)}${gemTxt(s.gems)})</button>`}</div></div>`;
   }).join('');
   const bc=branchCost(), okB=S.rep>=65;
   html+=`<div class="card ${okB?'':'locked'}"><h4>🏪 Mở chi nhánh</h4>
     <div class="lv">Đang có ${S.branches} chi nhánh · Yêu cầu uy tín 65${okB?' ✓':` <span class="bad">(hiện ${Math.round(S.rep)})</span>`}</div>
     <div class="desc">Chi nhánh do quản lý vận hành, mỗi tối gửi về lợi nhuận theo uy tín thương hiệu (khoảng ${fmtS(1.2e6+S.rep*45e3)}/ngày).</div>
-    <div class="foot"><button class="primary" data-branch="1" ${!okB||S.money<bc||R?'disabled':''}>Mở (${fmtS(bc)})</button></div></div>`;
+    <div class="foot"><button class="primary" data-branch="1" ${!okB||S.money<bc||S.gems<BRANCH_GEMS||R?'disabled':''}>Mở (${fmtS(bc)}${gemTxt(BRANCH_GEMS)})</button></div></div>`;
   $('#svcCards').innerHTML=html;
 }
 function renderReport(){
@@ -1812,7 +1887,7 @@ window.checkMiles=checkMiles;
    ===================================================================== */
 const packState=()=>JSON.stringify(S);
 function unpack(raw){
-  const d=JSON.parse(raw); if(d&&d.gems==null) d.gems=30; if(d&&!d.owned) d.owned={}; if(d&&!d.wear) d.wear={...DEFAULT_WEAR}; if(d&&!d.q) d.q=[]; if(d&&!d.maidV1){ d.maidV1=true; d.wear.hat='hat_maid'; d.wear.outfit='fit_maid'; } if(!d||!(d.ver===2||d.ver===3)||!d.market) throw new Error('bad');
+  const d=JSON.parse(raw); if(d&&d.gems==null) d.gems=30; if(d&&!d.owned) d.owned={}; if(d&&!d.wear) d.wear={...DEFAULT_WEAR}; if(d&&!d.q) d.q=[]; if(d&&!d.unlocks) d.unlocks={}; if(d&&!d.maidV1){ d.maidV1=true; d.wear.hat='hat_maid'; d.wear.outfit='fit_maid'; } if(!d||!(d.ver===2||d.ver===3)||!d.market) throw new Error('bad');
   if(!d.owner) d.owner=ownerLook(); if(!d.fb) d.fb={}; if(d.autoPay==null) d.autoPay=false; if(d.manualServed==null) d.manualServed=0; if(!d.autoUnlocked) d.autoPay=false; d.ver=3;
   EQUIP.forEach(e=>{ if(d.eq[e.id]==null) d.eq[e.id]=0; });
   PRODUCTS.forEach(p=>{ if(!d.inv[p.id]) d.inv[p.id]=[]; if(!d.market[p.id]) d.market[p.id]={cost:p.cost,ref:p.ref}; if(!d.price[p.id]) d.price[p.id]=d.market[p.id].ref; });
@@ -1833,8 +1908,9 @@ function openSaves(fromStart){
     <div class="card"><div>🔄 Tự động lưu: ${slotLine(auto?.meta)}</div>${auto?`<div class="foot"><button data-load="${SAVE_AUTO}">Tải</button></div>`:''}</div>`;
   for(let i=1;i<=3;i++){
     const s=readSlot(SAVE_SLOT(i));
+    const lockSlot=i>1&&S&&!hasU('slot'+i);
     html+=`<div class="card"><div>Ô lưu ${i}: ${slotLine(s?.meta)}</div><div class="foot">
-      ${!fromStart&&S?`<button class="primary" data-saveto="${i}">${s?'Ghi đè':'Lưu vào đây'}</button>`:''}
+      ${!fromStart&&S?(lockSlot?`<button data-unslot="slot${i}">🔒 Mở ô (${UNLOCKS['slot'+i].price}💎)</button>`:`<button class="primary" data-saveto="${i}">${s?'Ghi đè':'Lưu vào đây'}</button>`):''}
       ${s?`<button data-load="${SAVE_SLOT(i)}">Tải</button><button class="danger" data-del="${i}">Xóa</button>`:''}</div></div>`;
   }
   html+=`<div class="card"><b>Mã sao lưu</b><div class="desc muted">Dùng để chuyển game sang máy hoặc trình duyệt khác.</div>
@@ -1846,6 +1922,7 @@ function openSaves(fromStart){
 $('#modalBox').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
   if(b.dataset.close) closeModal();
+  else if(b.dataset.unslot) askUnlock(b.dataset.unslot,()=>openSaves(false));
   else if(b.dataset.saveto){ ls(SAVE_SLOT(b.dataset.saveto),JSON.stringify({meta:meta(),state:packState()})); autosave(); toast(`Đã lưu vào ô ${b.dataset.saveto}`); openSaves(false); }
   else if(b.dataset.load){ const s=readSlot(b.dataset.load); if(!s) return; try{ S=unpack(s.state); startPlaying(); toast(`Đã tải: ${S.name} – ngày ${S.day}`); }catch(err){ toast('Bản lưu bị lỗi, không tải được'); } }
   else if(b.dataset.del){ ls(SAVE_SLOT(b.dataset.del),null); openSaves(savesFromStart); }
@@ -1890,6 +1967,7 @@ function suggestion(){
   return out;
 }
 $('#btnSuggest').addEventListener('click',()=>{
+  if(!hasU('suggest')){ askUnlock('suggest',()=>$('#btnSuggest').click()); return; }
   const sg=suggestion(), total=sg.reduce((a,[id,n])=>a+n*S.market[id].cost,0);
   if(!sg.length){ toast('Kho đang đủ hàng, chưa cần nhập thêm'); return; }
   modal(`<h3>🤖 Gợi ý nhập hàng</h3><p>Dựa trên sức mua thường ngày của tiệm, nên nhập <b>${sg.length}</b> mặt hàng, tổng <b>${fmt(total)}</b>.</p>
@@ -1908,7 +1986,10 @@ $('#staffCards').addEventListener('click',e=>{
   modal(`<h3>Cho ${esc(s.name)} nghỉ việc?</h3><p>Trả thêm 1 ngày lương (${fmt(s.wage)}) làm trợ cấp.</p><div class="row"><button class="danger" id="cfFire">Cho nghỉ</button><button data-close="1">Hủy</button></div>`);
   $('#cfFire').onclick=()=>{ S.money-=s.wage; S.staff=S.staff.filter(x=>x!==s); closeModal(); toast(`${s.name} đã nghỉ việc`); refreshAll(); autosaveSoft(); };
 });
+const HUNT_GEMS=25;
 $('#candCards').addEventListener('click',e=>{
+  const h=e.target.closest('[data-hunt]');
+  if(h){ if(S.gems<HUNT_GEMS) return; S.gems-=HUNT_GEMS; const c=makeStaff(h.dataset.hunt); c.skill=5; c.speed=1.45; c.wage=round(ROLES[c.role].wage*1.3,10000); S.cands.unshift(c); toast(`⭐ Đã tìm được ${c.name} – ${ROLES[c.role].name} 5 sao!`); autosaveSoft(); refreshAll(); return; }
   const b=e.target.closest('[data-hire]'); if(!b||R) return;
   const s=S.cands.find(x=>x.id==b.dataset.hire); if(!s||S.money<500e3) return;
   S.money-=500e3; S.staff.push(s); S.cands=S.cands.filter(x=>x!==s);
@@ -1923,23 +2004,23 @@ $('#rvList').addEventListener('click',e=>{
 $('#rvList').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id&&e.target.id.startsWith('rpi-')) doReply(+e.target.id.slice(4),e.target.value); });
 $('#equipCards').addEventListener('click',e=>{
   const b=e.target.closest('[data-eq]'); if(!b) return;
-  const eq=EQUIP.find(x=>x.id===b.dataset.eq), lv=S.eq[eq.id]; if(lv>=eq.max||S.money<eq.cost[lv]) return;
-  S.money-=eq.cost[lv]; S.eq[eq.id]++;
+  const eq=EQUIP.find(x=>x.id===b.dataset.eq), lv=S.eq[eq.id], gm=gemOf(eq,lv); if(lv>=eq.max||S.money<eq.cost[lv]||S.gems<gm) return;
+  S.money-=eq.cost[lv]; S.gems-=gm; S.eq[eq.id]++;
   if(eq.id==='fridge') PRODUCTS.filter(isFresh).forEach(p=>S.inv[p.id].forEach(x=>x.d++));
   toast(`${eq.icon} Đã mua ${eq.name}`); refreshAll(); autosaveSoft(); tutHook('equip');
 });
 $('#adsCards').addEventListener('click',e=>{
   const b=e.target.closest('[data-ad]'); if(!b) return;
-  const a=ADS.find(x=>x.id===b.dataset.ad); if(S.money<a.cost||S.ads.find(x=>x.id===a.id)) return;
-  S.money-=a.cost; S.ads.push({id:a.id,left:a.days}); if(a.rep) S.rep=clamp(S.rep+a.rep,0,100);
+  const a=ADS.find(x=>x.id===b.dataset.ad); if(S.money<a.cost||S.gems<(a.gems||0)||S.ads.find(x=>x.id===a.id)) return;
+  S.money-=a.cost; S.gems-=(a.gems||0); S.ads.push({id:a.id,left:a.days}); if(a.rep) S.rep=clamp(S.rep+a.rep,0,100);
   if(R) R.base*=1+a.cust*0.6;
   toast(`${a.icon} Chiến dịch "${a.name}" bắt đầu!`); refreshAll(); autosaveSoft();
 });
 $('#svcCards').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b||R) return;
-  if(b.dataset.svc){ const s=SERVICES.find(x=>x.id===b.dataset.svc); if(S.money<s.cost||S.rep<s.rep) return; S.money-=s.cost; S.svc[s.id]=1;
+  if(b.dataset.svc){ const s=SERVICES.find(x=>x.id===b.dataset.svc); if(S.money<s.cost||S.rep<s.rep||S.gems<(s.gems||0)) return; S.money-=s.cost; S.gems-=(s.gems||0); S.svc[s.id]=1;
     toast(`${s.icon} Đã mở dịch vụ ${s.name}!`); if(s.id==='delivery'&&!staffOf('shipper').length) setTimeout(()=>toast('Nhớ tuyển nhân viên giao hàng ở tab Nhân viên!'),2700); }
-  if(b.dataset.branch){ const c=branchCost(); if(S.money<c||S.rep<65) return; S.money-=c; S.branches++; toast(`🏪 Khai trương chi nhánh thứ ${S.branches}!`); }
+  if(b.dataset.branch){ const c=branchCost(); if(S.money<c||S.rep<65||S.gems<BRANCH_GEMS) return; S.money-=c; S.gems-=BRANCH_GEMS; S.branches++; toast(`🏪 Khai trương chi nhánh thứ ${S.branches}!`); }
   refreshAll(); autosaveSoft(); checkMiles();
 });
 /* =====================================================================
@@ -1971,14 +2052,19 @@ function gotoTab(t){
   window.scrollTo({top:0});
 }
 window.gotoTab=gotoTab;
-function setSpeedBtn(s){ speed=s; $$('#speed button').forEach(x=>x.classList.toggle('on',+x.dataset.s===s)); }
+function setSpeedBtn(s){
+  if(s===2&&!hasU('speed2')){ askUnlock('speed2',()=>setSpeedBtn(2)); return false; }
+  if(s===4&&!hasU('speed4')){ askUnlock('speed4',()=>setSpeedBtn(4)); return false; }
+  speed=s; renderSpeedBtns(); return true;
+}
+function renderSpeedBtns(){ $$('#speed button').forEach(x=>{ const v=+x.dataset.s, lock=(v===2&&!hasU('speed2'))||(v===4&&!hasU('speed4')); x.textContent=v+'x'+(lock?' 🔒':''); x.classList.toggle('on',v===speed); }); }
 function openMenu(){
   if(R) userPaused=true;
   renderHeader();
   modal(`<h3>${R?'⏸ Tạm dừng':'☰ Menu'}</h3>
     <div class="col">
       ${R?'<button class="pill" data-m="resume">▶ Chơi tiếp</button>':''}
-      <div class="row"><span class="muted">Tốc độ:</span>${[1,2,4].map(s=>`<button class="sm ${speed===s?'on':''}" data-m="sp${s}">${s}x</button>`).join('')}</div>
+      <div class="row"><span class="muted">Tốc độ:</span>${[1,2,4].map(s=>`<button class="sm ${speed===s?'on':''}" data-m="sp${s}">${s}x${(s===2&&!hasU('speed2'))||(s===4&&!hasU('speed4'))?' 🔒':''}</button>`).join('')}</div>
       <button data-m="save" ${R?'disabled':''}>💾 Lưu game${R?' (khi tiệm đóng cửa)':''}</button>
       <button data-m="help">❓ Hướng dẫn</button>
       <button data-m="tut">📘 Hướng dẫn từng bước</button>
@@ -1991,7 +2077,7 @@ $('#btnPause').addEventListener('click',openMenu);
 $('#modalBox').addEventListener('click',e=>{
   const b=e.target.closest('[data-m]'); if(!b) return; const m=b.dataset.m;
   if(m==='resume'||m==='close') closeMenu();
-  else if(m.startsWith('sp')){ setSpeedBtn(+m.slice(2)); openMenu(); }
+  else if(m.startsWith('sp')){ if(setSpeedBtn(+m.slice(2))) openMenu(); }
   else if(m==='save'){ userPaused=false; openSaves(false); }
   else if(m==='help'){ closeMenu(); gotoTab('help'); }
   else if(m==='tut'){ closeMenu(); startTut(); }
@@ -2016,7 +2102,7 @@ $('#autoBox').addEventListener('change',e=>{ if(e.target.id!=='autoPay') return;
 $('#autoBox').addEventListener('click',e=>{
   if(!e.target.closest('#btnUnlockAuto')) return;
   const ok=autoReqs().every(r=>r.ok); if(!ok) return;
-  S.money-=AUTO_COST; S.autoUnlocked=true; S.autoPay=false; toast('🤖 Đã mở khóa Tự động phục vụ! Bật công tắc để dùng.'); autosaveSoft(); refreshAll();
+  S.money-=AUTO_COST; S.gems-=AUTO_GEMS; S.autoUnlocked=true; S.autoPay=false; toast('🤖 Đã mở khóa Tự động phục vụ! Bật công tắc để dùng.'); autosaveSoft(); refreshAll();
 });
 $('#btnTutAgain').addEventListener('click',()=>startTut());
 $('#modal').addEventListener('click',e=>{ if(e.target.id==='modal'&&!(R&&R.paused)&&!(S&&S.over)){ if(userPaused) closeMenu(); else closeModal(); } });
@@ -2091,7 +2177,7 @@ function drawStartBg(now){
   // mái hiên
   g.fillStyle='#caa085'; g.fillRect(sx-4,top-10,sw+8,12); g.strokeRect(sx-4,top-10,sw+8,12);
   const n=11, sw2=(sw+20)/n;
-  for(let i=0;i<n;i++){ const x0=sx-10+i*sw2; { const aw=S?wornItem('awning').aw:['#6fc18a','#ffffff']; g.fillStyle=i%2?aw[1]:aw[0]; } g.beginPath(); g.moveTo(x0,top); g.lineTo(x0+sw2,top); g.lineTo(x0+sw2,top+awH); g.arc(x0+sw2/2,top+awH,sw2/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
+  for(let i=0;i<n;i++){ const x0=sx-10+i*sw2; { const aw=S?wornItem('awning').aw:['#6fc18a','#ffffff']; g.fillStyle=aw[i%aw.length]; } g.beginPath(); g.moveTo(x0,top); g.lineTo(x0+sw2,top); g.lineTo(x0+sw2,top+awH); g.arc(x0+sw2/2,top+awH,sw2/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
   // đèn lồng
   [[0.12,'#f7d0a8'],[0.26,'#bfe3d4'],[0.74,'#d8c3ee'],[0.88,'#f7d0a8']].forEach(([fx,col],i)=>{
     const lx=sx+sw*fx, ly=top+awH+sw2*0.5+22+Math.sin(t*1.5+i)*2; g.strokeStyle=OL; g.lineWidth=2;
@@ -2114,7 +2200,7 @@ function drawStartBg(now){
   g.font=`${sw*0.075}px system-ui`; g.textAlign='center'; g.textBaseline='alphabetic';
   ['🥬','🍅','🥚','🍎','🥛'].forEach((e,i)=>g.fillText(e,sx+sw*(0.12+i*0.075),cTop-12));
   drawCat(g,sx+sw*0.66,cTop-16,sw/430,false,t,S?wornItem('cat').cat:null);
-  g.font=`${sw*0.1}px system-ui`; g.fillText('🪴',sx+sw*0.9,cTop-10);
+  g.font=`${sw*0.1}px system-ui`; (S?wornItem('decor').decor:['🪴']).forEach((e2,k)=>g.fillText(e2,sx+sw*(0.9-k*0.1),cTop-10));
   // sàn
   g.fillStyle='#e8f3ea'; g.fillRect(0,cBot,w,h-cBot);
   g.strokeStyle='rgba(120,100,110,.25)'; g.lineWidth=1.5;
@@ -2141,7 +2227,7 @@ const TUT=[
   {t:'Chào chủ tiệm! 👋', b:()=>`Chúc mừng <b>${esc(S.name)}</b> khai trương! Bạn có <b>40 triệu</b> vốn và 1 thu ngân. Cùng làm quen nhé.`},
   {t:'Tiền vốn', b:()=>'Tiền hiện ở giữa thanh trên cùng. Nhập hàng, thuê người, mua thiết bị đều <b>trừ tiền ngay</b>.', el:'.hmid'},
   {t:'Mua giấy phép trước', b:()=>'Ở tab <b>Nâng cấp</b>, mua <b>Giấy phép kinh doanh</b> (1,5 tr) để không bị công an phường phạt.', el:'[data-eq=license]', tab:'equip', wait:'equip'},
-  {t:'Nhập hàng', b:()=>'Trong <b>Kho</b>, bấm <b>+5 / +10 / +20</b> để nhập từng món, hoặc <b>🤖 Nhập theo gợi ý</b> cho nhanh.', el:'#btnSuggest', tab:'kho', wait:'bought'},
+  {t:'Nhập hàng', b:()=>'Trong <b>Kho</b>, bấm <b>+5 / +10 / +20</b> để nhập từng món, hoặc mở khóa <b>🤖 Nhập theo gợi ý</b> (40💎) cho nhanh.', el:'#btnSuggest', tab:'kho', wait:'bought'},
   {t:'Mở cửa', b:()=>'Tiệm mở <b>6:30 – 21:30</b>. Bấm <b>Mở cửa</b>, khách sẽ lần lượt đến quầy.', el:'#closedOv .pill', tab:'store', wait:'open'},
   {t:'Lấy hàng cho khách 🧺', b:()=>'Đọc lời khách, chọn <b>nhóm hàng</b> (chấm đỏ là nhóm còn thiếu) rồi bấm vào <b>khay</b> để lấy đúng món. Lấy nhầm thì bấm vào món trong Giỏ hàng để trả lại.', el:'#bins', tab:'store', wait:'picked'},
   {t:'Nhận tiền 💵', b:()=>'Đủ món thì bấm <b>Nhận tiền</b>. Nhanh tay kẻo <b>thanh kiên nhẫn</b> hết! Khách xếp hàng phía sau (vòng tròn trên cùng) sẽ được thu ngân phục vụ.', el:'#tray', tab:'store', wait:'paid'},

@@ -10,6 +10,7 @@ Trò chơi trình duyệt: mở tiệm tạp hóa – thực phẩm tươi sốn
 - Khách đang đợi phía sau hiện thành vòng tròn trên cùng; **thu ngân** thuê thêm tự phục vụ họ. Có thể bật *tự động phục vụ* quầy của bạn.
 - Khách **khen/chê từng sản phẩm** (tươi ngon, rẻ, héo, mắc) ngay tại quầy và trong đánh giá.
 - **👗 Tủ đồ & 💎 kim cương**: mua mũ, trang phục, phụ kiện cho chủ tiệm, màu mái hiên, phụ kiện cho mèo, đồng phục nhân viên. Kim cương kiếm bằng cách chơi (phục vụ nhanh, 5 sao, nhiệm vụ hằng ngày, mốc thành tích). Gói nạp hiển thị nhưng tạm khóa.
+- **Tính năng cần 💎 để mở**: tốc độ 2x/4x, nhập theo gợi ý, ô lưu 2 và 3, tự động phục vụ; một số thiết bị, quảng cáo, dịch vụ, chi nhánh cần thêm 💎; săn ứng viên 5 sao bằng 💎.
 - 51 mặt hàng, nhân viên, đánh giá sao & phản hồi, nâng cấp tiệm, quảng cáo & PR, dịch vụ mở khóa, trộm & sự cố & kiểm tra & thuế, sao lưu 3 ô + mã sao lưu.
 
 Mục tiêu: tổng tài sản **500 triệu**. Âm tiền 3 ngày liên tiếp là phá sản.
