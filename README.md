@@ -1,0 +1,16 @@
+# 🍃 Chợ Lá Xanh – Mô phỏng kinh doanh tạp hóa
+
+Trò chơi trình duyệt: mở tiệm tạp hóa – thực phẩm tươi sống, phục vụ từng khách hàng và phát triển thành chuỗi cửa hàng.
+
+**Chơi:** mở `index.html` bằng trình duyệt (không cần cài đặt).
+
+## Tính năng
+- **Giao diện pastel dễ thương**: màn hình mở đầu là quầy tiệm có mái hiên sọc hồng, đèn lồng, mèo ngủ; nút *Chơi tiếp* hiện tên tiệm, ngày và tiền của bản lưu.
+- **Bán hàng tại quầy**: khách chibi đứng trước quầy, nói món cần mua trong bong bóng lời thoại, có **thanh kiên nhẫn**. Chọn nhóm hàng, bấm vào **khay hàng** (có số lượng tồn) để lấy đúng món vào **Giỏ hàng**, rồi **Nhận tiền** (tiền mặt có tiền thối hoặc QR). Lấy nhầm thì bấm món trong giỏ để trả lại, hết hàng thì *Báo hết*.
+- Khách đang đợi phía sau hiện thành vòng tròn trên cùng; **thu ngân** thuê thêm tự phục vụ họ. Có thể bật *tự động phục vụ* quầy của bạn.
+- Khách **khen/chê từng sản phẩm** (tươi ngon, rẻ, héo, mắc) ngay tại quầy và trong đánh giá.
+- 51 mặt hàng, nhân viên, đánh giá sao & phản hồi, nâng cấp tiệm, quảng cáo & PR, dịch vụ mở khóa, trộm & sự cố & kiểm tra & thuế, sao lưu 3 ô + mã sao lưu.
+
+Mục tiêu: tổng tài sản **500 triệu**. Âm tiền 3 ngày liên tiếp là phá sản.
+
+> Trò chơi hư cấu, lấy cảm hứng từ mô hình chuỗi cửa hàng thực phẩm tươi sống; các con số chỉ mang tính minh họa.
