@@ -1687,8 +1687,9 @@ function renderWardrobe(){
 /* ====== 💳 Nạp kim cương qua chuyển khoản VietQR ======
    Chủ game điền thông tin dưới đây (không phải bí mật, ai xem mã nguồn cũng thấy):
    - bin: mã ngân hàng (xem PAY_BANKS), acct: số tài khoản, holder: tên chủ tài khoản (IN HOA, không dấu)
-   - api: địa chỉ máy chủ nạp (thư mục server/, Cloudflare Worker). Để trống = chế độ thử nghiệm. */
-const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev',site:'https://minhvy107.github.io/cholaxanh/'};
+   - api: địa chỉ máy chủ nạp (thư mục server/, Cloudflare Worker). Để trống = chế độ thử nghiệm.
+   - memo: chữ đặt trước mã đơn trong nội dung chuyển khoản (VietinBank + SePay bắt buộc có "SEVQR"). */
+const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev',site:'https://minhvy107.github.io/cholaxanh/',memo:'SEVQR'};
 const PAY_BANKS={'970436':'Vietcombank','970415':'VietinBank','970418':'BIDV','970405':'Agribank','970422':'MB Bank','970407':'Techcombank','970416':'ACB','970423':'TPBank','970432':'VPBank','970403':'Sacombank','970441':'VIB','970443':'SHB'};
 // Giá và số 💎 (gồm cả quà tặng) phải khớp PACKS trong server/worker.js
 const GEM_PACKS=[{id:'p1',gems:60,bonus:0,vnd:22000},{id:'p2',gems:320,bonus:30,vnd:99000},{id:'p3',gems:700,bonus:100,vnd:199000},
@@ -1731,17 +1732,18 @@ window.payOpen=async function(packId){
   S.payOrder=o; autosaveSoft(); payShow(); };
 window.payShow=function(){ const o=S.payOrder; if(!o) return; const live=PAY_LIVE();
   const bin=live?PAY_CFG.bin:'970436', acct=live?PAY_CFG.acct:'0000000000', holder=live?PAY_CFG.holder:'TAI KHOAN THU NGHIEM';
+  const memo=(live&&PAY_CFG.memo?PAY_CFG.memo+' ':'')+o.code;
   const cp=v=>`<button onclick="navigator.clipboard&&navigator.clipboard.writeText('${v}');toast('Đã sao chép')">Chép</button>`;
   modal(`<h3>💳 Nạp ${o.gems}💎 · ${fmtVND(o.vnd)}</h3>
     ${live?'':`<div class="paydemo">⚠️ CHẾ ĐỘ THỬ NGHIỆM – cổng nạp chưa được cấu hình. Đừng chuyển tiền vào tài khoản này.</div>`}
     <div class="payqr" id="payQr"><span class="muted">Đang tạo mã QR…</span></div>
     <table class="paytbl"><tr><td>Ngân hàng</td><td><b>${PAY_BANKS[bin]||bin}</b></td></tr>
       <tr><td>Số tài khoản</td><td><b>${acct}</b>${cp(acct)}</td></tr><tr><td>Chủ tài khoản</td><td><b>${esc(holder)}</b></td></tr>
-      <tr><td>Số tiền</td><td><b>${fmtVND(o.vnd)}</b>${cp(o.vnd)}</td></tr><tr><td>Nội dung</td><td><b style="color:#d9534f">${o.code}</b>${cp(o.code)}</td></tr></table>
-    <p class="muted" style="font-size:12.5px">Quét mã bằng app ngân hàng, giữ nguyên <b>số tiền</b> và <b>nội dung</b>. Kim cương được cộng tự động trong khoảng 1 phút sau khi tiền về. Có thể đóng bảng này, đơn vẫn được giữ.</p>
+      <tr><td>Số tiền</td><td><b>${fmtVND(o.vnd)}</b>${cp(o.vnd)}</td></tr><tr><td>Nội dung</td><td><b style="color:#d9534f">${memo}</b>${cp(memo)}</td></tr></table>
+    <p class="muted" style="font-size:12.5px">Quét mã bằng app ngân hàng, giữ nguyên <b>số tiền</b> và <b>nội dung</b> (kể cả chữ SEVQR nếu có). Kim cương được cộng tự động trong khoảng 1 phút sau khi tiền về. Có thể đóng bảng này, đơn vẫn được giữ.</p>
     <div class="paystat" id="payStat">${live?'⏳ Đang chờ tiền về…':'Chế độ thử: không có tiền thật được xử lý.'}</div>
     <div class="row">${!live&&PAY_TEST?`<button onclick="payDemoPaid()">🧪 Giả lập đã nhận tiền</button>`:''}<button class="danger" onclick="payCancel()">Hủy đơn</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
-  const data=vietQR(bin,acct,o.vnd,o.code);
+  const data=vietQR(bin,acct,o.vnd,memo);
   loadQR().then(qr=>{ const q=qr(0,'M'); q.addData(data); q.make(); const el=$('#payQr'); if(el) el.innerHTML=q.createImgTag(6,8); })
     .catch(()=>{ const el=$('#payQr'); if(el) el.innerHTML='<span class="muted">Không tải được mã QR. Bạn chuyển khoản thủ công theo thông tin bên dưới.</span>'; });
   if(live) payPoll(); };
