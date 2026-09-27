@@ -347,7 +347,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <h3 class="sec" style="margin-top:18px">📋 Nhiệm vụ hôm nay</h3>
     <p class="muted" style="margin:0 0 8px;font-size:13px">Làm xong nhận kim cương. Nhiệm vụ đổi mỗi sáng, nhiệm vụ đã xong mà quên nhận sẽ được cộng tự động.</p>
     <div id="wdQuests"></div>
-    <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: tự tay phục vụ nhanh (+1), khách ở quầy của bạn chấm 5 sao (+1), đạt mốc thành tích (+20).</p>
+    <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: làm nhiệm vụ hằng ngày, đạt mốc thành tích (+20), thắng thử thách bất ngờ (+5), mốc thưởng lễ hội.</p>
     <h3 class="sec" style="margin-top:14px">💳 Nạp kim cương</h3>
     <div id="wdOffers"></div>
     <div class="packs" id="wdPacks"></div>
@@ -1259,12 +1259,10 @@ function collectPay(){
   const c=R&&R.cur; if(!c||c.stage!=='pay') return;
   const fast=c.waited<c.patience*0.4;
   c.byYou=true;
-  let gem=0;
-  if(finishCustomer(c)){ S.manualServed=(S.manualServed||0)+1; questProg('hand',1); festPts(2); festMis('hand',1); if(fast){ questProg('fast',1); gem=1; } }
-  if(gem) S.gems+=gem;
+  if(finishCustomer(c)){ S.manualServed=(S.manualServed||0)+1; questProg('hand',1); festPts(2); festMis('hand',1); if(fast) questProg('fast',1); }
   questProg('rev',R.st.rev+R.st.svc);
   if(fast&&Math.random()<0.5) say(c,pick(['Lẹ ghê, cảm ơn nha!','Tiệm dễ thương quá','Mai ghé nữa nha!']),12);
-  moneyFloat('+'+fmtS(c.paidAmt||0)+(gem?' · +1💎':''));
+  moneyFloat('+'+fmtS(c.paidAmt||0));
   releaseCur(true); tutHook('paid'); renderLive();
 }
 function rollAddons(){
@@ -1982,7 +1980,7 @@ function makeReview(c,kind){
   if(op&&!text.includes(op.text)) text+=' '+op.text+(/[!.…?]$/.test(op.text)?'':'.');
   const tags=[]; for(const o of ops) if(!tags.some(t=>t.id===o.id)) tags.push({id:o.id,good:o.good});
   const rv={id:++S.nextId, day:S.day, t:R.t, name:c.name, look:c.look, stars:s, text, tags:tags.slice(0,3), reply:null};
-  if(s===5){ questProg('five',1); if(c.byYou) S.gems+=1; festPts(3); }
+  if(s===5){ questProg('five',1); festPts(3); }
   S.reviews.unshift(rv); if(S.reviews.length>200) S.reviews.pop();
   R.reviews.push(rv);
 }
