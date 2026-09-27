@@ -48,8 +48,8 @@ input[type=text],textarea{font:inherit;padding:8px 12px;border:2px solid var(--l
 .hstars{text-align:right;line-height:1.15;font-size:12.5px;color:var(--muted)}
 .hstars .stars{font-size:17px;display:block}
 .stars{color:var(--sun);letter-spacing:1px;-webkit-text-stroke:.5px #c9922b}
-.awning{height:22px;background:repeating-linear-gradient(90deg,#6fc18a 0 32px,#ffffff 32px 64px);position:relative;border-top:2px solid #9fcfad}
-.awning::after{content:"";position:absolute;left:0;right:0;top:100%;height:14px;background:radial-gradient(circle at 16px 0,#6fc18a 15px,transparent 16px) 0 0/64px 14px repeat-x,radial-gradient(circle at 48px 0,#ffffff 15px,transparent 16px) 0 0/64px 14px repeat-x;filter:drop-shadow(0 2px 0 rgba(90,58,50,.12))}
+.awning{height:22px;background:repeating-linear-gradient(90deg,var(--aw1,#6fc18a) 0 32px,var(--aw2,#ffffff) 32px 64px);position:relative;border-top:2px solid #9fcfad}
+.awning::after{content:"";position:absolute;left:0;right:0;top:100%;height:14px;background:radial-gradient(circle at 16px 0,var(--aw1,#6fc18a) 15px,transparent 16px) 0 0/64px 14px repeat-x,radial-gradient(circle at 48px 0,var(--aw2,#ffffff) 15px,transparent 16px) 0 0/64px 14px repeat-x;filter:drop-shadow(0 2px 0 rgba(90,58,50,.12))}
 
 /* ---------- Bottom nav ---------- */
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#ffffff;border-top:2px solid var(--line);display:flex;overflow-x:auto;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:8;scrollbar-width:none}
@@ -143,6 +143,28 @@ label.toggle{display:flex;gap:6px;align-items:center;font-size:13px;cursor:point
 .lockbox{margin:4px 10px;background:var(--panel);border:2px dashed var(--line);border-radius:14px;padding:8px 12px;font-size:13px}
 .lockbox ul{margin:4px 0 8px;padding-left:4px;list-style:none}
 .lockbox li{margin:1px 0}
+/* Tủ đồ */
+.gems{font:800 15px var(--display);background:#eaf4ff;border:2px solid #a9cdf0;color:#2f6aa3;border-radius:999px;padding:2px 12px;display:inline-flex;gap:4px;align-items:center}
+.wd-top{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-bottom:10px}
+#wdCv{width:100%;height:190px;display:block;border-radius:16px;border:2px solid var(--line);background:#fff}
+.wd-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.wd-item{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;cursor:pointer;position:relative}
+.wd-item .ic{font-size:28px;line-height:1.1}
+.wd-item .nm{font-size:12px;line-height:1.2;min-height:29px}
+.wd-item.sel{border-color:var(--brand);box-shadow:0 0 0 2px #fbd3dd}
+.wd-item.worn{border-color:var(--mint);background:#effaf2}
+.wd-item .tagw{position:absolute;top:-8px;right:-4px;background:var(--mint);color:#fff;border-radius:9px;font-size:10px;padding:0 6px}
+.wd-item button{font-size:12px;padding:2px 8px;border-radius:9px;width:100%}
+.quest{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:8px 10px;margin-bottom:6px;font-size:13px}
+.quest .qb{grid-column:1/-1;height:8px;border-radius:5px;background:var(--panel2);overflow:hidden}
+.quest .qb i{display:block;height:100%;background:#7fb8e6}
+.packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pack{background:linear-gradient(#f4f9ff,#e3f0fd);border:2px solid #a9cdf0;border-radius:14px;padding:10px 6px;text-align:center;position:relative}
+.pack .g{font:800 20px var(--display);color:#2f6aa3}
+.pack .soon{position:absolute;inset:0;border-radius:12px;background:rgba(255,255,255,.55);display:grid;place-items:center;font:800 13px var(--display);color:#6b7a8c}
+.tray{position:relative}
+.tray .owner{position:absolute;top:-22px;right:-12px;width:40px;height:40px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);background:#fff;padding:0;cursor:pointer}
+.tray .owner img{width:100%;height:100%;border-radius:50%;display:block}
 details.logbox{margin:6px 10px;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:6px 10px}
 details.logbox summary{cursor:pointer;font-family:var(--display)}
 .log{max-height:220px;overflow-y:auto;font-size:12.5px;display:flex;flex-direction:column;gap:3px;margin-top:6px}
@@ -261,7 +283,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
   <header id="hdr">
     <button class="pausebtn" id="btnPause" aria-label="Tạm dừng và menu">⏸</button>
     <div class="hday"><b id="sDay">Ngày 1</b><span>🕕 <b id="sClock">06:30</b></span></div>
-    <div class="hmid"><span class="nm" id="hName"></span><b id="sMoney">0</b><small>💚 Uy tín <span id="sRep">50</span></small></div>
+    <div class="hmid"><span class="nm" id="hName"></span><b id="sMoney">0</b><small>💚 <span id="sRep">50</span> · 💎 <span id="sGems">0</span></small></div>
     <div class="hstars"><span class="stars" id="sStarsIcons">☆☆☆☆☆</span><span><span id="sStars">–</span> · <span id="sRevCount">0</span> đánh giá</span></div>
   </header>
   <div class="awning"></div>
@@ -287,6 +309,20 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <label class="toggle"><input type="checkbox" id="flash"> Xả hàng tươi sắp hết hạn sau 18:00 (giảm 30%)</label>
     <div id="autoBox"></div>
     <details class="logbox"><summary>📋 Nhật ký trong ngày</summary><div class="log" id="log"></div></details>
+  </section>
+
+  <section class="tab panel" id="tab-wardrobe">
+    <div class="sec-title"><h3 class="sec">👗 Tủ đồ</h3><span class="gems" id="wdGems">💎 0</span></div>
+    <div class="wd-top"><canvas id="wdCv"></canvas></div>
+    <div class="chips" id="wdSlots" style="margin-bottom:10px"></div>
+    <div class="wd-items" id="wdItems"></div>
+    <h3 class="sec" style="margin-top:18px">📋 Nhiệm vụ hôm nay</h3>
+    <p class="muted" style="margin:0 0 8px;font-size:13px">Làm xong nhận kim cương. Nhiệm vụ đổi mỗi sáng, nhiệm vụ đã xong mà quên nhận sẽ được cộng tự động.</p>
+    <div id="wdQuests"></div>
+    <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: tự tay phục vụ nhanh (+1), khách ở quầy của bạn chấm 5 sao (+1), đạt mốc thành tích (+20).</p>
+    <h3 class="sec" style="margin-top:14px">💳 Nạp kim cương</h3>
+    <div class="packs" id="wdPacks"></div>
+    <p class="muted" style="font-size:12.5px">Nạp tiền thật sẽ mở khi tiệm có máy chủ, cổng thanh toán và giấy phép phát hành. Hiện tại bạn kiếm kim cương hoàn toàn miễn phí bằng cách chơi.</p>
   </section>
 
   <section class="tab panel" id="tab-kho">
@@ -402,6 +438,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 
   <nav class="bnav" id="tabs">
     <button data-tab="store" class="on"><span class="i">🏪</span>Tiệm</button>
+    <button data-tab="wardrobe"><span class="i">👗</span>Tủ đồ</button>
     <button data-tab="kho"><span class="i">📦</span>Kho</button>
     <button data-tab="staff"><span class="i">👥</span>Nhân viên</button>
     <button data-tab="reviews"><span class="i">⭐</span>Đánh giá<span class="badge" id="revBadge" hidden></span></button>
@@ -604,7 +641,7 @@ function makeStaff(role){
 }
 function ownerLook(){ const p=genPerson(true).look; return {...p, shirt:'#ffb703', apron:'#ffffff', cap:'#e0a82e', bow:null}; }
 function newGame(name){
-  S={ver:3, owner:ownerLook(), fb:{}, autoPay:false, autoUnlocked:false, manualServed:0, name, day:1, money:START_MONEY, rep:50, staff:[], eq:{}, svc:{}, ads:[], branches:0,
+  S={ver:3, owner:ownerLook(), fb:{}, gems:30, owned:{}, wear:{...DEFAULT_WEAR}, q:[], autoPay:false, autoUnlocked:false, manualServed:0, name, day:1, money:START_MONEY, rep:50, staff:[], eq:{}, svc:{}, ads:[], branches:0,
      inv:{}, price:{}, market:{}, reviews:[], hist:[], weekRev:0, event:null, cands:[], negDays:0,
      over:false, won:false, miles:{}, flash:true, nextId:1, lastSeenRev:0};
   EQUIP.forEach(e=>S.eq[e.id]=0);
@@ -614,6 +651,7 @@ function newGame(name){
   PRODUCTS.forEach(p=>S.price[p.id]=S.market[p.id].ref);
 }
 function rollMorning(first){
+  settleQuests(); rollQuests();
   S.event=!first&&Math.random()<0.4?{...pick(EVENTS)}:null;
   if(S.event&&S.event.rep) S.rep=clamp(S.rep+S.event.rep,0,100);
   const ev=S.event||{};
@@ -703,6 +741,7 @@ function drawBust(g,x,y,r,L,o={}){
     g.strokeStyle='rgba(255,255,255,.45)'; g.lineWidth=lw*0.9; g.beginPath(); g.arc(x-r*0.1,y-r*0.2,r*0.72,Math.PI*1.25,Math.PI*1.45); g.stroke();
     g.strokeStyle=OL; g.lineWidth=lw;
   }
+  if(L.hat) drawHat(g,x,y,r,L.hat,lw);
   if(L.bow){ g.fillStyle=L.bow; for(const s of [-1,1]){ g.beginPath(); g.moveTo(x-r*0.55,y-r*0.78); g.lineTo(x-r*0.55+s*r*0.36,y-r*0.95); g.lineTo(x-r*0.55+s*r*0.36,y-r*0.6); g.closePath(); g.fill(); g.stroke(); } ell(g,x-r*0.55,y-r*0.78,r*0.08,r*0.08); g.fill(); g.stroke(); }
   // mặt
   const ey=y+r*0.18, ex=r*0.38;
@@ -715,6 +754,7 @@ function drawBust(g,x,y,r,L,o={}){
     for(const s of [-1,1]){ ell(g,x+s*ex,ey,r*0.13,r*0.17); g.fill(); g.fillStyle='#fff'; ell(g,x+s*ex+r*0.04,ey-r*0.06,r*0.05,r*0.05); g.fill(); ell(g,x+s*ex-r*0.04,ey+r*0.07,r*0.025,r*0.025); g.fill(); g.fillStyle='#3b2622'; }
   }
   if(mood==='angry'||mood==='annoyed'){ g.lineWidth=lw*0.9; for(const s of [-1,1]){ g.beginPath(); g.moveTo(x+s*(ex+r*0.16),ey-r*0.3); g.lineTo(x+s*(ex-r*0.1),ey-r*0.22); g.stroke(); } g.lineWidth=lw; }
+  if(L.shades){ g.fillStyle='#2b2b36'; for(const sd of [-1,1]){ rr(g,x+sd*ex-r*0.24,ey-r*0.16,r*0.48,r*0.3,r*0.1); g.fill(); g.stroke(); } g.beginPath(); g.moveTo(x-ex+r*0.24,ey-r*0.05); g.lineTo(x+ex-r*0.24,ey-r*0.05); g.stroke(); g.fillStyle='rgba(255,255,255,.5)'; for(const sd of [-1,1]){ rr(g,x+sd*ex-r*0.16,ey-r*0.11,r*0.12,r*0.06,r*0.03); g.fill(); } }
   if(L.glasses){ g.lineWidth=lw*0.7; for(const s of [-1,1]){ ell(g,x+s*ex,ey,r*0.22,r*0.2); g.stroke(); } g.beginPath(); g.moveTo(x-ex+r*0.22,ey); g.lineTo(x+ex-r*0.22,ey); g.stroke(); g.lineWidth=lw; }
   g.fillStyle=mood==='angry'?'rgba(240,90,90,.6)':'rgba(247,150,165,.6)';
   for(const s of [-1,1]){ ell(g,x+s*r*0.62,y+r*0.42,r*0.17,r*0.1); g.fill(); }
@@ -723,6 +763,16 @@ function drawBust(g,x,y,r,L,o={}){
   else if(mood==='angry'||mood==='annoyed'){ g.beginPath(); g.moveTo(x-r*0.12,y+r*0.58); g.quadraticCurveTo(x,y+r*0.46,x+r*0.12,y+r*0.58); g.stroke(); }
   else { g.beginPath(); g.moveTo(x-r*0.1,y+r*0.5); g.quadraticCurveTo(x,y+r*0.58,x+r*0.1,y+r*0.5); g.stroke(); }
   if(mood==='angry'){ g.font=`${r*0.4}px sans-serif`; g.textAlign='center'; g.textBaseline='middle'; g.fillText('💢',x+r*0.8,y-r*0.75); }
+  g.restore();
+}
+function drawHat(g,x,y,r,h,lw){
+  g.save(); g.strokeStyle=OL; g.lineWidth=lw;
+  if(h==='beret'){ g.fillStyle='#d64550'; ell(g,x+r*0.12,y-r*0.86,r*0.98,r*0.36,-0.15); g.fill(); g.stroke(); ell(g,x+r*0.2,y-r*1.22,r*0.08,r*0.1); g.fill(); g.stroke(); }
+  else if(h==='straw'){ g.fillStyle='#f3d27a'; ell(g,x,y-r*0.66,r*1.5,r*0.32); g.fill(); g.stroke(); rr(g,x-r*0.66,y-r*1.28,r*1.32,r*0.66,r*0.3); g.fill(); g.stroke(); g.fillStyle='#e05a64'; g.fillRect(x-r*0.66,y-r*0.86,r*1.32,r*0.14); g.strokeRect(x-r*0.66,y-r*0.86,r*1.32,r*0.14); }
+  else if(h==='crown'){ g.fillStyle='#ffd23f'; g.beginPath(); g.moveTo(x-r*0.6,y-r*0.78); g.lineTo(x-r*0.62,y-r*1.38); g.lineTo(x-r*0.3,y-r*1.08); g.lineTo(x,y-r*1.48); g.lineTo(x+r*0.3,y-r*1.08); g.lineTo(x+r*0.62,y-r*1.38); g.lineTo(x+r*0.6,y-r*0.78); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#e0476e'; ell(g,x,y-r*0.98,r*0.09,r*0.09); g.fill(); g.fillStyle='#5aa9e6'; ell(g,x-r*0.35,y-r*0.92,r*0.07,r*0.07); g.fill(); ell(g,x+r*0.35,y-r*0.92,r*0.07,r*0.07); g.fill(); }
+  else if(h==='ears'){ g.strokeStyle=OL; g.lineWidth=lw*1.4; g.beginPath(); g.arc(x,y-r*0.05,r*1.02,Math.PI*1.12,Math.PI*1.88); g.stroke(); g.lineWidth=lw;
+    for(const sd of [-1,1]){ g.fillStyle='#fdf6ee'; g.beginPath(); g.moveTo(x+sd*r*0.25,y-r*0.95); g.lineTo(x+sd*r*0.62,y-r*1.45); g.lineTo(x+sd*r*0.85,y-r*0.72); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#f7a6b8'; g.beginPath(); g.moveTo(x+sd*r*0.4,y-r*0.93); g.lineTo(x+sd*r*0.62,y-r*1.28); g.lineTo(x+sd*r*0.74,y-r*0.83); g.closePath(); g.fill(); } }
+  else if(h==='chef'){ g.fillStyle='#ffffff'; for(const [dx,dy,rr2] of [[-0.42,-1.28,0.36],[0.42,-1.28,0.36],[0,-1.42,0.42]]){ ell(g,x+dx*r,y+dy*r,rr2*r,rr2*r); g.fill(); g.stroke(); } rr(g,x-r*0.72,y-r*1.12,r*1.44,r*0.42,r*0.1); g.fill(); g.stroke(); }
   g.restore();
 }
 function shade(hex,amt){ const n=parseInt(hex.slice(1),16); const f=c=>clamp(c+amt,0,255); return '#'+[f(n>>16),f((n>>8)&255),f(n&255)].map(v=>v.toString(16).padStart(2,'0')).join(''); }
@@ -735,7 +785,7 @@ function avatar(L){
   drawBust(g,48,44,24*(L.scale&&L.scale<0.9?0.92:1),L,{}); g.restore();
   const u=c.toDataURL(); avCache.set(k,u); return u;
 }
-function drawCat(g,x,y,s,awake,t){
+function drawCat(g,x,y,s,awake,t,acc){
   g.save(); g.lineJoin='round'; g.lineCap='round'; g.strokeStyle=OL; g.lineWidth=2*s;
   g.fillStyle='#f3d9b1'; ell(g,x,y+4*s,38*s,10*s); g.fill(); g.stroke();
   g.fillStyle='#fffaf2'; ell(g,x+6*s,y-8*s,30*s,17*s); g.fill(); g.stroke();
@@ -751,6 +801,9 @@ function drawCat(g,x,y,s,awake,t){
   else for(const ex of [-24,-12]){ g.beginPath(); g.arc(x+ex*s,y-13*s,3.2*s,0.15*Math.PI,0.85*Math.PI); g.stroke(); }
   g.beginPath(); g.moveTo(x-21*s,y-7*s); g.quadraticCurveTo(x-19.5*s,y-5*s,x-18*s,y-7*s); g.quadraticCurveTo(x-16.5*s,y-5*s,x-15*s,y-7*s); g.stroke();
   g.fillStyle='rgba(247,150,165,.55)'; ell(g,x-28*s,y-8*s,3*s,2*s); g.fill(); ell(g,x-8*s,y-8*s,3*s,2*s); g.fill();
+  if(acc==='bow'){ g.fillStyle='#e5534b'; for(const sd of [-1,1]){ g.beginPath(); g.moveTo(x-28*s,y-22*s); g.lineTo(x-28*s+sd*8*s,y-27*s); g.lineTo(x-28*s+sd*8*s,y-17*s); g.closePath(); g.fill(); g.stroke(); } ell(g,x-28*s,y-22*s,2.5*s,2.5*s); g.fill(); g.stroke(); }
+  if(acc==='scarf'){ g.fillStyle='#e5534b'; ell(g,x-14*s,y+0.5*s,13*s,4*s,0.15); g.fill(); g.stroke(); rr(g,x-6*s,y,5*s,11*s,2*s); g.fill(); g.stroke(); g.strokeStyle='#fff'; g.lineWidth=1.2*s; g.beginPath(); g.moveTo(x-22*s,y-1*s); g.lineTo(x-20*s,y+3*s); g.moveTo(x-14*s,y-1*s); g.lineTo(x-12*s,y+3.5*s); g.stroke(); g.strokeStyle=OL; g.lineWidth=1.8*s; }
+  if(acc==='party'){ g.fillStyle='#7fb8e6'; g.beginPath(); g.moveTo(x-27*s,y-23*s); g.lineTo(x-13*s,y-23*s); g.lineTo(x-21*s,y-44*s); g.closePath(); g.fill(); g.stroke(); g.fillStyle='#ffd23f'; g.beginPath(); g.moveTo(x-24*s,y-30*s); g.lineTo(x-16*s,y-30*s); g.lineTo(x-17.5*s,y-35*s); g.lineTo(x-22.5*s,y-35*s); g.closePath(); g.fill(); g.fillStyle='#f7a6b8'; ell(g,x-21*s,y-45*s,3*s,3*s); g.fill(); g.stroke(); }
   if(!awake){ g.fillStyle='#8f7a8a'; g.font=`800 ${12*s}px "Baloo 2",sans-serif`; g.textAlign='center'; const k=(t*0.6)%1; g.globalAlpha=1-k; g.fillText('z',x-2*s+k*10*s,y-32*s-k*14*s); g.globalAlpha=Math.max(0,1-((k+0.5)%1)); g.fillText('Z',x+4*s+((k+0.5)%1)*10*s,y-40*s-((k+0.5)%1)*14*s); }
   g.restore();
 }
@@ -944,9 +997,13 @@ function checkDone(c){
 function collectPay(){
   const c=R&&R.cur; if(!c||c.stage!=='pay') return;
   const fast=c.waited<c.patience*0.4;
-  if(finishCustomer(c)) S.manualServed=(S.manualServed||0)+1;
+  c.byYou=true;
+  let gem=0;
+  if(finishCustomer(c)){ S.manualServed=(S.manualServed||0)+1; questProg('hand',1); if(fast){ questProg('fast',1); gem=1; } }
+  if(gem) S.gems+=gem;
+  questProg('rev',R.st.rev+R.st.svc);
   if(fast&&Math.random()<0.5) say(c,pick(['Lẹ ghê, cảm ơn nha!','Tiệm dễ thương quá','Mai ghé nữa nha!']),12);
-  moneyFloat('+'+fmtS(c.paidAmt||0));
+  moneyFloat('+'+fmtS(c.paidAmt||0)+(gem?' · +1💎':''));
   releaseCur(true); tutHook('paid'); renderLive();
 }
 function rollAddons(){
@@ -1076,7 +1133,7 @@ function renderOrder(){
   const r=clamp(1-c.waited/c.patience,0,1), bar=$('#patBar'); bar.style.width=Math.round(r*100)+'%'; bar.style.background=patColor(r);
 }
 function renderTray(){
-  const c=R&&R.cur; let h='<span class="sign">GIỎ HÀNG</span>';
+  const c=R&&R.cur; let h=`<span class="sign">GIỎ HÀNG</span><button class="owner" data-owner="1" title="Chủ tiệm – mở Tủ đồ"><img src="${avatar(ownerView())}" alt="Chủ tiệm"></button>`;
   if(!R) h+='<div class="tempty">Tiệm đang đóng cửa</div>';
   else if(!c) h+=`<div class="tempty">${R.queue.length?'Mời khách tiếp theo…':'Chưa có khách 😴'}</div>`;
   else {
@@ -1113,7 +1170,7 @@ function staffStatus(s){
   return '';
 }
 function renderStaffRow(){
-  setHTML($('#staffRow'),S.staff.map(s=>`<div class="stf"><img src="${avatar(s.look)}" alt=""><span><b>${esc(s.name)} · ${ROLES[s.role].name}</b>${staffStatus(s)}</span></div>`).join('')||'<span class="muted" style="font-size:13px">Chưa có nhân viên. Bạn tự đứng quầy.</span>');
+  setHTML($('#staffRow'),S.staff.map(s=>`<div class="stf"><img src="${avatar(staffLook(s))}" alt=""><span><b>${esc(s.name)} · ${ROLES[s.role].name}</b>${staffStatus(s)}</span></div>`).join('')||'<span class="muted" style="font-size:13px">Chưa có nhân viên. Bạn tự đứng quầy.</span>');
 }
 function renderClosed(){
   const ov=$('#closedOv');
@@ -1208,6 +1265,102 @@ function stageBg(w,h,d){
   g.fillStyle='rgba(245,251,246,.28)'; g.fillRect(0,0,w,h);
   _sbg={key,c}; return c;
 }
+/* =====================================================================
+   TỦ ĐỒ, KIM CƯƠNG, NHIỆM VỤ
+   ===================================================================== */
+const WARDROBE=[
+  {id:'hat_cap',slot:'hat',name:'Mũ lưỡi trai',icon:'🧢',price:0,cap:['#6fc18a','#ffffff']},
+  {id:'hat_none',slot:'hat',name:'Để tóc tự nhiên',icon:'💇',price:0},
+  {id:'hat_beret',slot:'hat',name:'Mũ nồi đỏ',icon:'🎨',price:40,hat:'beret'},
+  {id:'hat_straw',slot:'hat',name:'Nón rơm',icon:'👒',price:60,hat:'straw'},
+  {id:'hat_ears',slot:'hat',name:'Bờm tai mèo',icon:'🐱',price:80,hat:'ears'},
+  {id:'hat_chef',slot:'hat',name:'Mũ đầu bếp',icon:'🧑‍🍳',price:90,hat:'chef'},
+  {id:'hat_crown',slot:'hat',name:'Vương miện',icon:'👑',price:200,hat:'crown'},
+  {id:'fit_apron',slot:'outfit',name:'Tạp dề xanh',icon:'🥬',price:0,shirt:'#9fd8b0',apron:'#ffffff'},
+  {id:'fit_tee',slot:'outfit',name:'Áo thun vàng',icon:'👕',price:30,shirt:'#ffd166'},
+  {id:'fit_hoodie',slot:'outfit',name:'Hoodie hồng',icon:'🩷',price:60,shirt:'#f7a8c0'},
+  {id:'fit_denim',slot:'outfit',name:'Áo yếm jean',icon:'👖',price:70,shirt:'#fff3e0',apron:'#6f9fd8'},
+  {id:'fit_chef',slot:'outfit',name:'Áo đầu bếp',icon:'🥼',price:90,shirt:'#ffffff',apron:'#e8eef0'},
+  {id:'fit_aodai',slot:'outfit',name:'Áo dài đỏ',icon:'🧧',price:120,shirt:'#d9434e'},
+  {id:'acc_none',slot:'acc',name:'Không đeo',icon:'🙂',price:0},
+  {id:'acc_glass',slot:'acc',name:'Kính tròn',icon:'👓',price:25,glasses:true},
+  {id:'acc_bow',slot:'acc',name:'Nơ hồng',icon:'🎀',price:35,bow:'#ff5d8f'},
+  {id:'acc_shades',slot:'acc',name:'Kính râm',icon:'🕶️',price:70,shades:true},
+  {id:'aw_green',slot:'awning',name:'Mái hiên xanh lá',icon:'🟢',price:0,aw:['#6fc18a','#ffffff']},
+  {id:'aw_pink',slot:'awning',name:'Mái hiên hồng',icon:'🩷',price:50,aw:['#ee8fa5','#fff6ec']},
+  {id:'aw_blue',slot:'awning',name:'Mái hiên xanh biển',icon:'🔵',price:50,aw:['#7fb8e6','#ffffff']},
+  {id:'aw_orange',slot:'awning',name:'Mái hiên cam',icon:'🟠',price:50,aw:['#f4a261','#fff7ea']},
+  {id:'aw_purple',slot:'awning',name:'Mái hiên tím',icon:'🟣',price:80,aw:['#b39ddb','#ffffff']},
+  {id:'cat_none',slot:'cat',name:'Mèo tự nhiên',icon:'🐱',price:0},
+  {id:'cat_bow',slot:'cat',name:'Nơ đỏ',icon:'🎀',price:30,cat:'bow'},
+  {id:'cat_scarf',slot:'cat',name:'Khăn quàng',icon:'🧣',price:45,cat:'scarf'},
+  {id:'cat_party',slot:'cat',name:'Mũ sinh nhật',icon:'🥳',price:60,cat:'party'},
+  {id:'uni_green',slot:'uniform',name:'Đồng phục gốc',icon:'🟩',price:0},
+  {id:'uni_pink',slot:'uniform',name:'Đồng phục hồng',icon:'🩷',price:60,uni:'#f19cb4'},
+  {id:'uni_blue',slot:'uniform',name:'Đồng phục xanh biển',icon:'🟦',price:60,uni:'#7fb8e6'},
+  {id:'uni_orange',slot:'uniform',name:'Đồng phục cam',icon:'🟧',price:60,uni:'#f4a261'},
+];
+const WMAP=Object.fromEntries(WARDROBE.map(w=>[w.id,w]));
+const SLOTS={hat:'👒 Mũ',outfit:'👕 Trang phục',acc:'🎀 Phụ kiện',awning:'🏪 Mái hiên',cat:'🐱 Mèo',uniform:'👥 Đồng phục NV'};
+const DEFAULT_WEAR={hat:'hat_cap',outfit:'fit_apron',acc:'acc_none',awning:'aw_green',cat:'cat_none',uniform:'uni_green'};
+let wdSlot='hat', wdPreview=null;
+function wornItem(slot){ return WMAP[(S&&S.wear&&S.wear[slot])||DEFAULT_WEAR[slot]]||WMAP[DEFAULT_WEAR[slot]]; }
+const owns=id=>WMAP[id].price===0||!!(S.owned&&S.owned[id]);
+function ownerView(over){
+  const wear={...(S.wear||DEFAULT_WEAR),...(over||{})}, L={...S.owner,cap:null,cap2:null,hat:null,bow:null,glasses:false,shades:false,apron:null};
+  for(const slot of ['hat','outfit','acc']){ const it=WMAP[wear[slot]]||WMAP[DEFAULT_WEAR[slot]];
+    if(it.cap){ L.cap=it.cap[0]; L.cap2=it.cap[1]; } if(it.hat) L.hat=it.hat; if(it.shirt) L.shirt=it.shirt; if(it.apron) L.apron=it.apron;
+    if(it.glasses) L.glasses=true; if(it.bow) L.bow=it.bow; if(it.shades) L.shades=true; }
+  return L;
+}
+function staffLook(s){ const u=wornItem('uniform').uni; return u&&(s.role==='cashier'||s.role==='stocker')?{...s.look,shirt:u,cap:u}:s.look; }
+function applyAwning(){ const aw=S?wornItem('awning').aw:['#6fc18a','#ffffff'], st=document.documentElement.style; if(st.getPropertyValue('--aw1')!==aw[0]){ st.setProperty('--aw1',aw[0]); st.setProperty('--aw2',aw[1]); } }
+const QUESTS=[
+  {type:'hand',t:n=>`Tự tay phục vụ ${n} khách`,n:()=>rint(6,12),reward:15},
+  {type:'fast',t:n=>`Phục vụ nhanh ${n} khách (thanh kiên nhẫn còn trên 60%)`,n:()=>rint(4,8),reward:15},
+  {type:'five',t:n=>`Nhận ${n} đánh giá 5 sao`,n:()=>rint(2,4),reward:12},
+  {type:'rev',t:n=>`Doanh thu trong ngày đạt ${fmtS(n)}`,n:()=>round(rand(12e6,26e6),1e6),reward:20},
+];
+function rollQuests(){ if(!S) return; S.q=QUESTS.slice().sort(()=>Math.random()-0.5).slice(0,3).map(q=>({type:q.type,target:q.n(),prog:0,reward:q.reward,claimed:false})); }
+function settleQuests(){ if(!S||!S.q) return; let g=0; for(const q of S.q) if(!q.claimed&&q.prog>=q.target){ q.claimed=true; g+=q.reward; } if(g){ S.gems+=g; S.pendingGemNote=g; } }
+function questProg(type,v){ if(!S||!S.q) return; for(const q of S.q){ if(q.type!==type||q.claimed) continue; const was=q.prog>=q.target; q.prog=Math.min(q.target,type==='rev'?v:q.prog+v); if(!was&&q.prog>=q.target) toast(`📋 Xong nhiệm vụ: ${QUESTS.find(x=>x.type===type).t(q.target)} – vào Tủ đồ nhận ${q.reward}💎`); } }
+function drawWardrobePreview(){
+  const cv=$('#wdCv'); if(!cv) return; const w=cv.clientWidth, h=cv.clientHeight; if(!w) return;
+  const d=window.devicePixelRatio||1; cv.width=Math.round(w*d); cv.height=Math.round(h*d);
+  const g=cv.getContext('2d'); g.setTransform(d,0,0,d,0,0);
+  const over=wdPreview?{[WMAP[wdPreview].slot]:wdPreview}:{};
+  const aw=(WMAP[over.awning||S.wear.awning]||WMAP.aw_green).aw, catAcc=(WMAP[over.cat||S.wear.cat]||WMAP.cat_none).cat, uni=(WMAP[over.uniform||S.wear.uniform]||WMAP.uni_green).uni;
+  g.drawImage(stageBg(w,h,d),0,0,w,h);
+  const sw=w/10; for(let i=0;i<10;i++){ g.fillStyle=i%2?aw[1]:aw[0]; g.strokeStyle=OL; g.lineWidth=2; g.beginPath(); g.moveTo(i*sw,0); g.lineTo(i*sw+sw,0); g.lineTo(i*sw+sw,18); g.arc(i*sw+sw/2,18,sw/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
+  g.fillStyle='#e7c39c'; g.strokeStyle=OL; g.lineWidth=2.5; rr(g,-4,h-30,w+8,36,6); g.fill(); g.stroke();
+  const r=Math.min(44,h*0.22); drawBust(g,w*0.3,h-30-r*1.25,r,ownerView(over),{mood:'happy'});
+  const st=S.staff.find(x=>x.role==='cashier'||x.role==='stocker');
+  if(st){ const L=uni?{...st.look,shirt:uni,cap:uni}:st.look; drawBust(g,w*0.56,h-30-r*0.95,r*0.7,L,{}); }
+  drawCat(g,w-62,h-36,0.9,true,performance.now()/1000,catAcc);
+}
+function renderWardrobe(){
+  $('#wdGems').textContent='💎 '+(S.gems||0);
+  $('#wdSlots').innerHTML=Object.entries(SLOTS).map(([k,n])=>`<button data-slot="${k}" class="${wdSlot===k?'on':''}">${n}</button>`).join('');
+  $('#wdItems').innerHTML=WARDROBE.filter(w=>w.slot===wdSlot).map(w=>{ const own=owns(w.id), worn=S.wear[w.slot]===w.id;
+    return `<div class="wd-item${worn?' worn':''}${wdPreview===w.id?' sel':''}" data-prev="${w.id}">${worn?'<span class="tagw">Đang dùng</span>':''}<span class="ic">${w.icon}</span><span class="nm">${w.name}</span>
+      ${worn?'<button disabled>✓ Đang dùng</button>':own?`<button data-wear="${w.id}">Dùng</button>`:`<button class="primary" data-buy="${w.id}" ${S.gems<w.price?'disabled':''}>💎 ${w.price}</button>`}</div>`; }).join('');
+  $('#wdQuests').innerHTML=(S.q||[]).map((q,i)=>{ const Q=QUESTS.find(x=>x.type===q.type), done=q.prog>=q.target;
+    return `<div class="quest"><span>${done&&!q.claimed?'✅':q.claimed?'🎁':'⬜'} ${Q.t(q.target)}<br><small class="muted">${q.type==='rev'?fmtS(q.prog)+' / '+fmtS(q.target):q.prog+' / '+q.target}</small></span>
+      ${q.claimed?'<span class="muted">Đã nhận</span>':`<button class="sm ${done?'primary':''}" data-claim="${i}" ${done?'':'disabled'}>+${q.reward}💎</button>`}
+      <div class="qb"><i style="width:${Math.round(q.prog/q.target*100)}%"></i></div></div>`; }).join('')||'<p class="muted">Nhiệm vụ sẽ có vào sáng mai.</p>';
+  $('#wdPacks').innerHTML=[[60,'22.000đ'],[320,'99.000đ'],[700,'199.000đ']].map(([g,p])=>`<div class="pack"><div class="g">💎 ${g}</div><div>${p}</div><div class="soon">🔒 Sắp ra mắt</div></div>`).join('');
+  drawWardrobePreview();
+}
+$('#tab-wardrobe').addEventListener('click',e=>{
+  const sl=e.target.closest('[data-slot]'); if(sl){ wdSlot=sl.dataset.slot; wdPreview=null; renderWardrobe(); return; }
+  const b=e.target.closest('button');
+  if(b&&b.dataset.buy){ const it=WMAP[b.dataset.buy]; if(S.gems<it.price) return; S.gems-=it.price; S.owned[it.id]=true; S.wear[it.slot]=it.id; wdPreview=null; toast(`🎉 Đã mua ${it.name}!`); autosaveSoft(); refreshAll(); return; }
+  if(b&&b.dataset.wear){ const it=WMAP[b.dataset.wear]; S.wear[it.slot]=it.id; wdPreview=null; toast(`Đã thay ${it.name}`); autosaveSoft(); refreshAll(); return; }
+  if(b&&b.dataset.claim!=null){ const q=S.q[+b.dataset.claim]; if(q&&!q.claimed&&q.prog>=q.target){ q.claimed=true; S.gems+=q.reward; toast(`🎁 +${q.reward}💎`); autosaveSoft(); refreshAll(); } return; }
+  const pv=e.target.closest('[data-prev]'); if(pv){ wdPreview=wdPreview===pv.dataset.prev?null:pv.dataset.prev; renderWardrobe(); }
+});
+window.addEventListener('resize',()=>{ if(activeTab==='wardrobe') drawWardrobePreview(); });
+
 /* Cảnh quầy (canvas) */
 const stageCv=$('#stageCv'), sg=stageCv.getContext('2d');
 function drawStage(now){
@@ -1229,7 +1382,7 @@ function drawStage(now){
   g.strokeStyle='rgba(90,58,50,.25)'; g.lineWidth=1.5; for(let x=30;x<w;x+=60){ g.beginPath(); g.moveTo(x,h-22); g.quadraticCurveTo(x+14,h-18,x+28,h-22); g.stroke(); }
   // chậu cây & mèo
   g.font='26px system-ui'; g.textAlign='center'; g.fillText('🪴',w*0.33,h-30);
-  drawCat(g,w-70,h-40,0.95,!!(R&&R.cur),t);
+  drawCat(g,w-70,h-40,0.95,!!(R&&R.cur),t,wornItem('cat').cat);
   if(night){ g.fillStyle=`rgba(60,40,90,${night*0.22})`; g.fillRect(0,0,w,h); }
   if(R&&R.t<R.blackoutUntil){ g.fillStyle='rgba(0,0,0,.55)'; g.fillRect(0,0,w,h); g.fillStyle='#fff'; g.font='800 26px "Baloo 2",sans-serif'; g.fillText('⚡ CÚP ĐIỆN',w/2,h/2); }
 }
@@ -1271,6 +1424,7 @@ function makeReview(c,kind){
   if(op&&!text.includes(op.text)) text+=' '+op.text+(/[!.…?]$/.test(op.text)?'':'.');
   const tags=[]; for(const o of ops) if(!tags.some(t=>t.id===o.id)) tags.push({id:o.id,good:o.good});
   const rv={id:++S.nextId, day:S.day, t:R.t, name:c.name, look:c.look, stars:s, text, tags:tags.slice(0,3), reply:null};
+  if(s===5){ questProg('five',1); if(c.byYou) S.gems+=1; }
   S.reviews.unshift(rv); if(S.reviews.length>200) S.reviews.pop();
   R.reviews.push(rv);
 }
@@ -1425,7 +1579,7 @@ function buy(id,n){
 function renderStaff(){
   const c=counterCount(), nc=staffOf('cashier').length;
   $('#wageSum').innerHTML=`Tổng lương: <b>${fmt(S.staff.reduce((a,s)=>a+s.wage,0))}</b>/ngày · ${nc} thu ngân / ${c} quầy nhân viên (+ quầy của bạn)${nc>c?' <span class="warn">(dư thu ngân – mua thêm quầy)</span>':''}`;
-  const card=(s,hire)=>`<div class="card"><div class="person"><img src="${avatar(s.look)}" alt=""><div><h4>${esc(s.name)}</h4><div class="lv">${esc(s.full)}</div></div></div>
+  const card=(s,hire)=>`<div class="card"><div class="person"><img src="${avatar(staffLook(s))}" alt=""><div><h4>${esc(s.name)}</h4><div class="lv">${esc(s.full)}</div></div></div>
     <div>${ROLES[s.role].icon} <b>${ROLES[s.role].name}</b> · Tay nghề <span class="stars">${starStr(s.skill)}</span></div>
     <div class="desc muted">${ROLES[s.role].desc}</div>
     <div>Lương: <b>${fmt(s.wage)}</b>/ngày</div>
@@ -1547,6 +1701,7 @@ function showReport(rec,x){
     ${row('⭐ Đánh giá hôm nay',x.nrev?`${x.avg.toFixed(1)} sao (${x.nrev} lượt)`:'chưa có')}
     ${row('💚 Uy tín',`${Math.round(rec.rep)} (${x.repDelta>=0?'+':''}${x.repDelta.toFixed(1)})`,x.repDelta>=0?'good':'bad')}
   </table>`;
+  if(S.pendingGemNote){ html+=`<p>🎁 Nhiệm vụ hôm qua đã xong: <b>+${S.pendingGemNote}💎</b> được cộng tự động.</p>`; S.pendingGemNote=0; }
   if(x.top.length) html+=`<p><b>🔥 Bán chạy:</b> ${x.top.join(', ')}</p>`;
   if(x.missed.length) html+=`<p class="bad"><b>❌ Khách hỏi mà hết:</b> ${x.missed.join(', ')}</p>`;
   if(x.spoilList.length) html+=`<p class="warn"><b>🗑️ Hủy:</b> ${x.spoilList.join(', ')}</p>`;
@@ -1565,7 +1720,7 @@ const MILES=[
   ['w250',()=>netWorth()>=250e6,'💎 Tài sản vượt 250 triệu, đã đi nửa chặng đường!'],
 ];
 function checkMiles(){
-  for(const [k,f,msg] of MILES) if(!S.miles[k]&&f()){ S.miles[k]=1; toast(msg); autosaveSoft(); return; }
+  for(const [k,f,msg] of MILES) if(!S.miles[k]&&f()){ S.miles[k]=1; S.gems+=20; toast(msg+' +20💎'); autosaveSoft(); return; }
   if(!S.won&&netWorth()>=GOAL){ S.won=true; autosaveSoft();
     modal(`<h3>🏆 Chiến thắng!</h3><p><b>${esc(S.name)}</b> đạt tổng tài sản <b>${fmt(netWorth())}</b> sau ${S.day-1} ngày.</p><p>Bạn đã là ông chủ chuỗi tạp hóa thực thụ! Có thể tiếp tục kinh doanh.</p><div class="row"><button class="primary" onclick="closeModal()">Tiếp tục kinh doanh</button></div>`); }
 }
@@ -1576,7 +1731,7 @@ window.checkMiles=checkMiles;
    ===================================================================== */
 const packState=()=>JSON.stringify(S);
 function unpack(raw){
-  const d=JSON.parse(raw); if(!d||!(d.ver===2||d.ver===3)||!d.market) throw new Error('bad');
+  const d=JSON.parse(raw); if(d&&d.gems==null) d.gems=30; if(d&&!d.owned) d.owned={}; if(d&&!d.wear) d.wear={...DEFAULT_WEAR}; if(d&&!d.q) d.q=[]; if(!d||!(d.ver===2||d.ver===3)||!d.market) throw new Error('bad');
   if(!d.owner) d.owner=ownerLook(); if(!d.fb) d.fb={}; if(d.autoPay==null) d.autoPay=false; if(d.manualServed==null) d.manualServed=0; if(!d.autoUnlocked) d.autoPay=false; d.ver=3;
   EQUIP.forEach(e=>{ if(d.eq[e.id]==null) d.eq[e.id]=0; });
   PRODUCTS.forEach(p=>{ if(!d.inv[p.id]) d.inv[p.id]=[]; if(!d.market[p.id]) d.market[p.id]={cost:p.cost,ref:p.ref}; if(!d.price[p.id]) d.price[p.id]=d.market[p.id].ref; });
@@ -1719,13 +1874,13 @@ function renderHeader(){
   $('#sStars').textContent=a?a.toFixed(1).replace('.',','):'–';
   $('#sStarsIcons').textContent=a?starStr(Math.round(a)):'☆☆☆☆☆';
   $('#sRevCount').textContent=S.reviews.length;
-  $('#sRep').textContent=Math.round(S.rep);
+  $('#sRep').textContent=Math.round(S.rep); $('#sGems').textContent=S.gems||0; applyAwning();
   const unread=S.reviews.filter(r=>!r.reply&&r.stars<=2).length;
   $('#revBadge').hidden=!unread; $('#revBadge').textContent=unread;
   $('#btnPause').textContent=R&&!userPaused?'⏸':'☰';
 }
 let activeTab='store';
-function renderActive(){ ({kho:renderKho,staff:renderStaff,reviews:renderReviews,equip:renderEquip,ads:renderAds,svc:renderSvc,report:renderReport})[activeTab]?.(); }
+function renderActive(){ ({wardrobe:renderWardrobe,kho:renderKho,staff:renderStaff,reviews:renderReviews,equip:renderEquip,ads:renderAds,svc:renderSvc,report:renderReport})[activeTab]?.(); }
 function refreshAll(){ renderHeader(); renderLive(); renderActive(); }
 function gotoTab(t){
   activeTab=t;
@@ -1765,7 +1920,7 @@ $('#modalBox').addEventListener('click',e=>{
 /* Sự kiện quầy */
 $('#cats').addEventListener('click',e=>{ const b=e.target.closest('[data-cat]'); if(!b) return; selCat=b.dataset.cat; renderCats(); renderBins(); });
 $('#bins').addEventListener('click',e=>{ const b=e.target.closest('[data-p]'); if(b) tapProduct(b.dataset.p); });
-$('#tray').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; if(b.id==='btnPay') collectPay(); else if(b.dataset.ret!=null) returnItem(+b.dataset.ret); });
+$('#tray').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; if(b.dataset.owner){ gotoTab('wardrobe'); return; } if(b.id==='btnPay') collectPay(); else if(b.dataset.ret!=null) returnItem(+b.dataset.ret); });
 $('#orderBubble').addEventListener('click',e=>{ const b=e.target.closest('[data-out]'); if(b) markOut(+b.dataset.out); });
 $('#closedOv').addEventListener('click',e=>{
   if(e.target.id!=='btnOpen') return;
@@ -1855,7 +2010,7 @@ function drawStartBg(now){
   // mái hiên
   g.fillStyle='#caa085'; g.fillRect(sx-4,top-10,sw+8,12); g.strokeRect(sx-4,top-10,sw+8,12);
   const n=11, sw2=(sw+20)/n;
-  for(let i=0;i<n;i++){ const x0=sx-10+i*sw2; g.fillStyle=i%2?'#ffffff':'#6fc18a'; g.beginPath(); g.moveTo(x0,top); g.lineTo(x0+sw2,top); g.lineTo(x0+sw2,top+awH); g.arc(x0+sw2/2,top+awH,sw2/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
+  for(let i=0;i<n;i++){ const x0=sx-10+i*sw2; { const aw=S?wornItem('awning').aw:['#6fc18a','#ffffff']; g.fillStyle=i%2?aw[1]:aw[0]; } g.beginPath(); g.moveTo(x0,top); g.lineTo(x0+sw2,top); g.lineTo(x0+sw2,top+awH); g.arc(x0+sw2/2,top+awH,sw2/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
   // đèn lồng
   [[0.12,'#f7d0a8'],[0.26,'#bfe3d4'],[0.74,'#d8c3ee'],[0.88,'#f7d0a8']].forEach(([fx,col],i)=>{
     const lx=sx+sw*fx, ly=top+awH+sw2*0.5+22+Math.sin(t*1.5+i)*2; g.strokeStyle=OL; g.lineWidth=2;
@@ -1877,7 +2032,7 @@ function drawStartBg(now){
   // hàng trên quầy
   g.font=`${sw*0.075}px system-ui`; g.textAlign='center'; g.textBaseline='alphabetic';
   ['🥬','🍅','🥚','🍎','🥛'].forEach((e,i)=>g.fillText(e,sx+sw*(0.12+i*0.075),cTop-12));
-  drawCat(g,sx+sw*0.66,cTop-16,sw/430,false,t);
+  drawCat(g,sx+sw*0.66,cTop-16,sw/430,false,t,S?wornItem('cat').cat:null);
   g.font=`${sw*0.1}px system-ui`; g.fillText('🪴',sx+sw*0.9,cTop-10);
   // sàn
   g.fillStyle='#e8f3ea'; g.fillRect(0,cBot,w,h-cBot);
