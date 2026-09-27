@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f3dccb; --page:#fbefe4; --panel:#fffaf3; --panel2:#fbeee2; --ink:#5a3a32; --muted:#9a7c6e; --line:#ecd6c3;
+  --bg:#d6eedc; --page:#f5fbf6; --panel:#ffffff; --panel2:#e9f6ec; --ink:#4f3b33; --muted:#7f8a7f; --line:#cfe6d5;
   --brand:#ec7f98; --brand2:#d9657f; --brandDk:#c4546e; --mint:#8ccfb1; --sun:#f6c25a;
   --bad:#e05a50; --good:#3f9f6e; --warn:#d98a2b; --wood:#e7c8a2; --woodDk:#b98b5e;
   --display:"Baloo 2","Nunito",system-ui,sans-serif; --body:"Nunito","Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -37,7 +37,7 @@ input[type=text],textarea{font:inherit;padding:8px 12px;border:2px solid var(--l
 
 /* ---------- Header ---------- */
 #hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--page);display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px 8px}
-.pausebtn{width:46px;height:46px;border-radius:50%;border:3px solid var(--brand);background:#fff;color:var(--brand2);font-size:18px;padding:0;box-shadow:0 0 0 4px #fbe0e6}
+.pausebtn{width:46px;height:46px;border-radius:50%;border:3px solid #6fc18a;background:#fff;color:#3f9f6e;font-size:18px;padding:0;box-shadow:0 0 0 4px #dcf1e2}
 .hday{display:flex;flex-direction:column;line-height:1.15}
 .hday b:first-child{font:800 19px var(--display)}
 .hday span{font-size:13px;color:var(--muted)}
@@ -48,11 +48,11 @@ input[type=text],textarea{font:inherit;padding:8px 12px;border:2px solid var(--l
 .hstars{text-align:right;line-height:1.15;font-size:12.5px;color:var(--muted)}
 .hstars .stars{font-size:17px;display:block}
 .stars{color:var(--sun);letter-spacing:1px;-webkit-text-stroke:.5px #c9922b}
-.awning{height:22px;background:repeating-linear-gradient(90deg,#ee8fa5 0 32px,#fff6ec 32px 64px);position:relative;border-top:2px solid #e3b7a0}
-.awning::after{content:"";position:absolute;left:0;right:0;top:100%;height:14px;background:radial-gradient(circle at 16px 0,#ee8fa5 15px,transparent 16px) 0 0/64px 14px repeat-x,radial-gradient(circle at 48px 0,#fff6ec 15px,transparent 16px) 0 0/64px 14px repeat-x;filter:drop-shadow(0 2px 0 rgba(90,58,50,.12))}
+.awning{height:22px;background:repeating-linear-gradient(90deg,#6fc18a 0 32px,#ffffff 32px 64px);position:relative;border-top:2px solid #9fcfad}
+.awning::after{content:"";position:absolute;left:0;right:0;top:100%;height:14px;background:radial-gradient(circle at 16px 0,#6fc18a 15px,transparent 16px) 0 0/64px 14px repeat-x,radial-gradient(circle at 48px 0,#ffffff 15px,transparent 16px) 0 0/64px 14px repeat-x;filter:drop-shadow(0 2px 0 rgba(90,58,50,.12))}
 
 /* ---------- Bottom nav ---------- */
-.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#fffaf3;border-top:2px solid var(--line);display:flex;overflow-x:auto;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:8;scrollbar-width:none}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#ffffff;border-top:2px solid var(--line);display:flex;overflow-x:auto;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:8;scrollbar-width:none}
 .bnav button{flex:1 0 auto;min-width:56px;display:flex;flex-direction:column;align-items:center;gap:0;font-size:10.5px;border:none;background:none;border-radius:14px;padding:4px 6px;color:var(--muted);position:relative}
 .bnav button .i{font-size:21px;line-height:1.1}
 .bnav button.on{background:var(--panel2);color:var(--brand2)}
@@ -92,7 +92,7 @@ button.mini{padding:0 6px;font-size:11px;border-radius:8px;border:1.5px solid va
 .pat{display:flex;align-items:center;gap:8px;margin-top:7px;font:800 11px var(--display);letter-spacing:1px}
 .pb{flex:1;height:12px;border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}
 .pb i{display:block;height:100%;border-radius:6px;transition:width .25s}
-.closedov{position:absolute;inset:0;z-index:4;background:rgba(251,232,217,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:12px}
+.closedov{position:absolute;inset:0;z-index:4;background:rgba(240,250,243,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:12px}
 .closedov[hidden]{display:none}
 .closedov h3{font-size:22px}
 .closedov p{margin:0;font-size:13px;color:var(--muted);max-width:340px}
@@ -213,13 +213,13 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 @media (prefers-reduced-motion: reduce){.hl{animation:none}}
 
 /* ---------- Start screen ---------- */
-#start{position:fixed;inset:0;z-index:30;overflow:hidden;background:#f7d8c4}
+#start{position:fixed;inset:0;z-index:30;overflow:hidden;background:#d3eedb}
 #start[hidden]{display:none!important}
 #bg{position:absolute;inset:0;width:100%;height:100%}
 .st-title{position:absolute;left:0;right:0;top:40%;text-align:center;pointer-events:none;padding-inline:16px}
 .st-title h1{font:800 clamp(40px,11vw,62px)/1 var(--display);color:#5a3a32;text-shadow:3px 3px 0 #fff,-3px 3px 0 #fff,3px -3px 0 #fff,-3px -3px 0 #fff,0 4px 0 #fff,0 7px 10px rgba(90,58,50,.25)}
 .st-bottom{position:absolute;left:0;right:0;bottom:calc(7% + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:8px;padding-inline:16px;text-align:center}
-.st-sub{margin:0;font:800 15px var(--body);color:#6b4a3f;background:rgba(255,250,243,.85);border-radius:999px;padding:3px 14px}
+.st-sub{margin:0;font:800 15px var(--body);color:#4f3b33;background:rgba(255,255,255,.88);border-radius:999px;padding:3px 14px}
 .st-save{font:800 16px var(--display);color:var(--brand2);text-shadow:0 1px 0 #fff}
 .st-bottom .pill{width:min(360px,100%);font-size:24px;padding:8px 20px}
 .st-links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
@@ -283,7 +283,6 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <div class="staffrow" id="staffRow"></div>
     <div class="ctl">
       <span class="row speed" id="speed"><button data-s="1" class="on">1x</button><button data-s="2">2x</button><button data-s="4">4x</button></span>
-      <button id="btnFF" disabled>⏩ Tua đến cuối ngày</button>
     </div>
     <label class="toggle"><input type="checkbox" id="flash"> Xả hàng tươi sắp hết hạn sau 18:00 (giảm 30%)</label>
     <div id="autoBox"></div>
@@ -731,7 +730,7 @@ const avCache=new Map();
 function avatar(L){
   const k=JSON.stringify(L); if(avCache.has(k)) return avCache.get(k);
   const c=document.createElement('canvas'); c.width=c.height=96; const g=c.getContext('2d');
-  g.fillStyle='#fdebd9'; g.beginPath(); g.arc(48,48,48,0,Math.PI*2); g.fill();
+  g.fillStyle='#e6f5ea'; g.beginPath(); g.arc(48,48,48,0,Math.PI*2); g.fill();
   g.save(); g.beginPath(); g.arc(48,48,48,0,Math.PI*2); g.clip();
   drawBust(g,48,44,24*(L.scale&&L.scale<0.9?0.92:1),L,{}); g.restore();
   const u=c.toDataURL(); avCache.set(k,u); return u;
@@ -1130,7 +1129,7 @@ function renderLive(){
   const ev=S.event, ads=S.ads.map(a=>ADS.find(d=>d.id===a.id)).filter(Boolean);
   const chip=$('#evChip'); const t=(ev?ev.icon+' '+ev.name:'')+(ads.length?' '+ads.map(a=>a.icon).join(''):'');
   chip.hidden=!t; chip.textContent=t;
-  $('#btnFF').disabled=!R; $('#flash').checked=S.flash; renderAutoBox();
+  $('#flash').checked=S.flash; renderAutoBox();
 }
 function renderEvent(){}
 const AUTO_COST=8e6, AUTO_SERVED=30, AUTO_REP=45;
@@ -1157,8 +1156,8 @@ function drawStage(now){
   if(stageCv.width!==Math.round(w*d)||stageCv.height!==Math.round(h*d)){ stageCv.width=Math.round(w*d); stageCv.height=Math.round(h*d); }
   const g=sg; g.setTransform(d,0,0,d,0,0);
   const t=now/1000, night=R&&R.t>=1080?clamp((R.t-1080)/210,0,1):0;
-  const bg=g.createLinearGradient(0,0,0,h); bg.addColorStop(0,'#fde9d9'); bg.addColorStop(1,'#f9d8c3'); g.fillStyle=bg; g.fillRect(0,0,w,h);
-  g.fillStyle='rgba(255,255,255,.45)'; for(let y=12;y<h-40;y+=26) for(let x=(y/26%2)*13+8;x<w;x+=26){ g.beginPath(); g.arc(x,y,2.2,0,7); g.fill(); }
+  const bg=g.createLinearGradient(0,0,0,h); bg.addColorStop(0,'#f3fbf5'); bg.addColorStop(1,'#dcf1e3'); g.fillStyle=bg; g.fillRect(0,0,w,h);
+  g.fillStyle='rgba(111,193,138,.18)'; for(let y=12;y<h-40;y+=26) for(let x=(y/26%2)*13+8;x<w;x+=26){ g.beginPath(); g.arc(x,y,2.2,0,7); g.fill(); }
   // kệ phía sau
   g.fillStyle='#d9ab83'; rr(g,w*0.42,h*0.1,w*0.5,6,3); g.fill();
   g.font='18px system-ui'; g.textAlign='center'; g.textBaseline='alphabetic'; g.globalAlpha=0.55;
@@ -1723,7 +1722,6 @@ $('#closedOv').addEventListener('click',e=>{
 });
 window.startDay=startDay;
 $('#speed').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) setSpeedBtn(+b.dataset.s); });
-$('#btnFF').addEventListener('click',()=>{ if(R){ R.ff=true; toast('⏩ Đang tua nhanh… quầy của bạn được phục vụ tự động'); } });
 $('#flash').addEventListener('change',e=>{ S.flash=e.target.checked; autosaveSoft(); });
 $('#autoBox').addEventListener('change',e=>{ if(e.target.id!=='autoPay') return; S.autoPay=e.target.checked; autosaveSoft(); renderLive(); });
 $('#autoBox').addEventListener('click',e=>{
@@ -1748,22 +1746,22 @@ const BUBBLES=Array.from({length:12},(_,i)=>({x:Math.random(),y:0.3+Math.random(
 function resizeBg(){ const d=window.devicePixelRatio||1; BW=bg.clientWidth; BH=bg.clientHeight; bg.width=BW*d; bg.height=BH*d; bctx.setTransform(d,0,0,d,0,0); }
 window.addEventListener('resize',resizeBg);
 function sticker(g,x,y,e,size,rot=0){ g.save(); g.translate(x,y); g.rotate(rot); g.fillStyle='#fff'; g.shadowColor='rgba(90,58,50,.25)'; g.shadowBlur=6; g.shadowOffsetY=2; g.beginPath(); g.arc(0,0,size*0.62,0,7); g.fill(); g.shadowColor='transparent'; g.font=`${size*0.8}px system-ui`; g.textAlign='center'; g.textBaseline='middle'; g.fillText(e,0,size*0.04); g.restore(); }
-function cloud(g,x,y,s){ const cs=[[0,0,1],[-0.9,0.25,0.7],[0.95,0.2,0.75],[0.4,-0.35,0.7],[-0.35,-0.3,0.6]]; g.lineWidth=3; g.strokeStyle='#e7bfa9'; for(const [dx,dy,r] of cs){ g.beginPath(); g.arc(x+dx*s,y+dy*s,r*s*0.8,0,7); g.stroke(); } g.fillStyle='#fff6ef'; for(const [dx,dy,r] of cs){ g.beginPath(); g.arc(x+dx*s,y+dy*s,r*s*0.8,0,7); g.fill(); } }
+function cloud(g,x,y,s){ const cs=[[0,0,1],[-0.9,0.25,0.7],[0.95,0.2,0.75],[0.4,-0.35,0.7],[-0.35,-0.3,0.6]]; g.lineWidth=3; g.strokeStyle='#b8dcc3'; for(const [dx,dy,r] of cs){ g.beginPath(); g.arc(x+dx*s,y+dy*s,r*s*0.8,0,7); g.stroke(); } g.fillStyle='#ffffff'; for(const [dx,dy,r] of cs){ g.beginPath(); g.arc(x+dx*s,y+dy*s,r*s*0.8,0,7); g.fill(); } }
 function drawStartBg(now){
   const g=bctx, w=BW, h=BH; if(!w) return;
   const t=now/1000;
-  const sky=g.createLinearGradient(0,0,0,h*0.7); sky.addColorStop(0,'#f5c9b2'); sky.addColorStop(1,'#fde9d9'); g.fillStyle=sky; g.fillRect(0,0,w,h);
+  const sky=g.createLinearGradient(0,0,0,h*0.7); sky.addColorStop(0,'#b9e3c6'); sky.addColorStop(1,'#f1fbf3'); g.fillStyle=sky; g.fillRect(0,0,w,h);
   cloud(g,w*0.15+Math.sin(t*0.2)*6,h*0.13,Math.min(w,500)*0.09); cloud(g,w*0.82+Math.sin(t*0.25+1)*6,h*0.1,Math.min(w,500)*0.11); cloud(g,w*0.3,h*0.24,Math.min(w,500)*0.07);
   const sw=Math.min(w*1.02,600), sx=(w-sw)/2, top=h*0.2, awH=h*0.1, cTop=h*0.57, cBot=h*0.76;
   // tường trong tiệm
-  g.fillStyle='#fdebdc'; g.fillRect(sx+sw*0.05,top,sw*0.9,cTop-top);
+  g.fillStyle='#f4fbf6'; g.fillRect(sx+sw*0.05,top,sw*0.9,cTop-top);
   // trụ
   g.fillStyle='#dba88a'; g.strokeStyle=OL; g.lineWidth=2.5;
   for(const px of [sx+sw*0.055,sx+sw*0.915]){ g.fillRect(px,top,sw*0.03,cBot-top); g.strokeRect(px,top,sw*0.03,cBot-top); }
   // mái hiên
   g.fillStyle='#caa085'; g.fillRect(sx-4,top-10,sw+8,12); g.strokeRect(sx-4,top-10,sw+8,12);
   const n=11, sw2=(sw+20)/n;
-  for(let i=0;i<n;i++){ const x0=sx-10+i*sw2; g.fillStyle=i%2?'#fff3e6':'#ee8fa5'; g.beginPath(); g.moveTo(x0,top); g.lineTo(x0+sw2,top); g.lineTo(x0+sw2,top+awH); g.arc(x0+sw2/2,top+awH,sw2/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
+  for(let i=0;i<n;i++){ const x0=sx-10+i*sw2; g.fillStyle=i%2?'#ffffff':'#6fc18a'; g.beginPath(); g.moveTo(x0,top); g.lineTo(x0+sw2,top); g.lineTo(x0+sw2,top+awH); g.arc(x0+sw2/2,top+awH,sw2/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
   // đèn lồng
   [[0.12,'#f7d0a8'],[0.26,'#bfe3d4'],[0.74,'#d8c3ee'],[0.88,'#f7d0a8']].forEach(([fx,col],i)=>{
     const lx=sx+sw*fx, ly=top+awH+sw2*0.5+22+Math.sin(t*1.5+i)*2; g.strokeStyle=OL; g.lineWidth=2;
@@ -1785,7 +1783,7 @@ function drawStartBg(now){
   drawCat(g,sx+sw*0.66,cTop-16,sw/430,false,t);
   g.font=`${sw*0.1}px system-ui`; g.fillText('🪴',sx+sw*0.9,cTop-10);
   // sàn
-  g.fillStyle='#ece3e6'; g.fillRect(0,cBot,w,h-cBot);
+  g.fillStyle='#e8f3ea'; g.fillRect(0,cBot,w,h-cBot);
   g.strokeStyle='rgba(120,100,110,.25)'; g.lineWidth=1.5;
   const vx=w/2, vy=cBot-h*0.5;
   for(let i=-8;i<=8;i++){ const bx=w/2+i*w*0.16; const k=(cBot-vy); g.beginPath(); g.moveTo(vx+(bx-vx)*((cBot-vy)/(h-vy)),cBot); g.lineTo(bx,h); g.stroke(); }
