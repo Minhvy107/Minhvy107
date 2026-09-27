@@ -150,6 +150,7 @@ label.toggle{display:flex;gap:6px;align-items:center;font-size:13px;cursor:point
 .wd-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .wd-item{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;cursor:pointer;position:relative}
 .wd-item .ic{font-size:28px;line-height:1.1}
+.wd-item .thumb{width:58px;height:58px;border-radius:50%;background:#fdebd9}
 .wd-item .nm{font-size:12px;line-height:1.2;min-height:29px}
 .wd-item.sel{border-color:var(--brand);box-shadow:0 0 0 2px #fbd3dd}
 .wd-item.worn{border-color:var(--mint);background:#effaf2}
@@ -703,7 +704,8 @@ function drawBust(g,x,y,r,L,o={}){
   const isF=L.f!=null?L.f:(['long','bob','bun','pony','pig'].includes(L.hs)||L.hat==='maid'||!!L.bow);
   const maid=L.outfit==='maid';
   g.save(); g.lineJoin='round'; g.lineCap='round'; g.lineWidth=lw; g.strokeStyle=OL;
-  if(L.hat==='maid') curlyTail(g,x,y,r,L.hair,lw);
+  if(L.tail) curlyTail(g,x,y,r,L.hair,lw);
+  const HX=HAIR_STY[L.hs];
   // thân
   if(maid) maidBody(g,x,y,r,lw,L.gc);
   else {
@@ -714,6 +716,7 @@ function drawBust(g,x,y,r,L,o={}){
     g.fillStyle='#ffffff'; g.beginPath(); g.moveTo(x-r*0.36,y+r*0.92); g.lineTo(x,y+r*1.28); g.lineTo(x+r*0.36,y+r*0.92); g.closePath(); g.fill(); g.stroke();
   }
   // tóc sau
+  if(HX&&HX.back) HX.back(g,x,y,r,L,lw);
   g.fillStyle=L.hair;
   if(L.hs==='long'){ rr(g,x-r*1.12,y-r*0.4,r*2.24,r*1.9,r*0.7); g.fill(); g.stroke(); }
   if(L.hs==='bob'){ rr(g,x-r*1.14,y-r*0.45,r*2.28,r*1.2,r*0.6); g.fill(); g.stroke(); }
@@ -733,6 +736,7 @@ function drawBust(g,x,y,r,L,o={}){
     g.beginPath(); g.moveTo(x-r*1.04,y-r*0.12); g.arc(x,y-r*0.12,r*1.04,Math.PI,0); g.closePath(); g.stroke();
     g.fillStyle=c1; ell(g,x-r*0.85,y-r*0.12,r*0.62,r*0.2,-0.15); g.fill(); g.stroke();
     g.fillStyle=c2; ell(g,x,y-r*1.1,r*0.12,r*0.08); g.fill(); g.stroke();
+  } else if(HX){ HX.front(g,x,y,r,L,lw);
   } else if(L.hs==='bald'){
     g.fillStyle=L.hair; for(const s of [-1,1]){ ell(g,x+s*r*0.8,y-r*0.2,r*0.24,r*0.34); g.fill(); g.stroke(); }
   } else {
@@ -802,6 +806,67 @@ function drawBust(g,x,y,r,L,o={}){
   if(mood==='angry'){ g.font=`${r*0.4}px sans-serif`; g.textAlign='center'; g.textBaseline='middle'; g.fillText('💢',x+r*0.8,y-r*0.75); }
   g.restore();
 }
+/* Các kiểu tóc mua bằng kim cương */
+function blob(g,pts,fill,lw){ g.strokeStyle=OL; g.lineWidth=lw*2; for(const [px,py,pr] of pts){ g.beginPath(); g.arc(px,py,pr,0,7); g.stroke(); } g.fillStyle=fill; for(const [px,py,pr] of pts){ g.beginPath(); g.arc(px,py,pr,0,7); g.fill(); } g.lineWidth=lw; }
+function lock(g,build,col,w,lw){ g.lineCap='round'; g.strokeStyle=OL; g.lineWidth=w+lw*2; g.beginPath(); build(); g.stroke(); g.strokeStyle=col; g.lineWidth=w; g.beginPath(); build(); g.stroke(); g.strokeStyle=OL; g.lineWidth=lw; }
+function ptsArc(cx,cy,R,a0,a1,n){ return Array.from({length:n},(_,i)=>{ const a=a0+(a1-a0)*i/(n-1); return [cx+Math.cos(a)*R,cy+Math.sin(a)*R]; }); }
+function ptsLine(x0,y0,x1,y1,n){ return Array.from({length:n},(_,i)=>[x0+(x1-x0)*i/(n-1),y0+(y1-y0)*i/(n-1)]); }
+function braid(g,pts,sz,col,lw){ g.lineWidth=lw*0.9; g.strokeStyle=OL; for(let i=0;i<pts.length;i++){ const [px,py]=pts[i], nx=pts[Math.min(i+1,pts.length-1)], pv=pts[Math.max(i-1,0)], a=Math.atan2(nx[1]-pv[1],nx[0]-pv[0]), o=(i%2?1:-1)*sz*0.28; g.fillStyle=col; ell(g,px+Math.cos(a+Math.PI/2)*o,py+Math.sin(a+Math.PI/2)*o,sz,sz*0.6,a+(i%2?0.7:-0.7)); g.fill(); g.stroke(); } g.lineWidth=lw; }
+function hairCap(g,x,y,r,col,lw,part,noPart){
+  g.fillStyle=col; g.strokeStyle=OL; g.lineWidth=lw; g.beginPath();
+  g.moveTo(x-r*1.03,y+r*0.1); g.arc(x,y-r*0.02,r*1.05,Math.PI*1.02,Math.PI*1.98); g.lineTo(x+r*1.03,y+r*0.1);
+  g.quadraticCurveTo(x+r*0.82,y-r*0.58,x+part*r,y-r*0.62); g.quadraticCurveTo(x-r*0.82,y-r*0.58,x-r*1.03,y+r*0.1); g.closePath(); g.fill(); g.stroke();
+  if(!noPart){ g.strokeStyle=shade(col,-35); g.lineWidth=lw*0.7; g.beginPath(); g.moveTo(x+part*r,y-r*0.62); g.quadraticCurveTo(x+part*r*0.8,y-r*0.85,x+part*r*0.5,y-r*1.02); g.stroke(); g.strokeStyle=OL; g.lineWidth=lw; }
+}
+function hairShine(g,x,y,r,lw){ g.strokeStyle='rgba(255,255,255,.55)'; g.lineWidth=lw*1.1; g.beginPath(); g.arc(x-r*0.05,y-r*0.15,r*0.8,Math.PI*1.22,Math.PI*1.42); g.stroke(); g.beginPath(); g.arc(x-r*0.05,y-r*0.15,r*0.8,Math.PI*1.52,Math.PI*1.6); g.stroke(); g.strokeStyle=OL; g.lineWidth=lw; }
+const HAIR_STY={
+  messybun:{ front(g,x,y,r,L,lw){ const c=L.hair;
+      blob(g,[[x,y-r*1.2,r*0.4],[x-r*0.28,y-r*1.04,r*0.26],[x+r*0.3,y-r*1.06,r*0.27],[x+r*0.06,y-r*1.5,r*0.24]],c,lw);
+      g.strokeStyle=shade(c,-35); g.lineWidth=lw*0.7; for(const [a,b,rad] of [[0,-1.22,0.22],[0.1,-1.45,0.12],[-0.25,-1.05,0.12]]){ g.beginPath(); g.arc(x+a*r,y+b*r,rad*r,0.3,4.5); g.stroke(); }
+      hairCap(g,x,y,r,c,lw,-0.25,true);
+      g.fillStyle=c; g.beginPath(); g.moveTo(x-r*0.25,y-r*0.62); g.quadraticCurveTo(x+r*0.5,y-r*0.55,x+r*0.9,y-r*0.02); g.quadraticCurveTo(x+r*0.4,y-r*0.3,x-r*0.1,y-r*0.28); g.closePath(); g.fill(); g.stroke();
+      for(const sd of [-1,1]) lock(g,()=>{ g.moveTo(x+sd*r*0.86,y-r*0.1); g.quadraticCurveTo(x+sd*r*1.12,y+r*0.3,x+sd*r*0.92,y+r*0.55); g.quadraticCurveTo(x+sd*r*0.8,y+r*0.8,x+sd*r*1.02,y+r*1.0); },c,r*0.12,lw);
+      hairShine(g,x,y,r,lw); } },
+  wavylong:{ back(g,x,y,r,L,lw){ const c=L.hair, pts=[];
+      for(let i=0;i<8;i++){ const t=i/7, yy=y-r*0.35+t*r*2.55, w=r*(1.12+0.1*Math.sin(i*1.6)); pts.push([x-w,yy,r*(0.44-t*0.08)],[x+w,yy,r*(0.44-t*0.08)]); }
+      blob(g,pts,c,lw); g.fillStyle=c; g.fillRect(x-r*1.15,y-r*0.4,r*2.3,r*1.3);
+      g.strokeStyle=shade(c,-35); g.lineWidth=lw*0.7; for(const sd of [-1,1]) for(let i=1;i<7;i++){ const yy=y-r*0.2+i*r*0.34; g.beginPath(); g.arc(x+sd*r*1.12,yy,r*0.2,sd>0?2.2:-0.9,sd>0?4.6:1.4); g.stroke(); } g.strokeStyle=OL; g.lineWidth=lw; },
+    front(g,x,y,r,L,lw){ const c=L.hair; hairCap(g,x,y,r,c,lw,0);
+      for(const sd of [-1,1]) lock(g,()=>{ g.moveTo(x+sd*r*0.35,y-r*0.55); g.quadraticCurveTo(x+sd*r*1.0,y-r*0.3,x+sd*r*0.9,y+r*0.25); g.quadraticCurveTo(x+sd*r*0.78,y+r*0.6,x+sd*r*1.0,y+r*0.95); },c,r*0.16,lw);
+      hairShine(g,x,y,r,lw); } },
+  afro:{ back(g,x,y,r,L,lw){ const c=L.hair, pts=[]; for(let k=0;k<22;k++){ const a=k/22*Math.PI*2; pts.push([x+Math.cos(a)*r*1.38,y-r*0.28+Math.sin(a)*r*1.3,r*0.36]); }
+      pts.push([x,y-r*0.28,r*1.4]); blob(g,pts,c,lw);
+      g.strokeStyle=shade(c,-30); g.lineWidth=lw*0.7; for(let k=0;k<26;k++){ const a=k*2.4, d=r*(0.7+0.6*((k*37)%10)/10); g.beginPath(); g.arc(x+Math.cos(a)*d,y-r*0.3+Math.sin(a)*d*0.9,r*0.1,0,4.6); g.stroke(); } g.strokeStyle=OL; g.lineWidth=lw; },
+    front(g,x,y,r,L,lw){ const c=L.hair; blob(g,ptsArc(x,y-r*0.02,r*0.98,Math.PI*1.08,Math.PI*1.92,9).map(([a,b],i)=>[a,b+(i%2?-r*0.05:0),r*0.24]),c,lw);
+      g.strokeStyle=shade(c,-30); g.lineWidth=lw*0.7; for(const [a,b] of ptsArc(x,y-r*0.02,r*0.98,Math.PI*1.08,Math.PI*1.92,9)){ g.beginPath(); g.arc(a,b,r*0.1,0.5,4.8); g.stroke(); } g.strokeStyle=OL; g.lineWidth=lw; } },
+  twinbraids:{ front(g,x,y,r,L,lw){ const c=L.hair; hairCap(g,x,y,r,c,lw,-0.35);
+      g.fillStyle=c; g.beginPath(); g.moveTo(x-r*0.35,y-r*0.62); g.quadraticCurveTo(x+r*0.45,y-r*0.5,x+r*0.95,y+r*0.05); g.quadraticCurveTo(x+r*0.4,y-r*0.25,x-r*0.2,y-r*0.3); g.closePath(); g.fill(); g.stroke();
+      braid(g,ptsArc(x,y-r*0.02,r*0.92,Math.PI*1.1,Math.PI*1.7,7),r*0.14,shade(c,8),lw);
+      for(const sd of [-1,1]){ const pts=ptsLine(x+sd*r*0.92,y+r*0.2,x+sd*r*1.02,y+r*1.75,7); braid(g,pts,r*0.17,c,lw); g.fillStyle='#e5534b'; ell(g,x+sd*r*1.02,y+r*1.9,r*0.1,r*0.07); g.fill(); g.stroke(); g.fillStyle=c; g.beginPath(); g.moveTo(x+sd*r*0.9,y+r*1.95); g.lineTo(x+sd*r*1.02,y+r*2.25); g.lineTo(x+sd*r*1.14,y+r*1.95); g.closePath(); g.fill(); g.stroke(); }
+      hairShine(g,x,y,r,lw); } },
+  bluntbob:{ back(g,x,y,r,L,lw){ g.fillStyle=L.hair; rr(g,x-r*1.2,y-r*0.45,r*2.4,r*1.35,r*0.3); g.fill(); g.stroke(); },
+    front(g,x,y,r,L,lw){ const c=L.hair; g.fillStyle=c; g.beginPath();
+      g.moveTo(x-r*1.08,y+r*0.9); g.lineTo(x-r*1.08,y-r*0.1); g.arc(x,y-r*0.1,r*1.08,Math.PI,0); g.lineTo(x+r*1.08,y+r*0.9); g.lineTo(x+r*0.84,y+r*0.9); g.lineTo(x+r*0.84,y-r*0.16); g.lineTo(x-r*0.84,y-r*0.16); g.lineTo(x-r*0.84,y+r*0.9); g.closePath(); g.fill(); g.stroke();
+      g.strokeStyle=shade(c,-30); g.lineWidth=lw*0.6; for(let k=-3;k<=3;k++){ g.beginPath(); g.moveTo(x+k*r*0.24,y-r*0.2); g.lineTo(x+k*r*0.22,y-r*0.75); g.stroke(); } g.strokeStyle=OL; g.lineWidth=lw;
+      hairShine(g,x,y,r,lw); } },
+  wolfcut:{ back(g,x,y,r,L,lw){ g.fillStyle=L.hair; for(const sd of [-1,1]){ g.beginPath(); g.moveTo(x+sd*r*0.7,y-r*0.6); g.lineTo(x+sd*r*1.25,y-r*0.2); g.lineTo(x+sd*r*1.05,y+r*0.2); g.lineTo(x+sd*r*1.25,y+r*0.55); g.lineTo(x+sd*r*0.98,y+r*0.7); g.lineTo(x+sd*r*1.08,y+r*1.15); g.lineTo(x+sd*r*0.78,y+r*0.85); g.lineTo(x+sd*r*0.72,y+r*1.1); g.lineTo(x+sd*r*0.6,y+r*0.5); g.closePath(); g.fill(); g.stroke(); } },
+    front(g,x,y,r,L,lw){ const c=L.hair; g.fillStyle=c; for(let k=-2;k<=2;k++){ g.beginPath(); const bx=x+k*r*0.36; g.moveTo(bx-r*0.2,y-r*0.8); g.lineTo(bx+k*r*0.1,y-r*1.36); g.lineTo(bx+r*0.2,y-r*0.8); g.closePath(); g.fill(); g.stroke(); }
+      g.beginPath(); g.moveTo(x-r*1.06,y+r*0.25); g.arc(x,y-r*0.05,r*1.08,Math.PI*1.03,Math.PI*1.97);
+      const zz=[[1.06,0.25],[0.8,-0.1],[0.72,0.15],[0.5,-0.25],[0.36,-0.02],[0.18,-0.32],[0,-0.1],[-0.18,-0.35],[-0.36,-0.05],[-0.52,-0.3],[-0.72,0.12],[-0.82,-0.12],[-1.06,0.25]];
+      for(const [a,b] of zz) g.lineTo(x+a*r,y+b*r); g.closePath(); g.fill(); g.stroke();
+      hairShine(g,x,y,r,lw); } },
+  halfbun:{ back(g,x,y,r,L,lw){ g.fillStyle=L.hair; rr(g,x-r*1.12,y-r*0.4,r*2.24,r*1.45,r*0.45); g.fill(); g.stroke(); },
+    front(g,x,y,r,L,lw){ const c=L.hair; blob(g,[[x,y-r*1.28,r*0.32]],c,lw); g.strokeStyle=shade(c,-35); g.lineWidth=lw*0.7; g.beginPath(); g.arc(x,y-r*1.28,r*0.18,0.2,4.2); g.stroke();
+      hairCap(g,x,y,r,c,lw,0); g.fillStyle='#e5534b'; rr(g,x-r*0.18,y-r*1.06,r*0.36,r*0.1,r*0.04); g.fill(); g.stroke();
+      for(const sd of [-1,1]) lock(g,()=>{ g.moveTo(x+sd*r*0.92,y-r*0.05); g.quadraticCurveTo(x+sd*r*1.02,y+r*0.35,x+sd*r*0.86,y+r*0.62); },c,r*0.13,lw);
+      hairShine(g,x,y,r,lw); } },
+  crownbraid:{ back(g,x,y,r,L,lw){ const c=L.hair; blob(g,[[x+r*0.95,y+r*1.02,r*0.38],[x+r*1.12,y+r*0.72,r*0.28]],c,lw); g.strokeStyle=shade(c,-35); g.lineWidth=lw*0.7; g.beginPath(); g.arc(x+r*0.95,y+r*1.02,r*0.22,0,4.4); g.stroke(); g.strokeStyle=OL; g.lineWidth=lw; },
+    front(g,x,y,r,L,lw){ const c=L.hair; hairCap(g,x,y,r,c,lw,-0.3);
+      g.fillStyle=c; g.beginPath(); g.moveTo(x-r*0.3,y-r*0.62); g.quadraticCurveTo(x+r*0.4,y-r*0.52,x+r*0.92,y+r*0.02); g.quadraticCurveTo(x+r*0.35,y-r*0.28,x-r*0.16,y-r*0.3); g.closePath(); g.fill(); g.stroke();
+      braid(g,ptsArc(x,y-r*0.05,r*1.0,Math.PI*1.02,Math.PI*1.98,11),r*0.17,shade(c,10),lw);
+      braid(g,ptsLine(x+r*1.02,y+r*0.05,x+r*1.0,y+r*0.72,4),r*0.15,shade(c,10),lw);
+      hairShine(g,x,y,r,lw); } },
+};
 let _ging=null;
 function gingham(g,gc){
   const [c1,c2]=gc||['#c9323f','#fbe3e3'], k=c1+c2; _ging=_ging||{};
@@ -1358,6 +1423,23 @@ function stageBg(w,h,d){
    TỦ ĐỒ, KIM CƯƠNG, NHIỆM VỤ
    ===================================================================== */
 const WARDROBE=[
+  {id:'hair_default',slot:'hair',name:'Tóc mặc định',icon:'💇',price:0},
+  {id:'hair_messybun',slot:'hair',name:'Búi messy',price:80,hs:'messybun'},
+  {id:'hair_bluntbob',slot:'hair',name:'Tóc bob mái',price:80,hs:'bluntbob'},
+  {id:'hair_halfbun',slot:'hair',name:'Búi nửa đầu',price:90,hs:'halfbun'},
+  {id:'hair_braids',slot:'hair',name:'Song bím thấp',price:110,hs:'twinbraids'},
+  {id:'hair_wolf',slot:'hair',name:'Wolf cut phá cách',price:110,hs:'wolfcut'},
+  {id:'hair_wavy',slot:'hair',name:'Sóng dài siêu',price:140,hs:'wavylong'},
+  {id:'hair_afro',slot:'hair',name:'Xoăn xù afro',price:140,hs:'afro'},
+  {id:'hair_crown',slot:'hair',name:'Vương miện tết',price:150,hs:'crownbraid'},
+  {id:'hc_default',slot:'haircolor',name:'Màu tóc gốc',price:0},
+  {id:'hc_brown',slot:'haircolor',name:'Nâu hạt dẻ',price:30,hc:'#9a6a4f'},
+  {id:'hc_black',slot:'haircolor',name:'Đen tuyền',price:30,hc:'#2b1d1a'},
+  {id:'hc_red',slot:'haircolor',name:'Đỏ nâu',price:50,hc:'#b5523b'},
+  {id:'hc_blonde',slot:'haircolor',name:'Vàng mật ong',price:60,hc:'#e2b86b'},
+  {id:'hc_ash',slot:'haircolor',name:'Xám khói',price:70,hc:'#a9a3b8'},
+  {id:'hc_pink',slot:'haircolor',name:'Hồng đào',price:80,hc:'#f19ab8'},
+  {id:'hc_mint',slot:'haircolor',name:'Xanh bạc hà',price:80,hc:'#7fcbb4'},
   {id:'hat_maid',slot:'hat',name:'Bờm ren tai mèo',icon:'🐾',price:0,hat:'maid'},
   {id:'hat_cap',slot:'hat',name:'Mũ lưỡi trai',icon:'🧢',price:0,cap:['#6fc18a','#ffffff']},
   {id:'hat_none',slot:'hat',name:'Để tóc tự nhiên',icon:'💇',price:0},
@@ -1427,17 +1509,21 @@ const WARDROBE=[
   {id:'dec_tet',slot:'decor',name:'Cây nêu ngày Tết',icon:'🎍',price:120,decor:['🎍','🧧']},
 ];
 const WMAP=Object.fromEntries(WARDROBE.map(w=>[w.id,w]));
-const SLOTS={hat:'👒 Mũ',outfit:'👕 Trang phục',acc:'🎀 Phụ kiện',awning:'🏪 Mái hiên',decor:'🪴 Trang trí quầy',cat:'🐱 Mèo',uniform:'👥 Đồng phục NV'};
-const DEFAULT_WEAR={decor:'dec_plant',hat:'hat_maid',outfit:'fit_maid',acc:'acc_none',awning:'aw_green',cat:'cat_none',uniform:'uni_green'};
-let wdSlot='hat', wdPreview=null;
+const SLOTS={hair:'💇 Kiểu tóc',haircolor:'🎨 Màu tóc',hat:'👒 Mũ',outfit:'👕 Trang phục',acc:'🎀 Phụ kiện',awning:'🏪 Mái hiên',decor:'🪴 Trang trí quầy',cat:'🐱 Mèo',uniform:'👥 Đồng phục NV'};
+const DEFAULT_WEAR={hair:'hair_default',haircolor:'hc_default',decor:'dec_plant',hat:'hat_maid',outfit:'fit_maid',acc:'acc_none',awning:'aw_green',cat:'cat_none',uniform:'uni_green'};
+let wdSlot='hair', wdPreview=null;
 function wornItem(slot){ return WMAP[(S&&S.wear&&S.wear[slot])||DEFAULT_WEAR[slot]]||WMAP[DEFAULT_WEAR[slot]]; }
 const owns=id=>WMAP[id].price===0||!!(S.owned&&S.owned[id]);
 function ownerView(over){
   const wear={...(S.wear||DEFAULT_WEAR),...(over||{})}, L={...S.owner,cap:null,cap2:null,hat:null,bow:null,glasses:false,shades:false,apron:null,outfit:null,gc:null,clip:null,mask:false,phones:false};
-  for(const slot of ['hat','outfit','acc']){ const it=WMAP[wear[slot]]||WMAP[DEFAULT_WEAR[slot]];
+  for(const slot of ['hat','outfit','acc','hair','haircolor']){ const it=WMAP[wear[slot]]||WMAP[DEFAULT_WEAR[slot]];
+    if(it.hs) L.hs=it.hs; if(it.hc) L.hair=it.hc;
     if(it.cap){ L.cap=it.cap[0]; L.cap2=it.cap[1]; } if(it.hat) L.hat=it.hat; if(it.shirt) L.shirt=it.shirt; if(it.apron) L.apron=it.apron;
     if(it.glasses) L.glasses=true; if(it.bow) L.bow=it.bow; if(it.shades) L.shades=true; if(it.outfit){ L.outfit=it.outfit; L.gc=it.gc||null; } if(it.clip) L.clip=it.clip; if(it.mask) L.mask=true; if(it.phones) L.phones=true; }
-  if(L.hat==='maid'){ L.hs='bob'; L.f=true; if(/#[cde]/.test(L.hair)) L.hair='#4a2c22'; }
+  const hairItem=WMAP[wear.hair]||WMAP.hair_default, hcItem=WMAP[wear.haircolor]||WMAP.hc_default;
+  if(!hcItem.hc&&/#[cde]/.test(L.hair)) L.hair='#4a2c22';
+  if(L.hat==='maid'){ L.f=true; if(!hairItem.hs){ L.hs='bob'; L.tail=true; } }
+  if(hairItem.hs) L.f=true;
   if(L.outfit==='maid') L.f=true;
   return L;
 }
@@ -1475,7 +1561,7 @@ function renderWardrobe(){
   $('#wdGems').textContent='💎 '+(S.gems||0);
   $('#wdSlots').innerHTML=Object.entries(SLOTS).map(([k,n])=>`<button data-slot="${k}" class="${wdSlot===k?'on':''}">${n}</button>`).join('');
   $('#wdItems').innerHTML=WARDROBE.filter(w=>w.slot===wdSlot).map(w=>{ const own=owns(w.id), worn=S.wear[w.slot]===w.id;
-    return `<div class="wd-item${worn?' worn':''}${wdPreview===w.id?' sel':''}" data-prev="${w.id}">${worn?'<span class="tagw">Đang dùng</span>':''}<span class="ic">${w.icon}</span><span class="nm">${w.name}</span>
+    return `<div class="wd-item${worn?' worn':''}${wdPreview===w.id?' sel':''}" data-prev="${w.id}">${worn?'<span class="tagw">Đang dùng</span>':''}${w.slot==='hair'||w.slot==='haircolor'?`<img class="thumb" alt="" src="${avatar(ownerView({[w.slot]:w.id,hat:'hat_none',acc:'acc_none'}))}">`:`<span class="ic">${w.icon}</span>`}<span class="nm">${w.name}</span>
       ${worn?'<button disabled>✓ Đang dùng</button>':own?`<button data-wear="${w.id}">Dùng</button>`:`<button class="primary" data-buy="${w.id}" ${S.gems<w.price?'disabled':''}>💎 ${w.price}</button>`}</div>`; }).join('');
   $('#wdQuests').innerHTML=(S.q||[]).map((q,i)=>{ const Q=QUESTS.find(x=>x.type===q.type), done=q.prog>=q.target;
     return `<div class="quest"><span>${done&&!q.claimed?'✅':q.claimed?'🎁':'⬜'} ${Q.t(q.target)}<br><small class="muted">${q.type==='rev'?fmtS(q.prog)+' / '+fmtS(q.target):q.prog+' / '+q.target}</small></span>
