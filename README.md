@@ -2,9 +2,12 @@
 
 Trò chơi trình duyệt: mở tiệm tạp hóa – thực phẩm tươi sống, phục vụ từng khách hàng và phát triển thành chuỗi cửa hàng.
 
-**Chơi:** mở `index.html` bằng trình duyệt (không cần cài đặt).
+**Chơi:** mở `index.html` bằng trình duyệt (cần mạng để tải thư viện 3D từ cdnjs).
 
 ## Tính năng
+- **Đồ họa 3D** (Three.js): cửa hàng, kệ hàng, quầy và nhân vật chibi 3D. Kéo để xoay, lăn chuột để phóng to, nút 🎯 để nhìn quầy của bạn.
+- **Tự tay tính tiền**: bạn đứng *Quầy của bạn*. Bấm vào khách đang chờ để mở màn hình thanh toán, **tích từng món** để hiện giá, nhận tiền mặt (có tiền thối) hoặc chuyển khoản. Bên cạnh là danh sách **khách đang đợi phía sau** và tình trạng các quầy khác. Có thể bật tự động khi bận.
+- **Khách khen & chê từng sản phẩm** (tươi ngon, giá rẻ, héo, mắc…) ngay trong tiệm và trong đánh giá; tổng hợp 👍/👎 theo sản phẩm.
 - **Màn hình bắt đầu** với mặt tiền tiệm, **đặt tên tiệm**, **hướng dẫn từng bước** cho người mới.
 - **Khách hàng chibi có tên** (Chị Mai, Chú Tâm, Bé Na…) tự vào tiệm, chọn hàng, xếp hàng ở quầy. **Thanh thời gian chờ** trên đầu mỗi khách; chờ lâu thì khách **hối thúc**, rồi bỏ về.
 - Tiệm mở **6:30 – 21:30**, khách đến theo giờ (không báo trước số lượng). Không có khách thì nhân viên vào **phòng nghỉ**.
