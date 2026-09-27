@@ -140,6 +140,9 @@ button.mini{padding:0 6px;font-size:11px;border-radius:8px;border:1.5px solid va
 .ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:4px 10px}
 .ctl .speed button{padding:2px 10px}
 label.toggle{display:flex;gap:6px;align-items:center;font-size:13px;cursor:pointer;padding:2px 10px}
+.lockbox{margin:4px 10px;background:var(--panel);border:2px dashed var(--line);border-radius:14px;padding:8px 12px;font-size:13px}
+.lockbox ul{margin:4px 0 8px;padding-left:4px;list-style:none}
+.lockbox li{margin:1px 0}
 details.logbox{margin:6px 10px;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:6px 10px}
 details.logbox summary{cursor:pointer;font-family:var(--display)}
 .log{max-height:220px;overflow-y:auto;font-size:12.5px;display:flex;flex-direction:column;gap:3px;margin-top:6px}
@@ -283,7 +286,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
       <button id="btnFF" disabled>⏩ Tua đến cuối ngày</button>
     </div>
     <label class="toggle"><input type="checkbox" id="flash"> Xả hàng tươi sắp hết hạn sau 18:00 (giảm 30%)</label>
-    <label class="toggle"><input type="checkbox" id="autoPay"> Tự động phục vụ khách ở quầy của bạn</label>
+    <div id="autoBox"></div>
     <details class="logbox"><summary>📋 Nhật ký trong ngày</summary><div class="log" id="log"></div></details>
   </section>
 
@@ -386,6 +389,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
       <li>Lấy nhầm thì bấm vào món trong <b>Giỏ hàng</b> để trả lại. Kệ hết hàng thì bấm <b>Báo hết</b> trong lời khách.</li>
       <li>Đủ món thì bấm <b>Nhận tiền</b>. Để ý <b>thanh kiên nhẫn</b>: hết là khách bỏ về và chê tiệm.</li>
       <li>Thu ngân thuê thêm sẽ tự phục vụ những khách xếp hàng phía sau (vòng tròn trên cùng).</li>
+      <li><b>Tự động phục vụ quầy của bạn</b> phải mở khóa: tự tay phục vụ 30 khách, uy tín từ 45, có Máy POS và trả 8 triệu.</li>
       <li>Khách khen hoặc chê từng món: tươi ngon, rẻ, héo, mắc. Xem tổng hợp ở tab Đánh giá.</li>
     </ul>
     <h3 class="sec">⚠️ Rủi ro</h3>
@@ -601,7 +605,7 @@ function makeStaff(role){
 }
 function ownerLook(){ const p=genPerson(true).look; return {...p, shirt:'#ffb703', apron:'#ffffff', cap:'#e0a82e', bow:null}; }
 function newGame(name){
-  S={ver:3, owner:ownerLook(), fb:{}, autoPay:false, name, day:1, money:START_MONEY, rep:50, staff:[], eq:{}, svc:{}, ads:[], branches:0,
+  S={ver:3, owner:ownerLook(), fb:{}, autoPay:false, autoUnlocked:false, manualServed:0, name, day:1, money:START_MONEY, rep:50, staff:[], eq:{}, svc:{}, ads:[], branches:0,
      inv:{}, price:{}, market:{}, reviews:[], hist:[], weekRev:0, event:null, cands:[], negDays:0,
      over:false, won:false, miles:{}, flash:true, nextId:1, lastSeenRev:0};
   EQUIP.forEach(e=>S.eq[e.id]=0);
@@ -811,7 +815,7 @@ function orderHTML(c){
 function makeCustomer(){
   const p=genPerson(false);
   const c={...p, id:++R.cid, want:[], basket:[], missing:[], waited:0, mood:'normal', bubble:null, bubT:0, ops:[], addons:[], stage:'queue',
-           patience:rand(10,16)*p.pat*patienceMult()*(1+0.1*Math.min(2,staffOf('stocker').length))};
+           patience:rand(16,24)*p.pat*patienceMult()*(1+0.1*Math.min(2,staffOf('stocker').length))};
   const pool=PRODUCTS.filter(x=>!catLocked(x.cat));
   const n=1+Math.floor(Math.pow(Math.random(),1.2)*5), chosen=new Set();
   for(let i=0;i<n*2&&chosen.size<n;i++){
@@ -941,7 +945,7 @@ function checkDone(c){
 function collectPay(){
   const c=R&&R.cur; if(!c||c.stage!=='pay') return;
   const fast=c.waited<c.patience*0.4;
-  finishCustomer(c);
+  if(finishCustomer(c)) S.manualServed=(S.manualServed||0)+1;
   if(fast&&Math.random()<0.5) say(c,pick(['Lẹ ghê, cảm ơn nha!','Tiệm dễ thương quá','Mai ghé nữa nha!']),12);
   moneyFloat('+'+fmtS(c.paidAmt||0));
   releaseCur(true); tutHook('paid'); renderLive();
@@ -997,12 +1001,12 @@ function simStep(dt){
   // quầy của bạn
   if(R.cur){
     const c=R.cur; c.bubT-=dt;
-    if(S.autoPay||R.ff){
+    if(autoOn()||R.ff){
       if(c.autoT==null) c.autoT=serveTime(c,1.0);
       c.autoT-=dt;
       if(c.autoT<=0){ if(finishCustomerAuto(c)) moneyFloat('+'+fmtS(c.paidAmt||0)); releaseCur(true); }
     } else {
-      c.waited+=dt*0.7;
+      c.waited+=dt*0.4;
       const r=c.waited/c.patience;
       if(r>0.55){ if(c.mood==='normal') c.mood='annoyed'; if(c.bubT<=0&&Math.random()<dt*0.3) say(c,pick(HURRY),12); }
       if(r>=1) abandonCur();
@@ -1013,7 +1017,7 @@ function simStep(dt){
   }
   // hàng chờ
   for(const c of R.queue.slice()){
-    c.waited+=dt; c.bubT-=dt;
+    c.waited+=dt*0.75; c.bubT-=dt;
     if(c.waited/c.patience>0.6) c.mood='annoyed';
     if(c.waited>=c.patience){ R.queue.splice(R.queue.indexOf(c),1); angryLeave(c); }
   }
@@ -1061,10 +1065,10 @@ function renderOrder(){
   box.hidden=false;
   let h='';
   if(c.bubble&&c.bubT>0) h+=`<div class="say">💬 ${esc(c.bubble)}</div>`;
-  h+=`<div class="who">${esc(c.name)}${S.autoPay?' · 🤖 đang tự phục vụ':''}</div>`;
+  h+=`<div class="who">${esc(c.name)}${autoOn()?' · 🤖 đang tự phục vụ':''}</div>`;
   if(c.stage==='order'){
     h+=`<div class="otext">${c.line}</div><div class="ochips">${c.want.map((w,i)=>{ const p=PMAP[w.id], done=w.got>=w.q, st=stockOf(w.id);
-      return `<span class="ochip ${done?'done':w.out?'outc':''}">${p.icon} ${w.got}/${w.q}${done?' ✓':''}${!done&&!w.out&&st<w.q-w.got&&!S.autoPay?` <button class="mini" data-out="${i}">Báo hết</button>`:''}</span>`; }).join('')}</div>`;
+      return `<span class="ochip ${done?'done':w.out?'outc':''}">${p.icon} ${w.got}/${w.q}${done?' ✓':''}${!done&&!w.out&&st<w.q-w.got&&!autoOn()?` <button class="mini" data-out="${i}">Báo hết</button>`:''}</span>`; }).join('')}</div>`;
   } else if(c.stage==='pay'){
     h+=`<div class="otext">${c.method==='cash'?`Tiền đây nè: <b>${fmt(c.given)}</b>`:'Cho mình chuyển khoản nha!'}</div>
         <div class="payline">Tổng <b>${fmt(c.total)}</b>${c.method==='cash'?` · Thối lại <b>${fmt(c.given-c.total)}</b>`:' · 📱 QR ✓'}</div>`;
@@ -1082,7 +1086,7 @@ function renderTray(){
     const total=c.want.reduce((a,w)=>a+w.amt,0)+(c.stage==='pay'?c.addons.reduce((a,x)=>a+x.price,0):0);
     h+=`<div class="titems">${items||'<div class="tempty">Bấm vào khay hàng bên phải để lấy đồ cho khách</div>'}</div>
        <div class="ttotal"><span>Tổng</span><span>${fmtS(total)}</span></div>
-       <button class="pill" id="btnPay" ${c.stage==='pay'&&!S.autoPay?'':'disabled'}>${c.stage==='pay'?'💵 Nhận tiền':'Lấy đủ hàng…'}</button>`;
+       <button class="pill" id="btnPay" ${c.stage==='pay'&&!autoOn()?'':'disabled'}>${c.stage==='pay'?'💵 Nhận tiền':'Lấy đủ hàng…'}</button>`;
   }
   setHTML($('#tray'),h);
 }
@@ -1126,9 +1130,25 @@ function renderLive(){
   const ev=S.event, ads=S.ads.map(a=>ADS.find(d=>d.id===a.id)).filter(Boolean);
   const chip=$('#evChip'); const t=(ev?ev.icon+' '+ev.name:'')+(ads.length?' '+ads.map(a=>a.icon).join(''):'');
   chip.hidden=!t; chip.textContent=t;
-  $('#btnFF').disabled=!R; $('#flash').checked=S.flash; $('#autoPay').checked=!!S.autoPay;
+  $('#btnFF').disabled=!R; $('#flash').checked=S.flash; renderAutoBox();
 }
 function renderEvent(){}
+const AUTO_COST=8e6, AUTO_SERVED=30, AUTO_REP=45;
+const autoOn=()=>!!(S.autoUnlocked&&S.autoPay);
+function autoReqs(){ return [
+  {ok:(S.manualServed||0)>=AUTO_SERVED, t:`Tự tay phục vụ ${AUTO_SERVED} khách (${Math.min(S.manualServed||0,AUTO_SERVED)}/${AUTO_SERVED})`},
+  {ok:S.rep>=AUTO_REP, t:`Uy tín từ ${AUTO_REP} (hiện ${Math.round(S.rep)})`},
+  {ok:S.eq.pos>=1, t:'Có Máy POS (tab Nâng cấp)'},
+  {ok:S.money>=AUTO_COST, t:`Đủ ${fmtS(AUTO_COST)} để mở khóa`},
+]; }
+function renderAutoBox(){
+  let h;
+  if(S.autoUnlocked) h=`<label class="toggle"><input type="checkbox" id="autoPay" ${S.autoPay?'checked':''}> 🤖 Tự động phục vụ khách ở quầy của bạn</label>`;
+  else { const rq=autoReqs(), ok=rq.every(r=>r.ok);
+    h=`<div class="lockbox"><b>🔒 Tự động phục vụ quầy của bạn</b><ul>${rq.map(r=>`<li class="${r.ok?'good':''}">${r.ok?'✅':'⬜'} ${r.t}</li>`).join('')}</ul>
+       <button class="primary sm" id="btnUnlockAuto" ${ok?'':'disabled'}>Mở khóa (${fmtS(AUTO_COST)})</button></div>`; }
+  setHTML($('#autoBox'),h);
+}
 /* Cảnh quầy (canvas) */
 const stageCv=$('#stageCv'), sg=stageCv.getContext('2d');
 function drawStage(now){
@@ -1505,7 +1525,7 @@ window.checkMiles=checkMiles;
 const packState=()=>JSON.stringify(S);
 function unpack(raw){
   const d=JSON.parse(raw); if(!d||!(d.ver===2||d.ver===3)||!d.market) throw new Error('bad');
-  if(!d.owner) d.owner=ownerLook(); if(!d.fb) d.fb={}; if(d.autoPay==null) d.autoPay=false; d.ver=3;
+  if(!d.owner) d.owner=ownerLook(); if(!d.fb) d.fb={}; if(d.autoPay==null) d.autoPay=false; if(d.manualServed==null) d.manualServed=0; if(!d.autoUnlocked) d.autoPay=false; d.ver=3;
   EQUIP.forEach(e=>{ if(d.eq[e.id]==null) d.eq[e.id]=0; });
   PRODUCTS.forEach(p=>{ if(!d.inv[p.id]) d.inv[p.id]=[]; if(!d.market[p.id]) d.market[p.id]={cost:p.cost,ref:p.ref}; if(!d.price[p.id]) d.price[p.id]=d.market[p.id].ref; });
   return d;
@@ -1705,7 +1725,12 @@ window.startDay=startDay;
 $('#speed').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) setSpeedBtn(+b.dataset.s); });
 $('#btnFF').addEventListener('click',()=>{ if(R){ R.ff=true; toast('⏩ Đang tua nhanh… quầy của bạn được phục vụ tự động'); } });
 $('#flash').addEventListener('change',e=>{ S.flash=e.target.checked; autosaveSoft(); });
-$('#autoPay').addEventListener('change',e=>{ S.autoPay=e.target.checked; autosaveSoft(); renderLive(); });
+$('#autoBox').addEventListener('change',e=>{ if(e.target.id!=='autoPay') return; S.autoPay=e.target.checked; autosaveSoft(); renderLive(); });
+$('#autoBox').addEventListener('click',e=>{
+  if(!e.target.closest('#btnUnlockAuto')) return;
+  const ok=autoReqs().every(r=>r.ok); if(!ok) return;
+  S.money-=AUTO_COST; S.autoUnlocked=true; S.autoPay=false; toast('🤖 Đã mở khóa Tự động phục vụ! Bật công tắc để dùng.'); autosaveSoft(); refreshAll();
+});
 $('#btnTutAgain').addEventListener('click',()=>startTut());
 $('#modal').addEventListener('click',e=>{ if(e.target.id==='modal'&&!(R&&R.paused)&&!(S&&S.over)){ if(userPaused) closeMenu(); else closeModal(); } });
 document.addEventListener('keydown',e=>{
