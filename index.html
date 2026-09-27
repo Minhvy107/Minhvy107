@@ -1688,7 +1688,7 @@ function renderWardrobe(){
    Chủ game điền thông tin dưới đây (không phải bí mật, ai xem mã nguồn cũng thấy):
    - bin: mã ngân hàng (xem PAY_BANKS), acct: số tài khoản, holder: tên chủ tài khoản (IN HOA, không dấu)
    - api: địa chỉ máy chủ nạp (thư mục server/, Cloudflare Worker). Để trống = chế độ thử nghiệm. */
-const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev'};
+const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev',site:'https://minhvy107.github.io/cholaxanh/'};
 const PAY_BANKS={'970436':'Vietcombank','970415':'VietinBank','970418':'BIDV','970405':'Agribank','970422':'MB Bank','970407':'Techcombank','970416':'ACB','970423':'TPBank','970432':'VPBank','970403':'Sacombank','970441':'VIB','970443':'SHB'};
 // Giá và số 💎 (gồm cả quà tặng) phải khớp PACKS trong server/worker.js
 const GEM_PACKS=[{id:'p1',gems:60,bonus:0,vnd:22000},{id:'p2',gems:320,bonus:30,vnd:99000},{id:'p3',gems:700,bonus:100,vnd:199000},
@@ -1721,7 +1721,13 @@ window.payOpen=async function(packId){
   const p=PAY_ALL.find(x=>x.id===packId); if(!p) return; const lk=GEM_OFFERS.includes(p)&&offerLocked(p); if(lk) return toast(`${p.name}: ${lk}`);
   const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', code='CLX'+payId()+Array.from({length:4},()=>A[Math.random()*A.length|0]).join('');
   const o={code,pack:p.id,gems:p.gems,vnd:p.vnd,at:Date.now()};
-  if(PAY_LIVE()){ try{ await payApi('/order',{code,pack:p.id}); } catch(e){ return modal(`<h3>💳 Không kết nối được máy chủ nạp</h3><p>Vui lòng thử lại sau ít phút. (${esc(e.message)})</p><div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>`); } }
+  if(PAY_LIVE()){ try{ await payApi('/order',{code,pack:p.id}); } catch(e){
+    const onSite=PAY_CFG.site&&location.href.startsWith(PAY_CFG.site);
+    return modal(onSite?`<h3>💳 Không kết nối được máy chủ nạp</h3><p>Vui lòng thử lại sau ít phút. (${esc(e.message)})</p><div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>`
+      :`<h3>💳 Nạp trên trang chính của game</h3><p>Trang bạn đang mở (bản xem trước) không cho phép kết nối máy chủ nạp. Hãy mở game tại trang chính để nạp kim cương:</p>
+        <p style="text-align:center"><a href="${PAY_CFG.site}" target="_blank" rel="noopener"><b>${PAY_CFG.site.replace(/^https:\/\//,'')}</b></a></p>
+        <p class="muted" style="font-size:12.5px">Mỗi trang lưu tiến trình riêng. Muốn mang tiệm sang trang chính, vào ☰ → 💾 Lưu game → <b>Xuất mã</b>, rồi ở trang chính chọn <b>Nhập mã</b>.</p>
+        <div class="row"><button onclick="navigator.clipboard&&navigator.clipboard.writeText('${PAY_CFG.site}');toast('Đã sao chép link')">Chép link</button><button class="primary" onclick="closeModal()">Đóng</button></div>`); } }
   S.payOrder=o; autosaveSoft(); payShow(); };
 window.payShow=function(){ const o=S.payOrder; if(!o) return; const live=PAY_LIVE();
   const bin=live?PAY_CFG.bin:'970436', acct=live?PAY_CFG.acct:'0000000000', holder=live?PAY_CFG.holder:'TAI KHOAN THU NGHIEM';
