@@ -1233,7 +1233,7 @@ function orderHTML(c){
 function makeCustomer(){
   const p=genPerson(false);
   const c={...p, id:++R.cid, want:[], basket:[], missing:[], waited:0, mood:'normal', bubble:null, bubT:0, ops:[], addons:[], stage:'queue',
-           patience:rand(21,31)*p.pat*patienceMult()*(1+0.1*Math.min(2,staffOf('stocker').length))};
+           patience:rand(26,39)*p.pat*patienceMult()*(1+0.1*Math.min(2,staffOf('stocker').length))};
   const pool=PRODUCTS.filter(x=>!catLocked(x.cat));
   const n=1+Math.floor(Math.pow(Math.random(),1.2)*5), chosen=new Set();
   for(let i=0;i<n*2&&chosen.size<n;i++){
@@ -3404,7 +3404,7 @@ function tutHook(ev){ if(tutI>=0&&TUT[tutI].wait===ev){ tutI++; setTimeout(showT
 /* =====================================================================
    VÒNG LẶP
    ===================================================================== */
-const MS_PER_MIN=500;
+const MS_PER_MIN=400;
 let last=performance.now(), uiT=0;
 function loop(now){
   const dt=Math.min(60,now-last); last=now;
