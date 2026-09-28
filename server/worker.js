@@ -96,7 +96,7 @@ async function leaderboard(req, env, path, url) {
       rep: Math.max(0, Math.min(100, Math.round(Number(b.rep) || 0))),
       stars: Math.max(0, Math.min(5, Math.round((Number(b.stars) || 0) * 10) / 10)), at: now,
       frame: ['hang'].includes(b.frame) ? b.frame : '',
-      title: ['haggle', 'kind', 'smart', 'streak', 'lucky', 'hand', 'star', 'trust', 'rich', 'old'].includes(b.title) ? b.title : '',
+      title: ['haggle', 'kind', 'smart', 'streak', 'lucky', 'hand', 'star', 'trust', 'rich', 'old', 'mil'].includes(b.title) ? b.title : '',
     };
     // Tiết kiệm lượt ghi KV (gói miễn phí chỉ 1.000 lượt/ngày, cần để dành cho nạp tiền): mỗi tiệm tối đa 1 lần / LB_GAP
     const rankIn = async key => JSON.parse((await env.ORDERS.get(key)) || '[]').findIndex(r => r.pid === pid) + 1;
@@ -282,6 +282,16 @@ async function handle(req, env) {
     // 🏆 Bảng xếp hạng: chỉ tiệm kinh doanh từ LB_MIN_DAY ngày, xếp theo tổng vốn; có bảng tuần/tháng (giờ VN) và thưởng top 10
     if (path === '/lb' || path.startsWith('/lb/')) return leaderboard(req, env, path, url);
     if (path === '/ping' || path === '/stats') return stats(req, env, path);
+    // 🎫 Vé số: số trúng mỗi ngày = HMAC bí mật theo ngày, chỉ trả sau 19:00 giờ VN
+    if (req.method === 'GET' && path === '/lot') {
+      const d = url.searchParams.get('d') || '';
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return json(env, { error: 'bad_request' }, 400);
+      if (Date.now() < Date.parse(d + 'T19:00:00Z') - 7 * 3600e3) return json(env, { pending: true });
+      const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(env.LOT_SECRET || env.SEPAY_API_KEY || 'clx-lot'), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+      const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode('lot:' + d)));
+      const n = ((sig[0] << 24 >>> 0) + (sig[1] << 16) + (sig[2] << 8) + sig[3]) % 1000000;
+      return new Response(JSON.stringify({ d, num: String(n).padStart(6, '0') }), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=86400', ...cors(env) } });
+    }
 
     return json(env, { error: 'not_found' }, 404);
   }
