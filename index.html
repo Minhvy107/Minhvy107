@@ -24,6 +24,9 @@ button:hover:not(:disabled){border-color:var(--brand)}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 button:disabled{opacity:.45;cursor:not-allowed}
 button.primary{background:var(--brand);border-color:var(--brandDk);color:#fff;box-shadow:0 3px 0 var(--brandDk)}
+a.btn{display:inline-block;text-decoration:none;font-weight:800;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:6px 12px}
+a.btn.primary{background:#0068ff;border-color:#0052cc;color:#fff;box-shadow:0 3px 0 #0052cc}
+.supinfo{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:2px dashed var(--line);border-radius:12px;padding:8px 10px;font-size:12px;max-height:160px;overflow:auto;margin:6px 0 10px}
 button.primary:hover:not(:disabled){background:var(--brand2);border-color:var(--brandDk)}
 button.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--brandDk)}
 button.danger{color:var(--bad);border-color:var(--bad)}
@@ -290,7 +293,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <p class="st-sub">Nhập hàng, đón khách, mở tiệm nhỏ của riêng bạn</p>
     <div class="st-save" id="stSave"></div>
     <button class="pill" id="stMain">Bắt đầu chơi</button>
-    <div class="st-links"><button class="link" id="stNew2" hidden>Chơi mới</button><button class="link" id="stLoad">Tải bản lưu</button><button class="link" id="stHelp">Hướng dẫn</button></div>
+    <div class="st-links"><button class="link" id="stNew2" hidden>Chơi mới</button><button class="link" id="stLoad">Tải bản lưu</button><button class="link" id="stHelp">Hướng dẫn</button><button class="link" id="stSupport" hidden onclick="openSupport('')">Báo lỗi</button></div>
   </div>
   <div class="st-ver">v4.0</div>
   <div class="namecard" id="startName" hidden>
@@ -1831,6 +1834,24 @@ function renderWardrobe(){
    - api: địa chỉ máy chủ nạp (thư mục server/, Cloudflare Worker). Để trống = chế độ thử nghiệm.
    - memo: chữ đặt trước mã đơn trong nội dung chuyển khoản (VietinBank + SePay bắt buộc có "SEVQR"). */
 const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev',site:'https://minhvy107.github.io/cholaxanh/',memo:'SEVQR'};
+// 🐞 Hỗ trợ: link Zalo (https://zalo.me/...) hoặc số điện thoại Zalo của chủ game. Để trống = ẩn nút báo lỗi.
+const SUPPORT={zalo:'https://zaloapp.com/qr/p/1b3g1giwfxayr'};
+const zaloURL=()=>{ const z=String(SUPPORT.zalo||'').trim(); if(!z) return ''; if(/^https?:\/\//.test(z)) return z; const d=z.replace(/\D/g,''); return d?'https://zalo.me/'+d.replace(/^84/,'0'):''; };
+let lastErr='';
+window.addEventListener('error',e=>{ lastErr=(e.message||'lỗi')+(e.lineno?` @${e.lineno}`:''); });
+function supportInfo(ctx){ const L=[`Game: Chợ Lá Xanh ${($('.st-ver')||{}).textContent||''}`];
+  if(S){ L.push(`Tiệm: ${S.name} · Ngày ${S.day} · Tiền ${fmtS(S.money)} · ${S.gems}💎`); if(S.pid) L.push(`Mã người chơi: ${S.pid}`); if(S.payOrder) L.push(`Đơn nạp đang chờ: ${S.payOrder.code} (${fmtVND(S.payOrder.vnd)})`); if(S.payLog&&S.payLog.length){ const x=S.payLog[S.payLog.length-1]; L.push(`Lần nạp gần nhất: ${x.code} +${x.g}💎`); } }
+  if(ctx) L.push(`Vấn đề: ${ctx}`); if(lastErr) L.push(`Lỗi gần nhất: ${lastErr}`);
+  L.push(`Lúc: ${new Date().toLocaleString('vi-VN')}`);
+  return L.join('\n'); }
+window.openSupport=function(ctx){ const url=zaloURL(); if(!url) return toast('Chưa có kênh hỗ trợ');
+  const info=supportInfo(ctx);
+  modal(`<h3>🐞 Báo lỗi / Hỗ trợ</h3><p>Gặp lỗi, nạp tiền chưa nhận kim cương, hay có góp ý? Nhắn cho chủ game qua <b>Zalo</b> nhé.</p>
+    <p class="muted" style="font-size:12.5px">Bấm <b>Chép thông tin</b> rồi dán vào tin nhắn Zalo để được hỗ trợ nhanh hơn. Nếu lỗi về nạp tiền, gửi kèm ảnh chụp giao dịch ngân hàng.</p>
+    <pre class="supinfo">${esc(info)}</pre>
+    <div class="row"><button onclick="navigator.clipboard&&navigator.clipboard.writeText(${esc(JSON.stringify(info))}).then(()=>toast('Đã chép thông tin'),()=>toast('Không chép được, hãy chụp màn hình'))">📋 Chép thông tin</button>
+    <a class="btn primary" href="${url}" target="_blank" rel="noopener">💬 Mở Zalo</a><button onclick="closeModal()">Đóng</button></div>`); };
+const supBtn=(ctx,label)=>zaloURL()?`<button onclick="openSupport(${esc(JSON.stringify(ctx||''))})">${label||'🐞 Báo lỗi qua Zalo'}</button>`:'';
 const PAY_BANKS={'970436':'Vietcombank','970415':'VietinBank','970418':'BIDV','970405':'Agribank','970422':'MB Bank','970407':'Techcombank','970416':'ACB','970423':'TPBank','970432':'VPBank','970403':'Sacombank','970441':'VIB','970443':'SHB'};
 // Giá và số 💎 (gồm cả quà tặng) phải khớp PACKS trong server/worker.js
 const GEM_PACKS=[{id:'p1',gems:60,bonus:0,vnd:22000},{id:'p2',gems:320,bonus:30,vnd:99000},{id:'p3',gems:700,bonus:100,vnd:199000},
@@ -1865,7 +1886,7 @@ window.payOpen=async function(packId){
   const o={code,pack:p.id,gems:p.gems,vnd:p.vnd,at:Date.now()};
   if(PAY_LIVE()){ try{ await payApi('/order',{code,pack:p.id}); } catch(e){
     const onSite=PAY_CFG.site&&location.href.startsWith(PAY_CFG.site);
-    return modal(onSite?`<h3>💳 Không kết nối được máy chủ nạp</h3><p>Vui lòng thử lại sau ít phút. (${esc(e.message)})</p><div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>`
+    return modal(onSite?`<h3>💳 Không kết nối được máy chủ nạp</h3><p>Vui lòng thử lại sau ít phút. (${esc(e.message)})</p><div class="row">${supBtn('Không kết nối được máy chủ nạp: '+e.message)}<button class="primary" onclick="closeModal()">Đóng</button></div>`
       :`<h3>💳 Nạp trên trang chính của game</h3><p>Trang bạn đang mở (bản xem trước) không cho phép kết nối máy chủ nạp. Hãy mở game tại trang chính để nạp kim cương:</p>
         <p style="text-align:center"><a href="${PAY_CFG.site}" target="_blank" rel="noopener"><b>${PAY_CFG.site.replace(/^https:\/\//,'')}</b></a></p>
         <p class="muted" style="font-size:12.5px">Mỗi trang lưu tiến trình riêng. Muốn mang tiệm sang trang chính, vào ☰ → 💾 Lưu game → <b>Xuất mã</b>, rồi ở trang chính chọn <b>Nhập mã</b>.</p>
@@ -1883,7 +1904,8 @@ window.payShow=function(){ const o=S.payOrder; if(!o) return; const live=PAY_LIV
       <tr><td>Số tiền</td><td><b>${fmtVND(o.vnd)}</b>${cp(o.vnd)}</td></tr><tr><td>Nội dung</td><td><b style="color:#d9534f">${memo}</b>${cp(memo)}</td></tr></table>
     <p class="muted" style="font-size:12.5px">Quét mã bằng app ngân hàng, giữ nguyên <b>số tiền</b> và <b>nội dung</b> (kể cả chữ SEVQR nếu có). Kim cương được cộng tự động trong khoảng 1 phút sau khi tiền về. Có thể đóng bảng này, đơn vẫn được giữ.</p>
     <div class="paystat" id="payStat">${live?'⏳ Đang chờ tiền về…':'Chế độ thử: không có tiền thật được xử lý.'}</div>
-    <div class="row">${!live&&PAY_TEST?`<button onclick="payDemoPaid()">🧪 Giả lập đã nhận tiền</button>`:''}<button class="danger" onclick="payCancel()">Hủy đơn</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
+    <div class="row">${!live&&PAY_TEST?`<button onclick="payDemoPaid()">🧪 Giả lập đã nhận tiền</button>`:''}<button class="danger" onclick="payCancel()">Hủy đơn</button><button class="primary" onclick="closeModal()">Đóng</button></div>
+    ${zaloURL()?`<p class="muted" style="font-size:12.5px;text-align:center;margin-top:8px">Đã chuyển khoản mà quá 10 phút chưa nhận 💎? <a href="#" onclick="openSupport('Nạp tiền chưa nhận kim cương');return false">Báo qua Zalo</a></p>`:''}`);
   const data=vietQR(bin,acct,o.vnd,memo);
   loadQR().then(qr=>{ const q=qr(0,'M'); q.addData(data); q.make(); const el=$('#payQr'); if(el) el.innerHTML=q.createImgTag(6,8); })
     .catch(()=>{ const el=$('#payQr'); if(el) el.innerHTML='<span class="muted">Không tải được mã QR. Bạn chuyển khoản thủ công theo thông tin bên dưới.</span>'; });
@@ -2504,6 +2526,7 @@ function openMenu(){
       <button data-m="save" ${R?'disabled':''}>💾 Lưu game${R?' (khi tiệm đóng cửa)':''}</button>
       <button data-m="help">❓ Hướng dẫn</button>
       <button data-m="tut">📘 Hướng dẫn từng bước</button>
+      ${zaloURL()?'<button data-m="support">🐞 Báo lỗi / Hỗ trợ qua Zalo</button>':''}
       <button data-m="home">🏠 Màn hình chính${R?' (ngày đang dở sẽ không lưu)':''}</button>
       ${R?'':'<button data-m="close">Đóng</button>'}
     </div>`);
@@ -2517,6 +2540,7 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='save'){ userPaused=false; openSaves(false); }
   else if(m==='help'){ closeMenu(); gotoTab('help'); }
   else if(m==='tut'){ closeMenu(); startTut(); }
+  else if(m==='support'){ openSupport(''); }
   else if(m==='home'){ userPaused=false; if(!R) autosave(); toHome(); }
 });
 
@@ -2740,6 +2764,7 @@ $('#stMain').addEventListener('click',()=>{
 $('#stNew2').addEventListener('click',showNameCard);
 $('#stBack').addEventListener('click',()=>{ $('#startName').hidden=true; $('#stBottom').hidden=false; });
 $('#stLoad').addEventListener('click',()=>openSaves(true));
+if(zaloURL()) $('#stSupport').hidden=false;
 $('#stHelp').addEventListener('click',()=>modal(`<h3>❓ Cách chơi</h3>${$('#tab-help').innerHTML.replace(/<div class="row">[\s\S]*?<\/div>\s*$/,'')}<div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`));
 const IDEAS=['Tạp hóa Cô Ba','Bách hóa Nhà Mình','Tiệm Xinh Đầu Hẻm','Chợ Nhỏ Yêu Đời','Tạp hóa Bé Na'];
 $('#nameIdeas').innerHTML=IDEAS.map(n=>`<button class="sm">${n}</button>`).join('');
