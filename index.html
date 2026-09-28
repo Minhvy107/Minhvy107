@@ -136,6 +136,37 @@ input[type=text],textarea{font:inherit;padding:8px 12px;border:2px solid var(--l
 
 /* ---------- Header ---------- */
 #hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--page);display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px 8px}
+.fx{margin:-4px}.fx-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}.fx-top b{font:900 18px var(--display);flex:1}.fx-back{padding:2px 12px;font-size:20px;line-height:1.2}
+.fx-w{font-size:13px;font-weight:800;text-align:right;line-height:1.15}.fx-w small{display:block;font-size:11px}.up{color:#1f8f5b}.dn{color:#d1202f}
+.fx-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fx-t{border:0;border-radius:18px;padding:14px 8px 10px;color:#fff;text-align:center;position:relative;box-shadow:0 5px 0 rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.35)}.fx-t span{display:block;font-size:36px;line-height:1.1}.fx-t b{display:block;font-size:14.5px}.fx-t small{display:block;font-size:11px;opacity:.9;font-weight:700}
+.fx-t i{position:absolute;right:8px;top:8px;background:#fff;color:#c7243a;border-radius:9px;font-style:normal;font-size:10.5px;padding:0 6px;font-weight:900}
+.fx-t.t1{background:linear-gradient(150deg,#ff6b5a,#c7243a)}.fx-t.t2{background:linear-gradient(150deg,#2fb378,#0c6b45)}.fx-t.t3{background:linear-gradient(150deg,#ffc94a,#e08a12)}.fx-t.t4{background:linear-gradient(150deg,#5b6cff,#27238f)}
+.fx-warn{background:#fff1f1;border:2px solid #f3b0b0;border-radius:12px;padding:6px 10px;font-size:12.5px;margin:10px 0 0}.fx-stat{font-size:11.5px;margin:10px 0 0;background:var(--panel2);border-radius:12px;padding:6px 10px}
+.fx-safe{font-size:11px;color:var(--muted);text-align:center;margin:8px 0}
+.bc-board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px;border-radius:18px;background:linear-gradient(#d42a36,#9e1622);box-shadow:inset 0 0 0 3px #f5c451}
+.bc-cell{background:radial-gradient(circle at 50% 35%,#fffdf5,#ffeec4);border:0;border-radius:14px;padding:8px 0 6px;position:relative;box-shadow:0 3px 0 #b8871f}.bc-cell span{font-size:34px;display:block;line-height:1.1}.bc-cell small{font-weight:900;font-size:12px;color:#9e1622}
+.bc-cell em{position:absolute;right:-4px;top:-6px;font-style:normal;background:#1f8f5b;color:#fff;border:2px dashed #fff;border-radius:12px;font-size:10.5px;padding:1px 6px;font-weight:900}.bc-cell.hit{box-shadow:0 0 0 3px #36d17c,0 0 14px #36d17c}
+.bc-plate{margin:12px auto 6px;width:220px;height:84px;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#fff,#e9e2d2);border:3px solid #c7b48a;display:flex;justify-content:center;align-items:center;gap:8px;box-shadow:0 5px 0 #a8946a}
+.bc-die{width:48px;height:48px;border-radius:12px;background:linear-gradient(145deg,#fff,#eee);border:2px solid #d8cdb3;display:grid;place-items:center;font-size:28px;box-shadow:0 4px 0 #cbbd9b}.bc-die.shake{transform:rotate(12deg) translateY(-4px)}
+.bc-msg{text-align:center;font-size:13px;font-weight:800;min-height:20px}.bc-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}.cc{border-radius:50%;width:46px;height:46px;padding:0;font-size:10.5px;border:3px dashed #fff;color:#fff;background:#7a8290;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.cc:nth-child(2){background:#e0303f}.cc:nth-child(3){background:#2d5bd6}.cc:nth-child(4){background:#1f8f5b}.cc:nth-child(5){background:#8f5fd6}.cc:nth-child(6){background:#e08a12}.cc:nth-child(7){background:#1b1b1b}.cc:nth-child(8){background:#c7243a}.cc.on{transform:scale(1.15);box-shadow:0 0 0 3px #ffd35a}
+.lot-h{font-size:12.5px;background:var(--panel2);border-radius:12px;padding:6px 10px}.lot-res{margin:8px 0;border:2px solid #c7243a;border-radius:14px;overflow:hidden;background:#fff}.lot-res>small{display:block;background:#c7243a;color:#fff;padding:3px 10px;font-weight:800}
+.lot-balls{display:flex;gap:5px;justify-content:center;padding:8px}.lot-balls i{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 12%,#ff5a5a 13%,#b3121e);color:#fff;font:900 16px system-ui;font-style:normal;display:grid;place-items:center}
+.lot-res table{width:100%;border-collapse:collapse;font-size:12px}.lot-res td{padding:3px 10px;border-top:1px solid #f3dede}.lot-res td b{font-family:ui-monospace,monospace;letter-spacing:2px}
+.lot-list{max-height:220px;overflow:auto}.lot-tk{display:flex;justify-content:space-between;align-items:center;border:2px dashed #c7243a;border-radius:12px;padding:6px 10px;margin-top:6px;background:#fff}.lot-tk b{display:block;font:900 20px ui-monospace,monospace;letter-spacing:3px;color:#c7243a}.lot-tk small{font-size:10.5px;color:var(--muted)}.lot-tk span{font-size:11.5px;text-align:right;font-weight:800}
+.lot-tk.win{border-color:#1f8f5b;background:#eafff2}.lot-tk.lose{opacity:.55}
+.xd-felt{background:radial-gradient(ellipse at 50% 30%,#2f9e6a,#11563a 75%);border:5px solid #6b3a1f;border-radius:22px;padding:12px;color:#fff;text-align:center}.xd-who{font-size:12.5px}.xd-who .sc{background:#ffd35a;color:#5a0b12;border-radius:9px;padding:0 7px;font-weight:900}
+.xd-hand{display:flex;justify-content:center;margin:8px 0;min-height:70px}.xd-hand .pc{margin-left:-10px}.xd-hand .pc:first-child{margin-left:0}.xd-pot{display:inline-block;background:rgba(0,0,0,.28);border-radius:12px;padding:2px 12px;color:#ffe27a;font-weight:900}
+.pc{width:50px;height:70px;background:linear-gradient(#fff,#f3f3f3);border-radius:8px;box-shadow:-2px 3px 6px rgba(0,0,0,.35);color:#1b1b1b;position:relative;font-weight:900}.pc.red{color:#d1202f}.pc i{position:absolute;left:5px;top:3px;font-style:normal;font-size:12px;line-height:1}.pc b{position:absolute;inset:0;display:grid;place-items:center;font-size:24px}
+.pc.back{background:repeating-linear-gradient(45deg,#c7243a 0 6px,#a01a2a 6px 12px);border:3px solid #fff}.xd-msg{margin-top:8px;font-weight:900;background:rgba(0,0,0,.25);border-radius:12px;padding:4px}
+.mil{background:radial-gradient(circle at 50% 0,#2b3fa8,#0b1446 70%);color:#fff;border-radius:18px;padding:12px;margin:-6px}.mil .fx-top b{color:#fff}.mil .fx-w small.dn{color:#ff9a9a}.mil .fx-w small.up{color:#7dffb0}.mil .fx-back{background:rgba(255,255,255,.15);color:#fff;border-color:#8fb0ff}
+.mil-mc{background:rgba(0,0,0,.25);border-radius:14px;padding:10px;font-size:13px}.mil-q{background:linear-gradient(#10206b,#081245);border:2px solid #8fb0ff;border-radius:30px;padding:10px 16px;text-align:center;font-size:15px;box-shadow:0 0 12px rgba(93,123,255,.6);margin-bottom:10px}.mil-q small{color:#ffb93b}
+.mil-ans{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mil-ans button{background:linear-gradient(#10206b,#081245);border:2px solid #8fb0ff;border-radius:24px;color:#fff;text-align:left;font-size:13px;padding:8px 12px}.mil-ans b{color:#ffb93b}
+.mil-ans .sel{background:linear-gradient(#ffb93b,#e07b0a);color:#1b1b1b}.mil-ans .sel b{color:#fff}.mil-ans .ok{background:linear-gradient(#36d17c,#1f8f5b);color:#fff}.mil-ans .bad{background:linear-gradient(#ff6b6b,#b3121e);color:#fff}.mil-ans .gone{visibility:hidden}
+.mil-hint{margin-top:8px;background:rgba(0,0,0,.25);border-radius:12px;padding:8px 10px;font-size:12.5px}.mil-aud{display:flex;gap:14px;justify-content:center;align-items:flex-end;height:84px;margin-top:6px}.mil-aud div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:11px}.mil-aud i{width:24px;background:linear-gradient(#8fb0ff,#3b56d6);border-radius:5px 5px 0 0;display:block}.mil-aud b{color:#ffb93b}
+.mil-life{display:flex;gap:8px;justify-content:center;margin:10px 0}.mil-life button{border-radius:50%;width:56px;height:38px;padding:0;background:rgba(93,123,255,.2);border:2px solid #8fb0ff;color:#fff;font-size:12px}.mil-life .used{opacity:.3;text-decoration:line-through}
+.mil-lad{margin-top:10px;border-radius:12px;background:rgba(0,0,0,.25);padding:6px 10px;font-size:11.5px;columns:2;column-gap:12px}.mil-lad div{display:flex;justify-content:space-between;padding:1px 4px;border-radius:6px;color:#b9c6ff}.mil-lad .mk{color:#fff;font-weight:900}.mil-lad .past{opacity:.5}.mil-lad .cur{background:linear-gradient(90deg,#ffb93b,#e07b0a);color:#1b1b1b}
+.mil button:not(.primary):not(.fx-back){color:#fff}.mil .row button:not(.primary){background:rgba(255,255,255,.12);border-color:#8fb0ff}
 .story-av{width:64px;height:64px;border-radius:50%;flex:none;background:var(--panel2)}
 .story-b{display:block;width:100%;text-align:left;margin-top:8px;padding:9px 12px}.story-b small{display:block;font-weight:700;font-size:11.5px;opacity:.8}
 .story-note{background:#f3f9ff;border:2px solid #cfe2f7;border-radius:14px;padding:8px 10px;margin:8px 0;font-size:13px;line-height:1.6}
@@ -2332,7 +2363,7 @@ function festLine(){ if(festOn()){ const F=festDef(), left=dDiff(vnDay(),S.fest.
 function mileReward(F,m){ const r=[]; if(m.gems) r.push(`💎 ${m.gems}`); if(m.money) r.push(`💵 ${fmtS(m.money)}`); if(m.item!=null){ const it=WMAP[F.items[m.item]]; r.push(`${it.icon||'🎨'} ${it.name}`); } return r; }
 function renderEventTab(){
   const box=$('#evBody'); let h='<h3 class="sec">🎪 Sự kiện</h3>';
-  h+=`<div class="ev-quick"><button onclick="openLogin()">🎁 Quà 7 ngày${loginReady()?' <span class="ntag fix">Nhận</span>':''}</button><button onclick="openWheel()">🎡 Vòng quay${wheelFree()?' <span class="ntag fix">1 lượt</span>':S.tix?` <span class="ntag bal">${S.tix} vé</span>`:''}</button><button onclick="openTitles()">🏅 Danh hiệu</button></div>`;
+  h+=`<div class="ev-quick"><button onclick="openLogin()">🎁 Quà 7 ngày${loginReady()?' <span class="ntag fix">Nhận</span>':''}</button><button onclick="openWheel()">🎡 Vòng quay${wheelFree()?' <span class="ntag fix">1 lượt</span>':S.tix?` <span class="ntag bal">${S.tix} vé</span>`:''}</button><button onclick="openTitles()">🏅 Danh hiệu</button><button onclick="openFair()">🎪 Hội chợ</button></div>`;
   if(festOn()){ const F=festDef(), f=S.fest, left=dDiff(vnDay(),f.end), nxt=FEST_MILES.find(m=>f.pts<m.pts), prev=[...FEST_MILES].reverse().find(m=>f.pts>=m.pts);
     h+=`<div class="fest-hero" style="--fa:${F.fa};--fb:${F.fb}"><div class="big">${F.icon} ${F.name}</div><div>${F.desc}</div>
       <div style="margin-top:6px;font-size:13px">📅 ${fmtD(f.start)} – ${fmtD(f.end)} · <b>${left?`còn ${left+1} ngày`:'hôm nay là ngày cuối!'}</b><br>🔥 Hàng được săn đón (+50% khách mua): ${F.cat.map(c=>CATS[c].icon+' '+CATS[c].name).join(', ')}</div>
@@ -3444,6 +3475,7 @@ function openMenu(){
       <div class="row"><span class="muted">Tốc độ:</span>${[1,2,4].map(s=>`<button class="sm ${speed===s?'on':''}" data-m="sp${s}">${s}x${(s===2&&!hasU('speed2'))||(s===4&&!hasU('speed4'))?' 🔒':''}</button>`).join('')}</div>
       ${R&&R.t<R.close?'<button data-m="early">🔒 Đóng cửa sớm</button>':''}
       <div class="row"><button data-m="login">🎁 Quà 7 ngày${loginReady()?' <span class="ntag fix">!</span>':''}</button><button data-m="wheel">🎡 Vòng quay${wheelFree()?' <span class="ntag fix">1</span>':''}</button><button data-m="titles">🏅 Danh hiệu</button></div>
+      <button data-m="fair">🎪 Hội chợ: bầu cua · vé số · xì dách · triệu phú</button>
       <button data-m="news">📢 Có gì mới${newsUnseen()?' <span class="ntag fix">MỚI</span>':''}</button>
       <button data-m="finance">🏦 Vay vốn & đổi kim cương</button>
       ${owns('theme_moon')?`<button data-m="theme">${S.wear.theme==='theme_moon'?'🌙 Giao diện mùa: Bật':'🍃 Giao diện mùa: Tắt'}</button>`:''}
@@ -3476,6 +3508,7 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='login'){ closeMenu(); openLogin(); }
   else if(m==='wheel'){ closeMenu(); openWheel(); }
   else if(m==='titles'){ closeMenu(); openTitles(); }
+  else if(m==='fair'){ closeMenu(); openFair(); }
   else if(m==='theme'){ toggleSeasonTheme(); b.textContent=S.wear.theme==='theme_moon'?'🌙 Giao diện mùa: Bật':'🍃 Giao diện mùa: Tắt'; }
   else if(m==='lb'){ closeMenu(); openLeaderboard(); }
   else if(m==='install'){ closeMenu(); openInstall(); }
@@ -3820,6 +3853,7 @@ const TITLES=[
   {id:'trust',icon:'💚',name:'Cả xóm tin tưởng',desc:'Uy tín đạt 90',ok:()=>S.rep>=90,p:()=>[Math.round(S.rep),90]},
   {id:'rich',icon:'💰',name:'Đại gia khu phố',desc:'Tổng tài sản 500 triệu',ok:()=>netWorth()>=500e6,p:()=>[Math.round(netWorth()/1e6),500]},
   {id:'old',icon:'🏮',name:'Tiệm lâu năm',desc:'Kinh doanh 100 ngày',ok:()=>S.day>=100,p:()=>[S.day,100]},
+  {id:'mil',icon:'💰',name:'Triệu phú chợ',desc:'Trả lời đúng cả 15 câu Ai là triệu phú',ok:()=>(S.cnt?.milWin||0)>=1,p:()=>[(S.cnt?.milWin||0),1]},
 ];
 const TMAP=Object.fromEntries(TITLES.map(t=>[t.id,t]));
 function titleCheck(){ if(!S) return; S.titles=S.titles||{}; for(const t of TITLES) if(!S.titles[t.id]&&t.ok()){ S.titles[t.id]=1; S.gems+=10; sfx('reward'); toast(`🏅 Mở danh hiệu "${t.icon} ${t.name}"! +10💎`); if(!S.title) S.title=t.id; autosaveSoft(); renderHeader(); } }
@@ -3837,9 +3871,278 @@ function autoPopups(){ let tries=0; const go=()=>{ const busy=$('#modal').classL
     if(loginReady()&&S.day>1) return openLogin(); };
   setTimeout(go,1200); }
 
+// Câu hỏi Ai là triệu phú: [câu hỏi, [đáp án…], chỉ số đáp án đúng]. Tránh câu phụ thuộc địa giới hành chính (đã sáp nhập tỉnh 2025).
+const MIL_Q=[
+ [ // Dễ (câu 1–5)
+  ['Bánh chưng ngày Tết thường được gói bằng lá gì?',['Lá chuối','Lá dong','Lá sen','Lá bàng'],1],
+  ['Thủ đô của Việt Nam là?',['Hà Nội','TP. Hồ Chí Minh','Huế','Đà Nẵng'],0],
+  ['1 kg bằng bao nhiêu gam?',['10','100','1.000','10.000'],2],
+  ['Con vật nào KHÔNG có trong trò bầu cua tôm cá?',['Tôm','Gà','Nai','Heo'],3],
+  ['Tết Trung thu vào ngày nào âm lịch?',['Rằm tháng Giêng','Rằm tháng Tám','Mùng 5 tháng 5','Mùng 1 tháng Giêng'],1],
+  ['Một tuần có mấy ngày?',['5','6','7','8'],2],
+  ['Tờ tiền mệnh giá lớn nhất Việt Nam đang lưu hành là?',['100.000đ','200.000đ','500.000đ','1.000.000đ'],2],
+  ['Ở điều kiện thường, nước sôi ở bao nhiêu độ C?',['50','80','100','150'],2],
+  ['Cầu vồng thường được kể có bao nhiêu màu?',['5','6','7','8'],2],
+  ['Con vật nào được người Việt gọi là "chúa sơn lâm"?',['Voi','Hổ','Gấu','Khỉ'],1],
+  ['Món nào có nước dùng, bánh phở và thịt bò hoặc gà?',['Phở','Bánh mì','Gỏi cuốn','Chè'],0],
+  ['Tết Nguyên Đán còn được gọi là?',['Tết Tây','Tết ta','Tết Đoan Ngọ','Tết Thanh minh'],1],
+  ['Mặt Trời mọc ở hướng nào?',['Đông','Tây','Nam','Bắc'],0],
+  ['Con gì gáy "ò ó o" vào buổi sáng?',['Vịt','Gà trống','Chó','Mèo'],1],
+  ['1 giờ có bao nhiêu phút?',['30','60','90','100'],1],
+  ['Ngôi sao trên quốc kỳ Việt Nam màu gì?',['Trắng','Vàng','Đỏ','Xanh'],1],
+  ['Trong 12 con giáp, năm Tý là năm con gì?',['Trâu','Chuột','Mèo','Hổ'],1],
+  ['Muối ăn có vị gì?',['Ngọt','Mặn','Chua','Đắng'],1],
+  ['Trái cây nào hay được gọi là "vua của các loại trái cây"?',['Sầu riêng','Xoài','Chuối','Ổi'],0],
+  ['Hồ Gươm ở Hà Nội còn gọi là hồ gì?',['Hồ Tây','Hồ Hoàn Kiếm','Hồ Trúc Bạch','Hồ Xuân Hương'],1],
+  ['Một năm dương lịch thường có bao nhiêu ngày?',['360','364','365','366'],2],
+  ['Ngày Quốc tế Thiếu nhi là ngày nào?',['1/6','8/3','20/11','2/9'],0],
+  ['Ngày Nhà giáo Việt Nam là ngày nào?',['20/10','20/11','8/3','1/5'],1],
+  ['Quốc khánh nước Việt Nam là ngày nào?',['30/4','2/9','1/5','19/8'],1],
+  ['Bia thường bán theo "lốc", 1 lốc thường có mấy lon?',['4','6','12','24'],1],
+  ['Trứng bán theo vỉ 10 quả. 3 vỉ là bao nhiêu quả?',['13','20','30','33'],2],
+  ['Khách mua 45.000đ, đưa tờ 50.000đ. Phải thối bao nhiêu?',['5.000đ','10.000đ','15.000đ','50.000đ'],0],
+  ['Nước mắm truyền thống được làm chủ yếu từ gì?',['Cá và muối','Đậu nành','Tôm khô','Rong biển'],0],
+  ['Con vật nào đẻ trứng?',['Mèo','Chó','Gà','Bò'],2],
+  ['Hạt gì dùng để nấu cơm?',['Gạo','Đậu xanh','Bắp','Mè'],0],
+ ],
+ [ // Vừa (câu 6–10)
+  ['Chợ nổi Cái Răng nằm ở thành phố nào?',['Hà Nội','Cần Thơ','Đà Nẵng','Huế'],1],
+  ['Sông nào dài nhất chảy qua Việt Nam?',['Sông Hồng','Sông Mê Kông','Sông Đà','Sông Đồng Nai'],1],
+  ['Đỉnh núi cao nhất Việt Nam là?',['Fansipan','Núi Bà Đen','Bạch Mã','Langbiang'],0],
+  ['Tác giả của "Truyện Kiều" là ai?',['Nguyễn Du','Nguyễn Trãi','Hồ Xuân Hương','Nguyễn Đình Chiểu'],0],
+  ['Trong xì dách, lá A đi với lá nào thì thành "xì dách"?',['2','5','K','9'],2],
+  ['Tắm nắng buổi sáng giúp cơ thể tạo ra vitamin gì?',['A','B12','C','D'],3],
+  ['Gửi 100 triệu, lãi 10%/năm. Sau 1 năm được bao nhiêu tiền lãi?',['1 triệu','10 triệu','11 triệu','100 triệu'],1],
+  ['Mua 3 món giá 12.000đ, 15.000đ và 23.000đ. Tổng cộng là?',['40.000đ','45.000đ','50.000đ','55.000đ'],2],
+  ['Nhập hàng 20.000đ, bán 25.000đ. Lãi bao nhiêu % so với giá vốn?',['5%','20%','25%','50%'],2],
+  ['Bánh mì Việt Nam chịu ảnh hưởng từ ẩm thực nước nào?',['Pháp','Nhật','Mỹ','Ý'],0],
+  ['Cà phê Việt Nam được trồng nhiều nhất ở vùng nào?',['Tây Nguyên','Đồng bằng sông Hồng','Tây Bắc','Duyên hải miền Trung'],0],
+  ['Trong 12 con giáp của Việt Nam, con gì thay cho con thỏ?',['Mèo','Chó','Chuột','Cáo'],0],
+  ['Ngày Phụ nữ Việt Nam là ngày nào?',['8/3','20/10','1/6','20/11'],1],
+  ['Ngăn đá tủ lạnh thường để ở khoảng bao nhiêu độ?',['5°C','0°C','-18°C','-50°C'],2],
+  ['Điện dân dụng ở Việt Nam dùng điện áp bao nhiêu?',['110V','220V','380V','12V'],1],
+  ['Tết Hàn thực (ăn bánh trôi, bánh chay) vào ngày nào âm lịch?',['3/3','5/5','7/7','9/9'],0],
+  ['Thành phố nào được gọi là "thành phố ngàn hoa"?',['Đà Lạt','Huế','Hội An','Nha Trang'],0],
+  ['Ai đọc bản Tuyên ngôn Độc lập ngày 2/9/1945?',['Hồ Chí Minh','Võ Nguyên Giáp','Phạm Văn Đồng','Trường Chinh'],0],
+  ['Chiến thắng Điện Biên Phủ diễn ra năm nào?',['1945','1954','1968','1975'],1],
+  ['Đơn vị tiền tệ của Nhật Bản là?',['Won','Yên','Nhân dân tệ','Baht'],1],
+  ['Hành tinh nào gần Mặt Trời nhất?',['Sao Kim','Sao Thủy','Trái Đất','Sao Hỏa'],1],
+  ['Hình vuông cạnh 5 m có diện tích bao nhiêu?',['10 m²','20 m²','25 m²','50 m²'],2],
+  ['Trong kinh doanh, "hàng tồn kho" là gì?',['Hàng đã bán','Hàng còn lại chưa bán','Hàng khách trả lại','Hàng tặng khách'],1],
+  ['Cây xanh hấp thụ khí gì khi quang hợp?',['Oxy','CO₂','Nitơ','Heli'],1],
+  ['Đàn bầu có mấy dây?',['1','2','3','4'],0],
+  ['Không gian văn hóa cồng chiêng là di sản của vùng nào?',['Tây Nguyên','Tây Bắc','Nam Bộ','Đồng bằng sông Hồng'],0],
+  ['Cầu Rồng phun lửa nổi tiếng ở thành phố nào?',['Đà Nẵng','Hải Phòng','Nha Trang','Quy Nhơn'],0],
+  ['Ký hiệu hóa học "Fe" là nguyên tố gì?',['Sắt','Flo','Vàng','Bạc'],0],
+  ['Kim tự tháp Giza nằm ở nước nào?',['Ai Cập','Mexico','Peru','Hy Lạp'],0],
+  ['Đại dương lớn nhất thế giới là?',['Đại Tây Dương','Ấn Độ Dương','Thái Bình Dương','Bắc Băng Dương'],2],
+  ['Công thức hóa học của nước là?',['H₂O','CO₂','O₂','NaCl'],0],
+  ['"Dế Mèn phiêu lưu ký" do ai sáng tác?',['Tô Hoài','Nguyễn Nhật Ánh','Xuân Diệu','Tố Hữu'],0],
+  ['Hàng giá 80.000đ, giảm 25% thì còn bao nhiêu?',['55.000đ','60.000đ','65.000đ','70.000đ'],1],
+  ['1 lượng (1 cây) vàng bằng bao nhiêu chỉ?',['5','10','12','100'],1],
+  ['Cột cờ Lũng Cú đánh dấu điểm cực nào của Việt Nam?',['Cực Bắc','Cực Nam','Cực Đông','Cực Tây'],0],
+  ['Tổng ba góc trong một tam giác bằng bao nhiêu?',['90°','180°','270°','360°'],1],
+  ['Căn bậc hai của 144 là?',['11','12','13','14'],1],
+ ],
+ [ // Khó (câu 11–15)
+  ['Vua Quang Trung đại phá quân Thanh vào dịp nào?',['Tết Kỷ Dậu 1789','Tết Mậu Thân 1968','Năm 1802','Năm 1428'],0],
+  ['Nhà Nguyễn đóng đô ở đâu?',['Phú Xuân (Huế)','Thăng Long','Hoa Lư','Gia Định'],0],
+  ['Kinh đô của nhà Đinh là?',['Hoa Lư','Thăng Long','Phú Xuân','Cổ Loa'],0],
+  ['Vua Lý Thái Tổ dời đô về Thăng Long năm nào?',['938','1010','1288','1428'],1],
+  ['Trận Bạch Đằng năm 938 do ai chỉ huy?',['Ngô Quyền','Lê Hoàn','Trần Hưng Đạo','Lý Thường Kiệt'],0],
+  ['Hệ Mặt Trời hiện có bao nhiêu hành tinh?',['7','8','9','10'],1],
+  ['Tốc độ ánh sáng trong chân không xấp xỉ bao nhiêu?',['300.000 km/s','30.000 km/s','3.000 km/s','300 km/s'],0],
+  ['Bột ngọt (mì chính) có thành phần chính là gì?',['Mononatri glutamat','Natri clorua','Sucrose','Axit axetic'],0],
+  ['Giấm ăn chứa loại axit nào?',['Axit axetic','Axit sunfuric','Axit clohiđric','Axit nitric'],0],
+  ['Số nguyên tố nhỏ nhất là?',['0','1','2','3'],2],
+  ['Việt Nam bắt đầu phát hành tiền polymer từ năm nào?',['1995','2003','2010','2015'],1],
+  ['Tiểu thuyết "Số đỏ" là của nhà văn nào?',['Vũ Trọng Phụng','Nam Cao','Ngô Tất Tố','Tô Hoài'],0],
+  ['Nhân vật Chí Phèo là của nhà văn nào?',['Nam Cao','Vũ Trọng Phụng','Nguyễn Tuân','Kim Lân'],0],
+  ['Chùa Một Cột được xây dựng lần đầu dưới triều đại nào?',['Nhà Lý','Nhà Trần','Nhà Lê','Nhà Nguyễn'],0],
+  ['Văn Miếu (Hà Nội) được xây dựng năm nào?',['1070','1010','1225','1802'],0],
+  ['Kênh đào Panama nối hai đại dương nào?',['Thái Bình Dương và Đại Tây Dương','Ấn Độ Dương và Thái Bình Dương','Đại Tây Dương và Ấn Độ Dương','Bắc Băng Dương và Đại Tây Dương'],0],
+  ['Vĩ tuyến 17 gắn với con sông nào?',['Sông Bến Hải','Sông Thạch Hãn','Sông Hương','Sông Gianh'],0],
+  ['Chất gì làm lá cây có màu xanh?',['Diệp lục','Carotene','Melanin','Hemoglobin'],0],
+  ['Nhóm máu nào thường được gọi là nhóm "cho" phổ thông?',['O','A','B','AB'],0],
+  ['Đơn vị đo cường độ dòng điện là gì?',['Vôn','Ampe','Oát','Ôm'],1],
+  ['Điểm cực Đông phần đất liền Việt Nam là?',['Mũi Đôi','Mũi Cà Mau','Mũi Né','Lũng Cú'],0],
+  ['Điểm cực Nam phần đất liền Việt Nam là?',['Mũi Cà Mau','Mũi Né','Mũi Đôi','Mũi Kê Gà'],0],
+  ['Giá tăng từ 50.000đ lên 60.000đ là tăng bao nhiêu %?',['10%','15%','20%','25%'],2],
+  ['Gửi 100 triệu, lãi kép 10%/năm. Sau 2 năm có tổng bao nhiêu?',['120 triệu','121 triệu','110 triệu','200 triệu'],1],
+  ['Vàng "bốn số 9" (9999) có độ tinh khiết khoảng bao nhiêu?',['99,99%','99%','90%','75%'],0],
+  ['Loài cá nào sống ở biển nhưng bơi ngược về sông để đẻ trứng?',['Cá hồi','Cá rô phi','Cá chép','Cá trê'],0],
+  ['Trống đồng Đông Sơn thuộc thời kỳ nào?',['Thời đại đồ đồng – sắt','Thời đồ đá cũ','Thời nhà Nguyễn','Thời Pháp thuộc'],0],
+  ['Theo truyền thuyết, bài thơ "Nam quốc sơn hà" gắn với ai?',['Lý Thường Kiệt','Trần Hưng Đạo','Lê Lợi','Quang Trung'],0],
+  ['Phố cổ Hội An được UNESCO công nhận là di sản thế giới năm nào?',['1993','1999','2003','2010'],1],
+  ['Nước nào đông dân nhất thế giới từ năm 2023?',['Trung Quốc','Ấn Độ','Mỹ','Indonesia'],1],
+  ['Chữ cái đầu tiên trong bảng chữ cái Hy Lạp là?',['Alpha','Beta','Gamma','Omega'],0],
+  ['Ai là người phát minh ra điện thoại (được cấp bằng sáng chế năm 1876)?',['Alexander Graham Bell','Thomas Edison','Isaac Newton','Albert Einstein'],0],
+ ]];
+
+/* ====== 🎪 Hội chợ Lá Xanh: bầu cua, vé số, xì dách (cược tiền trong game, không đổi thưởng) & Ai là triệu phú ====== */
+function fairState(){ const k=vnDay(); if(!S.fair) S.fair={day:'',start:0,net:0,tk:[],mil:{day:'',best:0},st:{bc:0,xd:0,lot:0,mil:0}};
+  const F=S.fair; if(F.day!==k){ F.day=k; F.start=Math.max(0,S.money); F.net=0; } return F; }
+const fairMax=()=>Math.max(10e3,Math.min(5e6,Math.floor(Math.max(0,S.money)*0.05/10e3)*10e3));
+function fairBlock(){ const F=fairState();
+  if(R) return 'Hội chợ chỉ mở khi tiệm đã đóng cửa.';
+  if(S.loan&&S.loan.bal>0) return 'Đang nợ vay ngân hàng, hãy trả hết nợ rồi mới chơi hội chợ nhé.';
+  if(S.money<10e6) return 'Cần ít nhất 10 triệu tiền mặt để giữ vốn nhập hàng.';
+  if(-F.net>=Math.max(2e6,F.start*0.2)) return 'Hôm nay bạn đã thua quá 20% vốn. Hội chợ nghỉ tới mai nhé!';
+  return ''; }
+function fairMoney(n,game){ const F=fairState(); S.money+=n; F.net+=n; F.st[game]=(F.st[game]||0)+n; autosaveSoft(); renderHeader(); }
+const fmtV=n=>(n>=0?'+':'−')+fmt(Math.abs(n));
+function fairTop(title,back=true){ const F=fairState(); return `<div class="fx-top">${back?'<button class="fx-back" onclick="openFair()">‹</button>':''}<b>${title}</b><span class="fx-w">💵 ${fmtS(S.money)}<small class="${F.net>=0?'up':'dn'}">${fmtV(F.net)}</small></span></div>`; }
+window.openFair=function(){ const F=fairState(), blk=fairBlock(), lot=lotPendingCount();
+  modal(`<div class="fx">${fairTop('🎪 Hội chợ Lá Xanh',false)}
+    <div class="fx-tiles"><button class="fx-t t1" onclick="bcOpen()"><span>🦀</span><b>Bầu cua tôm cá</b><small>Lắc bát 3 xúc xắc</small></button>
+    <button class="fx-t t2" onclick="xdOpen()"><span>🃏</span><b>Xì dách</b><small>Đấu với nhà cái</small></button>
+    <button class="fx-t t3" onclick="lotOpen()">${lot?`<i>${lot} vé</i>`:''}<span>🎫</span><b>Vé số Lá Xanh</b><small>Xổ 19:00 mỗi tối</small></button>
+    <button class="fx-t t4" onclick="milOpen()">${F.mil.day!==vnDay()?'<i>1 lượt</i>':''}<span>💰</span><b>Ai là triệu phú</b><small>Miễn phí mỗi ngày</small></button></div>
+    ${blk?`<p class="fx-warn">⚠️ ${blk}</p>`:''}
+    <div class="fx-stat">📊 Lời/lỗ từ trước tới nay: 🦀 ${fmtV(F.st.bc||0)} · 🃏 ${fmtV(F.st.xd||0)} · 🎫 ${fmtV(F.st.lot||0)} · 💰 ${fmtV(F.st.mil||0)}</div>
+    <p class="fx-safe">🔒 Chỉ để giải trí · cược bằng tiền trong game · không dùng 💎 · không đổi ra tiền thật<br>Mỗi ván tối đa 5% vốn (≤ 5 triệu) · không chơi khi đang nợ vay · thua 20% vốn/ngày thì nghỉ</p>
+    <div class="row" style="justify-content:flex-end"><button onclick="closeModal()">Đóng</button></div></div>`); };
+
+/* 🦀 Bầu cua */
+const BC=[['bau','🍐','Bầu'],['cua','🦀','Cua'],['tom','🦐','Tôm'],['ca','🐟','Cá'],['ga','🐓','Gà'],['nai','🦌','Nai']];
+let BCS={bets:{},chip:50e3,rolling:false,dice:null,msg:''};
+window.bcOpen=function(){ const blk=fairBlock(); BCS.bets=BCS.bets||{}; const tot=Object.values(BCS.bets).reduce((a,b)=>a+b,0), mx=fairMax();
+  const hit=BCS.dice?new Set(BCS.dice):new Set();
+  modal(`<div class="fx">${fairTop('🦀 Bầu cua tôm cá')}
+    <div class="bc-board">${BC.map(([k,ic,nm])=>`<button class="bc-cell${hit.has(k)?' hit':''}" onclick="bcBet('${k}')" ${blk||BCS.rolling?'disabled':''}><span>${ic}</span><small>${nm}</small>${BCS.bets[k]?`<em>${fmtS(BCS.bets[k])}</em>`:''}</button>`).join('')}</div>
+    <div class="bc-plate" id="bcPlate">${(BCS.dice||['bau','cua','tom']).map(k=>`<div class="bc-die">${BC.find(x=>x[0]===k)[1]}</div>`).join('')}</div>
+    <div class="bc-msg" id="bcMsg">${BCS.msg||'Chọn chip rồi chạm vào con vật để đặt cược'}</div>
+    <div class="bc-chips">${[10e3,50e3,100e3,200e3,500e3].filter(v=>v<=mx).map(v=>`<button class="cc${BCS.chip===v?' on':''}" onclick="BCS.chip=${v};bcOpen()">${fmtS(v)}</button>`).join('')}</div>
+    <div class="row" style="justify-content:space-between;margin-top:8px"><span class="muted" style="font-size:12.5px">Đã đặt: <b>${fmt(tot)}</b> / tối đa ${fmtS(mx)}</span><span><button onclick="BCS.bets={};BCS.msg='';bcOpen()" ${tot&&!BCS.rolling?'':'disabled'}>Xóa</button> <button class="primary" onclick="bcRoll()" ${tot&&!blk&&!BCS.rolling?'':'disabled'}>🥣 Lắc</button></span></div>
+    ${blk?`<p class="fx-warn">⚠️ ${blk}</p>`:''}</div>`); };
+window.bcBet=function(k){ if(fairBlock()||BCS.rolling) return; const tot=Object.values(BCS.bets).reduce((a,b)=>a+b,0);
+  if(tot+BCS.chip>fairMax()) return toast(`Mỗi ván tối đa ${fmtS(fairMax())}`); if(tot+BCS.chip>S.money) return toast('Không đủ tiền'); BCS.bets[k]=(BCS.bets[k]||0)+BCS.chip; BCS.dice=null; BCS.msg=''; sfx('tick'); bcOpen(); };
+window.bcRoll=function(){ if(fairBlock()||BCS.rolling) return; const bets={...BCS.bets}, tot=Object.values(bets).reduce((a,b)=>a+b,0); if(!tot) return;
+  BCS.rolling=true; const res=[0,1,2].map(()=>pick(BC)[0]); let n=0; const pl=$('#bcPlate'); sfx('alert');
+  const iv=setInterval(()=>{ if(pl) pl.innerHTML=[0,1,2].map(()=>`<div class="bc-die shake">${pick(BC)[1]}</div>`).join(''); if(++n>12){ clearInterval(iv); done(); } },90);
+  const done=()=>{ let net=0; const parts=[];
+    for(const [k,v] of Object.entries(bets)){ const c=res.filter(x=>x===k).length, nm=BC.find(x=>x[0]===k)[2]; if(c){ net+=v*c; parts.push(`<span class="up">${nm} ×${c}: +${fmtS(v*c)}</span>`); } else { net-=v; parts.push(`<span class="dn">${nm}: −${fmtS(v)}</span>`); } }
+    fairMoney(net,'bc'); BCS.rolling=false; BCS.dice=res; BCS.msg=(net>0?'🎉 ':net<0?'😢 ':'😐 ')+parts.join(' · '); if(net>0) sfx('reward'); cnt('bc'); bcOpen(); };
+};
+
+/* 🎫 Vé số: kết quả lấy từ máy chủ (bí mật, chung cho mọi người), xổ 19:00 giờ VN */
+const LOT_PRICE=10e3, LOT_MAX=20, LOT_PRIZE=[[6,500e6,'Đặc biệt'],[5,50e6,'Giải nhất'],[4,10e6,'Giải nhì'],[3,1e6,'Giải ba'],[2,50e3,'Khuyến khích']];
+function lotDrawDay(){ const t=Date.now()+VN_MS, d=new Date(t).toISOString().slice(0,10); return new Date(t).getUTCHours()>=19?dShift(d,1):d; }
+const lotDrawTime=d=>Date.parse(d+'T19:00:00Z')-VN_MS;
+const LOTR={};   // kết quả đã tải: {ngày: '123456'}
+function lotPrize(num,res){ for(const [n,v,nm] of LOT_PRIZE) if(num.slice(6-n)===res.slice(6-n)) return {v,nm}; return null; }
+function lotPendingCount(){ const F=fairState(); return F.tk.filter(t=>!t.done).length; }
+async function lotFetch(d){ if(LOTR[d]) return LOTR[d]; if(!PAY_CFG.api) return null;
+  try{ const r=await fetch(lbApi('/lot?d='+d)); if(!r.ok) return null; const j=await r.json(); if(j.num){ LOTR[d]=j.num; return j.num; } }catch(e){} return null; }
+async function lotSettle(){ const F=fairState(); let won=0; const due=[...new Set(F.tk.filter(t=>!t.done&&Date.now()>=lotDrawTime(t.d)).map(t=>t.d))];
+  for(const d of due){ const res=await lotFetch(d); if(!res) continue; for(const t of F.tk.filter(t=>!t.done&&t.d===d)){ t.done=true; const p=lotPrize(t.num,res); t.win=p?p.v:0; t.nm=p?p.nm:''; if(p){ won+=p.v; fairMoney(p.v,'lot'); } } }
+  F.tk=F.tk.filter(t=>!t.done||dDiff(t.d,vnDay())<=3).slice(-60); if(won){ sfx('reward'); toast(`🎫 Trúng vé số: +${fmtS(won)}!`); } return won; }
+window.lotOpen=async function(){ const F=fairState(), d=lotDrawDay(), mine=F.tk.filter(t=>t.d===d), blk=fairBlock();
+  const prev=dShift(d,-1); const show=()=>{ const res=LOTR[prev];
+    modal(`<div class="fx">${fairTop('🎫 Vé số Lá Xanh')}
+      <div class="lot-h">Kỳ quay <b>${fmtD(d)}</b> · xổ lúc <b>19:00</b> · 10.000đ/vé · đã mua ${mine.length}/${LOT_MAX}</div>
+      ${res?`<div class="lot-res"><small>Kết quả kỳ ${fmtD(prev)}</small><div class="lot-balls">${res.split('').map(c=>`<i>${c}</i>`).join('')}</div>
+        <table>${LOT_PRIZE.map(([n,v,nm])=>`<tr><td>${nm}</td><td><b>${'_'.repeat(6-n)}${res.slice(6-n)}</b></td><td>${fmtS(v)}</td></tr>`).join('')}</table></div>`:`<p class="muted" style="font-size:12.5px">Kết quả kỳ trước sẽ hiện khi có mạng tới máy chủ.</p>`}
+      <div class="lot-list">${F.tk.slice().reverse().slice(0,12).map(t=>`<div class="lot-tk${t.done?(t.win?' win':' lose'):''}"><div><small>Kỳ ${fmtD(t.d)}</small><b>${t.num}</b></div><span>${t.done?(t.win?`🎉 ${t.nm}<br>+${fmtS(t.win)}`:'Không trúng'):'⏳ Chờ xổ'}</span></div>`).join('')||'<p class="muted">Chưa có vé nào.</p>'}</div>
+      <div class="row" style="margin-top:8px"><input id="lotNum" maxlength="6" inputmode="numeric" placeholder="Tự chọn 6 số" style="flex:1;min-width:0"><button onclick="lotBuy(true)" ${blk?'disabled':''}>✍️ Mua</button><button class="primary" onclick="lotBuy(false)" ${blk?'disabled':''}>🎫 Mua nhanh</button></div>
+      ${blk?`<p class="fx-warn">⚠️ ${blk}</p>`:''}</div>`); };
+  show(); const won=await lotSettle(); if(!LOTR[prev]) await lotFetch(prev); if($('.lot-h')) show(); };
+window.lotBuy=function(custom){ if(fairBlock()) return; const F=fairState(), d=lotDrawDay();
+  if(F.tk.filter(t=>t.d===d).length>=LOT_MAX) return toast(`Mỗi kỳ tối đa ${LOT_MAX} vé`);
+  let num; if(custom){ num=($('#lotNum').value||'').replace(/\D/g,''); if(num.length!==6) return toast('Nhập đủ 6 chữ số'); } else num=String(Math.floor(Math.random()*1e6)).padStart(6,'0');
+  F.tk.push({d,num,done:false}); fairMoney(-LOT_PRICE,'lot'); sfx('coin'); lotOpen(); };
+
+/* 🃏 Xì dách (luật Việt: xì bàn, xì dách, ngũ linh; dưới 16 không được dằn) */
+let XD=null;
+const XDS=['♠','♥','♦','♣'], XDV=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+function xdDeck(){ const d=[]; for(const s of XDS) for(const v of XDV) d.push({v,s}); for(let i=d.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [d[i],d[j]]=[d[j],d[i]]; } return d; }
+function xdPts(h){ let t=0,a=0; for(const c of h){ if(c.v==='A'){ a++; t+=1; } else t+=['J','Q','K'].includes(c.v)?10:+c.v; }
+  while(a--){ const add=h.length<=2?10:h.length===3?9:0; if(add&&t+add<=21) t+=add; } return t; }   // A = 11 (2 lá), 10 (3 lá) hoặc 1
+function xdKind(h){ if(h.length===2&&h.every(c=>c.v==='A')) return 'xiban'; if(h.length===2&&h.some(c=>c.v==='A')&&h.some(c=>['10','J','Q','K'].includes(c.v))) return 'xidach';
+  const p=xdPts(h); if(p>21) return 'quac'; if(h.length===5) return 'ngulinh'; return 'pts'; }
+const XRANK={xiban:4,xidach:3,ngulinh:2}, XNAME={xiban:'XÌ BÀN',xidach:'XÌ DÁCH',ngulinh:'NGŨ LINH',quac:'QUẮC'};
+const xdCard=(c,hide)=>hide?'<div class="pc back"></div>':`<div class="pc${c.s==='♥'||c.s==='♦'?' red':''}"><i>${c.v}<br>${c.s}</i><b>${c.s}</b></div>`;
+window.xdOpen=function(){ const blk=fairBlock(), mx=fairMax(); if(!XD) XD={bet:Math.min(100e3,mx),st:'bet'};
+  const X=XD, pp=X.p?xdPts(X.p):0, pk=X.p?xdKind(X.p):'', over=X.st==='done';
+  modal(`<div class="fx">${fairTop('🃏 Xì dách')}
+    <div class="xd-felt"><div class="xd-who">🤖 Nhà cái ${X.d?`· <span class="sc">${over?(XNAME[xdKind(X.d)]||xdPts(X.d)+' điểm'):'?'}</span>`:''}</div>
+      <div class="xd-hand">${X.d?X.d.map((c,i)=>xdCard(c,i>0&&!over)).join(''):'<div class="pc back"></div><div class="pc back"></div>'}</div>
+      <div class="xd-pot">💰 Cược: ${fmt(X.bet)}</div>
+      <div class="xd-hand">${X.p?X.p.map(c=>xdCard(c)).join(''):''}</div>
+      <div class="xd-who">🙂 Bạn ${X.p?`· <span class="sc">${XNAME[pk]||pp+' điểm'}</span>`:''}</div>
+      ${X.msg?`<div class="xd-msg">${X.msg}</div>`:''}</div>
+    ${X.st==='play'?`<div class="row" style="justify-content:center;margin-top:8px"><button class="primary" onclick="xdHit()" ${X.p.length>=5?'disabled':''}>🃏 Rút</button><button onclick="xdStand()" ${pp<16?'disabled title="Dưới 16 điểm phải rút"':''}>✋ Dằn${pp<16?' (≥16)':''}</button><button onclick="xdDouble()" ${X.p.length===2&&X.bet*2<=Math.min(S.money,mx*2)?'':'disabled'}>✖2 Gấp đôi</button></div>`
+     :`<div class="bc-chips" style="margin-top:8px">${[10e3,50e3,100e3,200e3,500e3,1e6,2e6,5e6].filter(v=>v<=mx).map(v=>`<button class="cc${X.bet===v?' on':''}" onclick="XD.bet=${v};xdOpen()">${fmtS(v)}</button>`).join('')}</div>
+       <div class="row" style="justify-content:center;margin-top:8px"><button class="primary" onclick="xdDeal()" ${blk||X.bet>S.money?'disabled':''}>🂠 Chia bài</button></div>`}
+    <p class="muted" style="font-size:11.5px;text-align:center;margin:6px 0 0">Xì bàn (2 lá A) ăn ×1,5 · Xì dách (A + 10/J/Q/K) và Ngũ linh (5 lá ≤ 21) thắng mọi điểm thường · quá 21 là Quắc</p>
+    ${blk&&X.st!=='play'?`<p class="fx-warn">⚠️ ${blk}</p>`:''}</div>`); };
+window.xdDeal=function(){ if(fairBlock()||!XD||XD.st==='play') return; const mx=fairMax(); XD.bet=Math.min(XD.bet,mx); if(XD.bet>S.money) return;
+  const deck=xdDeck(); XD={bet:XD.bet,deck,p:[deck.pop(),deck.pop()],d:[deck.pop(),deck.pop()],st:'play',msg:'',dbl:false}; sfx('tick');
+  const pk=xdKind(XD.p), dk=xdKind(XD.d); if(XRANK[pk]>=3||XRANK[dk]>=3) return xdEnd(); xdOpen(); };
+window.xdHit=function(){ const X=XD; if(!X||X.st!=='play'||X.p.length>=5) return; X.p.push(X.deck.pop()); sfx('tick'); const k=xdKind(X.p); if(k==='quac'||k==='ngulinh'||X.dbl) return xdEnd(); xdOpen(); };
+window.xdStand=function(){ const X=XD; if(!X||X.st!=='play'||xdPts(X.p)<16) return; xdEnd(); };
+window.xdDouble=function(){ const X=XD; if(!X||X.st!=='play'||X.p.length!==2) return; X.bet*=2; X.dbl=true; X.p.push(X.deck.pop()); xdEnd(); };
+function xdEnd(){ const X=XD; X.st='done'; const pk=xdKind(X.p);
+  if(pk!=='quac'&&!(XRANK[pk]>=3)) while(xdPts(X.d)<16&&X.d.length<5) X.d.push(X.deck.pop());
+  const dk=xdKind(X.d), pr=XRANK[pk]||0, dr=XRANK[dk]||0; let net;
+  if(pk==='quac') net=-X.bet;                                            // bạn quắc: thua dù nhà cái cũng quắc
+  else if(pr&&pr>dr) net=Math.round(X.bet*({4:1.5,3:1,2:1}[pr]));      // xì bàn / xì dách / ngũ linh của bạn cao hơn
+  else if(dr&&dr>pr) net=-X.bet;
+  else if(pr&&pr===dr) net=0;
+  else if(dk==='quac') net=X.bet;
+  else { const a=xdPts(X.p), b=xdPts(X.d); net=a>b?X.bet:a<b?-X.bet:0; }
+  fairMoney(net,'xd'); cnt('xd'); X.msg=net>0?`🎉 Bạn thắng ${fmtV(net)}`:net<0?`😢 Nhà cái thắng · ${fmtV(net)}`:'🤝 Hòa, hoàn tiền cược'; if(net>0) sfx('reward');
+  xdOpen(); }
+
+/* 💰 Ai là triệu phú: miễn phí 1 lượt/ngày, 15 câu, 4 quyền trợ giúp, mốc an toàn câu 5 & 10 */
+const MIL_LADDER=[100e3,200e3,300e3,500e3,1e6,2e6,3e6,5e6,8e6,12e6,20e6,30e6,50e6,80e6,150e6];
+let MIL=null;
+function milPick(lv,skip){ const pool=MIL_Q[lv].filter(q=>!skip.has(q[0])); const q=pick(pool.length?pool:MIL_Q[lv]); skip.add(q[0]);
+  const ord=[0,1,2,3].sort(()=>Math.random()-0.5); return {q:q[0],a:ord.map(i=>q[1][i]),ok:ord.indexOf(q[2])}; }
+window.milOpen=function(){ const F=fairState();
+  if(!MIL){ if(F.mil.day===vnDay()) return modal(`<div class="fx mil">${fairTop('💰 Ai là triệu phú')}<p style="text-align:center;margin:20px 0">Hôm nay bạn đã chơi rồi 🎬<br>Kỷ lục: câu <b>${F.mil.best||0}</b>. Mai quay lại nhé!</p><div class="row" style="justify-content:center"><button onclick="openFair()">‹ Hội chợ</button></div></div>`);
+    return modal(`<div class="fx mil">${fairTop('💰 Ai là triệu phú')}<div class="mil-mc">🎤 <b>MC Hoàng Lá Xanh:</b> "Chào mừng chủ tiệm đến với chương trình! Trả lời đúng 15 câu hỏi để mang về <b>${fmtS(MIL_LADDER[14])}</b>. Mốc an toàn ở câu 5 và câu 10."</div>
+      ${milLadder(-1)}<div class="row" style="justify-content:center;margin-top:10px"><button class="primary" onclick="milStart()">🎬 Bắt đầu</button></div></div>`); }
+  const M=MIL, cur=M.cur;
+  modal(`<div class="fx mil">${fairTop('💰 Ai là triệu phú')}
+    <div class="mil-q"><small>Câu ${M.i+1} · ${fmt(MIL_LADDER[M.i])}</small><br>${cur.q}</div>
+    <div class="mil-ans">${cur.a.map((t,i)=>`<button class="${M.gone.includes(i)?'gone':''}${M.sel===i?' sel':''}${M.reveal!=null&&i===cur.ok?' ok':''}${M.reveal!=null&&M.sel===i&&i!==cur.ok?' bad':''}" onclick="milSel(${i})" ${M.gone.includes(i)||M.reveal!=null?'disabled':''}><b>${'ABCD'[i]}:</b> ${t}</button>`).join('')}</div>
+    ${M.hints.map(h=>`<div class="mil-hint">${h}</div>`).join('')}
+    <div class="mil-life">${[['h50','50:50'],['call','📞'],['aud','👥'],['swap','🔄']].map(([k,t])=>`<button class="${M.used[k]?'used':''}" onclick="milLife('${k}')" ${M.used[k]||M.reveal!=null?'disabled':''}>${t}</button>`).join('')}</div>
+    ${M.reveal==null?`<div class="row" style="justify-content:center"><button class="primary" onclick="milLock()" ${M.sel==null?'disabled':''}>✅ Chốt đáp án</button><button onclick="milStop()">🏳️ Dừng (${M.i?fmtS(MIL_LADDER[M.i-1]):'0đ'})</button></div>`:''}
+    ${milLadder(M.i)}</div>`); };
+function milLadder(i){ return `<div class="mil-lad">${MIL_LADDER.map((v,k)=>k).reverse().map(k=>`<div class="${k===i?'cur':''}${k===4||k===9||k===14?' mk':''}${k<i?' past':''}"><span>${k+1}${k===4||k===9?' ⭐':''}</span><span>${fmtS(MIL_LADDER[k])}</span></div>`).join('')}</div>`; }
+window.milStart=function(){ const F=fairState(); if(F.mil.day===vnDay()) return milOpen(); F.mil.day=vnDay(); autosaveSoft(); const skip=new Set();
+  MIL={i:0,skip,cur:milPick(0,skip),gone:[],sel:null,used:{},hints:[],reveal:null}; sfx('alert'); milOpen(); };
+window.milSel=function(i){ if(!MIL||MIL.reveal!=null) return; MIL.sel=i; milOpen(); };
+window.milLife=function(k){ const M=MIL; if(!M||M.used[k]) return; M.used[k]=true; const c=M.cur, lv=M.i<5?0:M.i<10?1:2;
+  if(k==='h50'){ M.gone=[0,1,2,3].filter(i=>i!==c.ok).sort(()=>Math.random()-0.5).slice(0,2); if(M.gone.includes(M.sel)) M.sel=null; M.hints.push('✂️ Đã bỏ 2 phương án sai.'); }
+  else if(k==='call'){ const right=Math.random()<[0.92,0.75,0.55][lv], alt=[0,1,2,3].filter(i=>i!==c.ok&&!M.gone.includes(i)), g=right||!alt.length?c.ok:pick(alt);
+    M.hints.push(`📞 Người thân: "Chị nghĩ là <b>${'ABCD'[g]}. ${c.a[g]}</b>, chắc ${right?'khoảng 80%':'hơn 50%'} thôi nha…"`); }
+  else if(k==='aud'){ const w=[0,1,2,3].map(i=>M.gone.includes(i)?0:i===c.ok?[70,50,35][lv]+Math.random()*20:Math.random()*25), s=w.reduce((a,b)=>a+b,0);
+    M.hints.push(`👥 Khán giả: <div class="mil-aud">${w.map((x,i)=>{ const p=Math.round(x/s*100); return `<div><span>${p}%</span><i style="height:${p*0.6}px"></i><b>${'ABCD'[i]}</b></div>`; }).join('')}</div>`); }
+  else if(k==='swap'){ M.cur=milPick(lv,M.skip); M.gone=[]; M.sel=null; M.hints=['🔄 Đã đổi sang câu hỏi khác.']; }
+  milOpen(); };
+window.milLock=function(){ const M=MIL; if(!M||M.sel==null||M.reveal!=null) return; M.reveal=M.sel; milOpen();
+  setTimeout(()=>{ if(MIL!==M) return;
+    if(M.sel===M.cur.ok){ sfx('reward'); if(M.i===14) return milEnd(MIL_LADDER[14],'🏆 Bạn đã trả lời đúng cả 15 câu! TRIỆU PHÚ CHỢ LÁ XANH!');
+      M.i++; M.cur=milPick(M.i<5?0:M.i<10?1:2,M.skip); M.gone=[]; M.sel=null; M.hints=[]; M.reveal=null; milOpen(); }
+    else { sfx('alert'); const safe=M.i>=10?MIL_LADDER[9]:M.i>=5?MIL_LADDER[4]:0; milEnd(safe,`❌ Sai rồi! Đáp án đúng là <b>${'ABCD'[M.cur.ok]}. ${M.cur.a[M.cur.ok]}</b>.`); } },1400); };
+window.milStop=function(){ const M=MIL; if(!M) return; milEnd(M.i?MIL_LADDER[M.i-1]:0,'🏳️ Bạn quyết định dừng cuộc chơi.'); };
+function milEnd(prize,msg){ const M=MIL, F=fairState(); MIL=null; const q=M.i+(msg.startsWith('🏆')?1:0); F.mil.best=Math.max(F.mil.best||0,q);
+  let gem=q>=15?50:q>=10?10:0; if(prize) fairMoney(prize,'mil'); if(gem) S.gems+=gem; cnt('mil'); if(q>=15) cnt('milWin'); autosaveSoft(); titleCheck();
+  modal(`<div class="fx mil">${fairTop('💰 Ai là triệu phú')}<div class="mil-mc" style="text-align:center">${msg}<br><br>Tiền thưởng mang về: <b style="font-size:20px;color:#ffb93b">${fmt(prize)}</b>${gem?`<br>+${gem}💎`:''}</div>
+    <div class="row" style="justify-content:center;margin-top:10px"><button class="primary" onclick="openFair()">‹ Về hội chợ</button></div></div>`); }
+
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-09-29-fair',date:'29/09/2026',title:'🎪 Hội chợ Lá Xanh',items:[
+    ['🦀','Bầu cua tôm cá: đặt chip, lắc bát 3 xúc xắc','new'],
+    ['🎫','Vé số Lá Xanh: 10.000đ/vé, xổ 19:00 mỗi tối, kết quả chung cho mọi người','new'],
+    ['🃏','Xì dách luật Việt: xì bàn, xì dách, ngũ linh, gấp đôi','new'],
+    ['💰','Ai là triệu phú: miễn phí mỗi ngày, 15 câu, 4 quyền trợ giúp','new'],
+    ['🔒','Chỉ để giải trí: cược bằng tiền trong game, không dùng 💎, không đổi thưởng; mỗi ván ≤ 5% vốn','bal']]},
   {v:'2026-09-29-w1',date:'29/09/2026',title:'✨ Bớt chán hơn: tình huống, mặc cả, quà mỗi ngày',items:[
     ['💬','Tình huống có lựa chọn: ông Sáu quên ví, tiền giả, mèo lạc, TikToker xin review… mỗi lựa chọn có hệ quả vài ngày sau','new'],
     ['🤝','Mặc cả: khách ở quầy của bạn thỉnh thoảng xin bớt giá, kéo thanh để chốt','new'],
