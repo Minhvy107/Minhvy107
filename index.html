@@ -136,6 +136,26 @@ input[type=text],textarea{font:inherit;padding:8px 12px;border:2px solid var(--l
 
 /* ---------- Header ---------- */
 #hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--page);display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px 8px}
+.story-av{width:64px;height:64px;border-radius:50%;flex:none;background:var(--panel2)}
+.story-b{display:block;width:100%;text-align:left;margin-top:8px;padding:9px 12px}.story-b small{display:block;font-weight:700;font-size:11.5px;opacity:.8}
+.story-note{background:#f3f9ff;border:2px solid #cfe2f7;border-radius:14px;padding:8px 10px;margin:8px 0;font-size:13px;line-height:1.6}
+.bubble-s{background:#fff;border:2px solid #5a4038;border-radius:14px;padding:8px 10px;flex:1;position:relative}
+.hg-range{width:100%;margin:12px 0 4px;accent-color:#e8698a;height:26px}
+.cal7{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.cal7 div{background:var(--panel);border:2px solid var(--line);border-radius:12px;text-align:center;padding:6px 2px;font-size:11.5px}.cal7 span{display:block;font-size:22px}.cal7 small{display:block;color:var(--muted);font-size:10.5px}
+.cal7 .got{background:#e3f5e8;opacity:.65}.cal7 .today{border-color:var(--brand);box-shadow:0 0 0 3px #ffd0dc}.cal7 .d7{grid-column:span 2;background:linear-gradient(135deg,#fff3c4,#ffd9e4)}
+.wh-wrap{position:relative;width:230px;height:230px;margin:10px auto}.wh{position:absolute;inset:0;border-radius:50%;border:5px solid #5a4038;background:conic-gradient(#ffd6e0 0 45deg,#d6f0ff 45deg 90deg,#fff1c7 90deg 135deg,#dff3e5 135deg 180deg,#ffd6e0 180deg 225deg,#d6f0ff 225deg 270deg,#fff1c7 270deg 315deg,#e9e0ff 315deg 360deg)}
+.wh span{position:absolute;transform:translate(-50%,-50%);font-weight:800;font-size:15px}.wh-ptr{position:absolute;left:50%;top:-12px;margin-left:-11px;border:11px solid transparent;border-top:20px solid #e5484d;filter:drop-shadow(0 2px 0 #5a4038)}
+.wh-hub{position:absolute;left:50%;top:50%;width:62px;height:62px;margin:-31px;border-radius:50%;background:var(--brand);color:#fff;border:4px solid #5a4038;font-weight:800;padding:0}.wh-hub:disabled{background:#ccc}
+.ttl-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ttl-grid>div{border:2px solid var(--line);border-radius:14px;padding:8px;text-align:center;background:var(--panel);cursor:pointer}.ttl-grid span{display:block;font-size:26px}.ttl-grid b{display:block;font-size:13px}.ttl-grid small{display:block;font-size:11px}
+.ttl-grid .lk{opacity:.5;cursor:default;filter:grayscale(.6)}.ttl-grid .sel{border-color:#f2c14e;background:#fffbea}.ttl-grid i{font-style:normal;font-size:11px;background:#fff1c7;border-radius:8px;padding:0 8px}.ttl-grid i.u{background:var(--panel2)}
+.ttl-chip{display:inline-block;background:linear-gradient(90deg,#f2c14e,#ff9f6b);color:#fff;border-radius:8px;padding:0 7px;font-size:10.5px;font-weight:800;vertical-align:1px}
+.ev-quick{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}.ev-quick button{flex:1;min-width:110px}
+.pausebtn.news{position:relative}.pausebtn.news:after{content:'';position:absolute;top:-2px;right:-2px;width:13px;height:13px;border-radius:50%;background:#ef4b5f;border:2px solid #fff}
+.news-e{border:2px solid var(--line);border-radius:16px;padding:10px 12px;margin:8px 0;background:var(--panel)}.news-e.top{border-color:#f2c14e;background:linear-gradient(180deg,#fffbea,var(--panel) 60%)}
+.news-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.news-h b{font:800 16px var(--display)}.news-d{font-size:11.5px;background:var(--panel2);border-radius:8px;padding:1px 8px;color:var(--muted)}
+.news-i{display:grid;grid-template-columns:26px minmax(0,1fr);gap:6px;padding:5px 0;border-top:1px dashed var(--line);font-size:13px}.news-i:first-of-type{border-top:0}.news-i>span:first-child{font-size:18px;text-align:center}
+.ntag{display:inline-block;font-size:10.5px;border-radius:7px;padding:0 6px;margin-left:4px;vertical-align:1px}.ntag.new{background:#e1f5e8;color:#23704a}.ntag.fix{background:#fde2e2;color:#a33}.ntag.bal{background:#fff1c7;color:#8a6200}
+.news-scroll{max-height:62vh;overflow:auto;margin:0 -4px;padding:0 4px}
 .pausebtn{width:46px;height:46px;border-radius:50%;border:3px solid #6fc18a;background:#fff;color:#3f9f6e;font-size:18px;padding:0;box-shadow:0 0 0 4px #dcf1e2}
 .hday{display:flex;flex-direction:column;line-height:1.15}
 .hday b:first-child{font:800 19px var(--display)}
@@ -788,7 +808,7 @@ function newGame(name){
   PRODUCTS.forEach(p=>S.price[p.id]=S.market[p.id].ref);
 }
 function rollMorning(first){
-  settleQuests(); rollQuests(); festMorning();
+  settleQuests(); rollQuests(); festMorning(); storyMorning();
   S.event=!first&&Math.random()<0.4?{...pick(EVENTS)}:null;
   if(S.event&&S.event.rep) S.rep=clamp(S.rep+S.event.rep,0,100);
   const ev=S.event||{};
@@ -1236,7 +1256,7 @@ function orderHTML(c){
 function makeCustomer(){
   const p=genPerson(false);
   const c={...p, id:++R.cid, want:[], basket:[], missing:[], waited:0, mood:'normal', bubble:null, bubT:0, ops:[], addons:[], stage:'queue',
-           patience:rand(26,39)*p.pat*patienceMult()*(1+0.1*Math.min(2,staffOf('stocker').length))};
+           patience:rand(26,39)*p.pat*patienceMult()*(1+0.1*Math.min(2,staffOf('stocker').length))*((R&&R.patBoost)||1)};
   const pool=PRODUCTS.filter(x=>!catLocked(x.cat));
   const n=1+Math.floor(Math.pow(Math.random(),1.2)*5), chosen=new Set();
   for(let i=0;i<n*2&&chosen.size<n;i++){
@@ -1257,7 +1277,8 @@ function startDay(){
   R={t:OPEN, base:dailyBase()*rand(0.9,1.12), queue:[], cur:null, curDelay:0.3, serv:{}, leaving:[], cid:0, shipBusy:{},
      paused:false, ff:false, blackoutUntil:0, slipUntil:0, closedLogged:false, deliv:0,
      st:{visitors:0,served:0,angry:0,missLeft:0,rev:0,svc:0,svcCogs:0,cogs:0,theft:0,caught:0,thieves:0,incident:0,deliv:0},
-     sold:{}, missed:{}, reviews:[], incident:null, chal:chalRoll(), rush:null, close:CLOSE};
+     sold:{}, missed:{}, reviews:[], incident:null, chal:chalRoll(), rush:null, close:CLOSE, story:storyRoll(), patBoost:1};
+  if(S.buzzDay===S.day){ R.base*=1.25; logMsg('🍀 Hôm nay tiệm đông khách hơn thường lệ!','ok'); }
   if(Math.random()<0.42){
     let pool=INCIDENTS.slice(); if(!S.eq.fridge) pool=pool.filter(x=>x!=='fridge');
     R.incident={t:rand(480,1200), id:pick(pool), fired:false};
@@ -1442,11 +1463,13 @@ function checkDone(c){
   const total=c.want.reduce((a,w)=>a+w.amt,0)+c.addons.reduce((a,x)=>a+x.price,0);
   c.total=total; c.given=cashGiven(total);
 }
-function collectPay(){
+function collectPay(skipHag){
   const c=R&&R.cur; if(!c||c.stage!=='pay') return;
+  if(skipHag!==true&&haggleMaybe(c)) return;
   const fast=c.waited<c.patience*0.4;
   c.byYou=true;
   const paid=finishCustomer(c); if(paid){ if(c.method==='qr') bankNotify(c); else sfx('coin'); }
+  if(paid&&c.discount){ S.money-=c.discount; R.st.rev-=c.discount; c.paidAmt-=c.discount; }
   if(paid){ passXp(3); S.manualServed=(S.manualServed||0)+1; questProg('hand',1); festPts(2); festMis('hand',1); if(fast) questProg('fast',1); }
   questProg('rev',R.st.rev+R.st.svc);
   if(fast&&Math.random()<0.5) say(c,pick(['Lẹ ghê, cảm ơn nha!','Tiệm dễ thương quá','Mai ghé nữa nha!']),12);
@@ -1490,6 +1513,7 @@ function simStep(dt){
   if(!R||R.paused) return;
   R.t+=dt;
   if(R.incident&&!R.incident.fired&&R.t>=R.incident.t){ R.incident.fired=true; fireIncident(R.incident.id); if(R.paused) return; }
+  if(R.story&&!R.story.fired&&R.t>=R.story.t&&R.t<R.close){ if($('#modal').classList.contains('show')) R.story.t+=5; else { R.story.fired=true; fireStory(R.story.id); if(R.paused) return; } }
   if(R.chal&&R.chal.state==='wait'&&R.t>=R.chal.t){ if($('#modal').classList.contains('show')) R.chal.t+=5; else { chalFire(); if(R.paused) return; } }
   chalTick();
   // khách đến trong giờ mở cửa
@@ -2308,6 +2332,7 @@ function festLine(){ if(festOn()){ const F=festDef(), left=dDiff(vnDay(),S.fest.
 function mileReward(F,m){ const r=[]; if(m.gems) r.push(`💎 ${m.gems}`); if(m.money) r.push(`💵 ${fmtS(m.money)}`); if(m.item!=null){ const it=WMAP[F.items[m.item]]; r.push(`${it.icon||'🎨'} ${it.name}`); } return r; }
 function renderEventTab(){
   const box=$('#evBody'); let h='<h3 class="sec">🎪 Sự kiện</h3>';
+  h+=`<div class="ev-quick"><button onclick="openLogin()">🎁 Quà 7 ngày${loginReady()?' <span class="ntag fix">Nhận</span>':''}</button><button onclick="openWheel()">🎡 Vòng quay${wheelFree()?' <span class="ntag fix">1 lượt</span>':S.tix?` <span class="ntag bal">${S.tix} vé</span>`:''}</button><button onclick="openTitles()">🏅 Danh hiệu</button></div>`;
   if(festOn()){ const F=festDef(), f=S.fest, left=dDiff(vnDay(),f.end), nxt=FEST_MILES.find(m=>f.pts<m.pts), prev=[...FEST_MILES].reverse().find(m=>f.pts>=m.pts);
     h+=`<div class="fest-hero" style="--fa:${F.fa};--fb:${F.fb}"><div class="big">${F.icon} ${F.name}</div><div>${F.desc}</div>
       <div style="margin-top:6px;font-size:13px">📅 ${fmtD(f.start)} – ${fmtD(f.end)} · <b>${left?`còn ${left+1} ngày`:'hôm nay là ngày cuối!'}</b><br>🔥 Hàng được săn đón (+50% khách mua): ${F.cat.map(c=>CATS[c].icon+' '+CATS[c].name).join(', ')}</div>
@@ -2402,7 +2427,7 @@ function askDayOff(){ if(R||S.over) return;
     ${fresh?`<li>Hàng tươi (${fresh} mặt hàng) vẫn giảm hạn, có thể bị hỏng.</li>`:''}<li>Khách quen tới thấy đóng cửa: <b>uy tín -3</b>.</li></ul>
     <div class="row"><button onclick="closeModal()">Thôi, mở cửa</button><button class="primary" onclick="dayOff()">Nghỉ hôm nay</button></div>`); }
 window.askDayOff=askDayOff;
-window.dayOff=function(){ closeModal(); if(R||S.over) return; startDay(); if(!R) return; R.chal=null; R.incident=null; R.close=OPEN; S.rep=clamp(S.rep-3,0,100); logMsg('😴 Hôm nay tiệm nghỉ bán (uy tín -3).','warn'); simStep(0.25); };
+window.dayOff=function(){ closeModal(); if(R||S.over) return; startDay(); if(!R) return; R.chal=null; R.incident=null; R.story=null; R.close=OPEN; S.rep=clamp(S.rep-3,0,100); logMsg('😴 Hôm nay tiệm nghỉ bán (uy tín -3).','warn'); simStep(0.25); };
 function renderChalBox(){ const el=$('#chalBox'); if(!el) return; const C=R&&R.chal;
   if(!C||C.state!=='active'){ setHTML(el,''); return; }
   let h='';
@@ -2908,7 +2933,7 @@ const lbApi=p=>PAY_CFG.api.replace(/\/$/,'')+p;
 function lbSubmit(force){ if(!S||!PAY_CFG.api||S.over||S.day<LB_MIN_DAY) return;
   try{ lbLast=Math.max(lbLast,+localStorage.getItem('clx-lb')||0); }catch(e){}
   if(Date.now()-lbLast<(force?20:30)*60000) return; lbLast=Date.now(); try{ localStorage.setItem('clx-lb',lbLast); }catch(e){}
-  fetch(lbApi('/lb'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:payId(),shop:S.name,worth:Math.round(netWorth()),day:S.day,rep:Math.round(S.rep),stars:+avgStars().toFixed(1),frame:(wornItem('frame')||{}).frame||''})})
+  fetch(lbApi('/lb'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:payId(),shop:S.name,worth:Math.round(netWorth()),day:S.day,rep:Math.round(S.rep),stars:+avgStars().toFixed(1),frame:(wornItem('frame')||{}).frame||'',title:S.title||''})})
     .then(r=>r.ok?r.json():null).then(d=>{ const w=d&&d.rank&&d.rank.week; if(w){ const was=S.lbRank; S.lbRank=w; if(was&&w<was&&w<=10) toast(`🏆 Lên hạng ${w} bảng xếp hạng tuần!`); } }).catch(()=>{}); }
 function lbLeft(ms){ const s=Math.max(0,ms-Date.now())/1000, d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60); return d?`${d} ngày ${h} giờ`:h?`${h} giờ ${m} phút`:`${m} phút`; }
 window.lbSetTab=function(t){ lbTab=t; openLeaderboard(true); };
@@ -2924,7 +2949,7 @@ window.openLeaderboard=function(keep){ const tabs=[['week','📅 Tuần này'],[
     let h='';
     if(d.endsAt) h+=`<div class="lbinfo">⏳ Kết thúc sau <b>${lbLeft(d.endsAt)}</b> · Top 10 nhận thưởng</div>
       <div class="lbrw">${d.rewards.slice(0,4).map((g,i)=>`<span>${i<3?medal(i):'4–10'} <b>${g}💎</b></span>`).join('')}</div>`;
-    const rows=d.list.map((r,i)=>`<tr class="${r.me?'me':''}${r.frame==='hang'?' fr-hang':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.me?' <span class="viptag">Bạn</span>':''}${r.frame==='hang'?'<div class="frt">🌙 CHỊ HẰNG · Mùa Trăng Rằm</div>':''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b>${d.rewards&&i<10?`<br><small class="good">+${d.rewards[i]}💎</small>`:''}</td></tr>`).join('');
+    const rows=d.list.map((r,i)=>`<tr class="${r.me?'me':''}${r.frame==='hang'?' fr-hang':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.me?' <span class="viptag">Bạn</span>':''}${r.frame==='hang'?'<div class="frt">🌙 CHỊ HẰNG · Mùa Trăng Rằm</div>':''}${r.title?' '+titleChip(r.title):''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b>${d.rewards&&i<10?`<br><small class="good">+${d.rewards[i]}💎</small>`:''}</td></tr>`).join('');
     h+=rows?`<table class="lb">${rows}</table>`:`<p>Chưa có tiệm nào đủ ${LB_MIN_DAY} ngày kinh doanh. Hãy là người đầu tiên! 🎉</p>`;
     if(S&&S.day>=LB_MIN_DAY&&!d.myRank) h+=`<p class="muted" style="font-size:13px">Tiệm của bạn (${fmtS(netWorth())}) chưa vào top ${Math.max(d.total,1)}. Cố lên!</p>`;
     else if(d.myRank>50) h+=`<p class="muted" style="font-size:13px">Bạn đang hạng ${d.myRank}.</p>`;
@@ -3198,6 +3223,7 @@ function showReport(rec,x){
   html+=advHTML(S.lastAdv,true);
   if(S.loanNote){ html+=`<p class="bad">${S.loanNote}</p>`; S.loanNote=''; }
   if(S.festNote){ html+=`<p>🎪 ${S.festNote}</p>`; S.festNote=''; }
+  if(S.storyNote){ html+=`<div class="story-note">${S.storyNote}</div>`; S.storyNote=''; }
   if(S.pendingGemNote){ html+=`<p>🎁 Nhiệm vụ hôm qua đã xong: <b>+${S.pendingGemNote}💎</b> được cộng tự động.</p>`; S.pendingGemNote=0; }
   if(x.top.length) html+=`<p><b>🔥 Bán chạy:</b> ${x.top.join(', ')}</p>`;
   if(x.missed.length) html+=`<p class="bad"><b>❌ Khách hỏi mà hết:</b> ${x.missed.join(', ')}</p>`;
@@ -3217,6 +3243,7 @@ const MILES=[
   ['w250',()=>netWorth()>=250e6,'💎 Tài sản vượt 250 triệu, đã đi nửa chặng đường!'],
 ];
 function checkMiles(){
+  titleCheck();
   for(const [k,f,msg] of MILES) if(!S.miles[k]&&f()){ S.miles[k]=1; S.gems+=20; sfx('reward'); toast(msg+' +20💎'); autosaveSoft(); return; }
   if(!S.won&&netWorth()>=GOAL){ S.won=true; autosaveSoft();
     modal(`<h3>🏆 Chiến thắng!</h3><p><b>${esc(S.name)}</b> đạt tổng tài sản <b>${fmt(netWorth())}</b> sau ${S.day-1} ngày.</p><p>Bạn đã là ông chủ chuỗi tạp hóa thực thụ! Có thể tiếp tục kinh doanh.</p><div class="row"><button class="primary" onclick="closeModal()">Tiếp tục kinh doanh</button></div>`); }
@@ -3416,6 +3443,8 @@ function openMenu(){
       ${R?'<button class="pill" data-m="resume">▶ Chơi tiếp</button>':''}
       <div class="row"><span class="muted">Tốc độ:</span>${[1,2,4].map(s=>`<button class="sm ${speed===s?'on':''}" data-m="sp${s}">${s}x${(s===2&&!hasU('speed2'))||(s===4&&!hasU('speed4'))?' 🔒':''}</button>`).join('')}</div>
       ${R&&R.t<R.close?'<button data-m="early">🔒 Đóng cửa sớm</button>':''}
+      <div class="row"><button data-m="login">🎁 Quà 7 ngày${loginReady()?' <span class="ntag fix">!</span>':''}</button><button data-m="wheel">🎡 Vòng quay${wheelFree()?' <span class="ntag fix">1</span>':''}</button><button data-m="titles">🏅 Danh hiệu</button></div>
+      <button data-m="news">📢 Có gì mới${newsUnseen()?' <span class="ntag fix">MỚI</span>':''}</button>
       <button data-m="finance">🏦 Vay vốn & đổi kim cương</button>
       ${owns('theme_moon')?`<button data-m="theme">${S.wear.theme==='theme_moon'?'🌙 Giao diện mùa: Bật':'🍃 Giao diện mùa: Tắt'}</button>`:''}
       <div class="row"><button data-m="lb">🏆 Bảng xếp hạng</button>${isStandalone()?'':'<button data-m="install">📱 Cài như app</button>'}</div>
@@ -3443,6 +3472,10 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='voice'){ toggleVoice(); b.textContent=VOICE.on?'🗣️ Loa báo CK: Bật':'🗣️ Loa báo CK: Tắt'; }
   else if(m==='early'){ closeMenu(); askCloseEarly(); }
   else if(m==='finance'){ closeMenu(); openFinance(); }
+  else if(m==='news'){ closeMenu(); openNews(true); }
+  else if(m==='login'){ closeMenu(); openLogin(); }
+  else if(m==='wheel'){ closeMenu(); openWheel(); }
+  else if(m==='titles'){ closeMenu(); openTitles(); }
   else if(m==='theme'){ toggleSeasonTheme(); b.textContent=S.wear.theme==='theme_moon'?'🌙 Giao diện mùa: Bật':'🍃 Giao diện mùa: Tắt'; }
   else if(m==='lb'){ closeMenu(); openLeaderboard(); }
   else if(m==='install'){ closeMenu(); openInstall(); }
@@ -3645,6 +3678,212 @@ function loop(now){
 /* =====================================================================
    KHỞI ĐỘNG
    ===================================================================== */
+/* ====== 💬 Tình huống có lựa chọn: 1 lần/ngày (≈55%), hệ quả có thể đến vài ngày sau ====== */
+const cnt=(k,n=1)=>{ S.cnt=S.cnt||{}; S.cnt[k]=(S.cnt[k]||0)+n; };
+const repAdd=n=>{ S.rep=clamp(S.rep+n,0,100); };
+function moneyAdd(n){ S.money+=n; if(R) R.st.incident-=n; }   // ghi vào chi phí/thu phát sinh trong ngày
+function pend(days,id,data){ (S.pend=S.pend||[]).push({day:S.day+days,id,...(data||{})}); }
+const OLD_LOOK=(f)=>({...genPerson(false).look,hs:f?'bun':'bald',hair:'#d8d8d8',f,glasses:Math.random()<0.5});
+// Mỗi tình huống: tạo nội dung (có thể ngẫu nhiên) → {icon,title,text,look,opts:[{t,sub,kind,run}]}
+const STORIES={
+  debt(){ const amt=rint(6,12)*10e3, name=pick(['Ông Sáu','Bà Năm','Ông Tám','Bà Bảy']), f=name.startsWith('Bà');
+    return {icon:'👴',title:`${name} quên ví`,look:OLD_LOOK(f),text:`"Chết, ${f?'bà':'ông'} để ví ở nhà rồi con ơi… Cho ${f?'bà':'ông'} ghi sổ ${fmtS(amt)}, mai ${f?'bà':'ông'} gửi nha?"`,opts:[
+      {t:'📒 Cho ghi nợ',sub:`Uy tín +2 · thường sẽ được trả, có khi kèm quà`,kind:1,run:()=>{ repAdd(2); moneyAdd(-amt); pend(rint(1,3),'debt',{amt,name}); return `Đã cho ${name} ghi nợ ${fmtS(amt)}.`; }},
+      {t:'🙏 Xin lỗi, tiệm không bán chịu',sub:'Uy tín −1',run:()=>{ repAdd(-1); return `${name} buồn buồn đi về.`; }},
+      {t:'🎁 Tặng luôn',sub:`Mất ${fmtS(amt)} · Uy tín +4`,kind:1,run:()=>{ repAdd(4); moneyAdd(-amt); pend(rint(2,4),'thanks',{name}); return `${name} cảm động lắm, cứ khen tiệm mãi.`; }}]}; },
+  fake(){ const fake=Math.random()<0.65;
+    return {icon:'💵',title:'Tờ 500 nghìn lạ lạ',text:'Một thanh niên mua gói thuốc lá, đưa tờ 500.000đ. Sờ thấy hơi trơn, màu hơi nhạt…',opts:[
+      {t:'🔍 Soi kỹ dưới đèn',sub:'Mất chút thời gian',run:()=>{ cnt('smart'); if(fake){ repAdd(1); return 'Đúng là tiền giả! Thanh niên chối rồi bỏ chạy. May quá.'; } repAdd(-1); return 'Tiền thật. Khách hơi phật ý vì bị nghi ngờ.'; }},
+      {t:'✅ Nhận luôn cho nhanh',sub:'Rủi ro nếu là tiền giả',run:()=>{ if(fake){ moneyAdd(-500e3); return 'Tối kiểm tiền mới biết là tiền giả… mất 500k.'; } return 'Tiền thật, bán xong nhanh gọn.'; }},
+      {t:'👮 Báo công an phường',sub:'Nếu đúng tiền giả: được khen',run:()=>{ if(fake){ repAdd(3); S.gems+=5; return 'Công an bắt được đường dây tiền giả, khen tiệm cảnh giác! +3 uy tín, +5💎'; } repAdd(-3); return 'Tiền thật… khách bị làm phiền, uy tín −3.'; }}]}; },
+  cat(){ return {icon:'🐈',title:'Mèo hoang đi lạc',text:'Một chú mèo mướp gầy nhom nằm co ro trước cửa tiệm, kêu meo meo.',opts:[
+      {t:'🐟 Cho ăn & sưởi ấm',sub:'−20k · mèo có thể quay lại cảm ơn',kind:1,run:()=>{ moneyAdd(-20e3); repAdd(1); pend(rint(2,5),'cat'); return 'Mèo ăn no rồi cọ cọ vào chân bạn.'; }},
+      {t:'🚪 Đuổi nhẹ ra ngoài',sub:'Không tốn gì',run:()=>'Mèo lủi thủi đi mất.'}]}; },
+  shady(){ const p=pick(PRODUCTS.filter(x=>!catLocked(x.cat)&&x.life>=10))||PRODUCTS[0], n=60, cost=Math.round(S.market[p.id].cost*0.55)*n;
+    return {icon:'📦',title:'Hàng giá rẻ bất thường',text:`Một người lạ chào bán ${n} ${p.unit} ${p.name.toLowerCase()} giá chỉ bằng nửa giá chợ (${fmtS(cost)}). Không có hóa đơn.`,opts:[
+      {t:'💸 Nhập luôn',sub:'Lời to, nhưng có thể bị phạt',run:()=>{ moneyAdd(-cost); S.inv[p.id].push({q:n,d:lifeOf(p),c:Math.round(cost/n)}); S.inv[p.id].sort((a,b)=>a.d-b.d); if(Math.random()<0.4) pend(rint(1,3),'shady',{name:p.name}); return `Đã nhập ${n} ${p.unit} ${p.name.toLowerCase()} giá rẻ.`; }},
+      {t:'✋ Từ chối',sub:'An toàn',run:()=>'Người lạ lầm bầm bỏ đi.'},
+      {t:'📋 Báo quản lý thị trường',sub:'Uy tín +2',kind:1,run:()=>{ repAdd(2); cnt('smart'); return 'Đội QLTT cảm ơn tiệm đã báo tin. Uy tín +2.'; }}]}; },
+  kid(){ return {icon:'🧒',title:'Bé đi lạc',text:'Một bé chừng 5 tuổi đứng khóc trước tiệm: "Con lạc mẹ rồi…"',look:{...genPerson(false).look,hs:'pig',f:true},opts:[
+      {t:'🍭 Dỗ bé, gọi loa tìm mẹ',sub:'Tặng bé cây kẹo · Uy tín +3',kind:1,run:()=>{ repAdd(3); moneyAdd(-5e3); pend(1,'kidmom'); return 'Mẹ bé chạy tới, rối rít cảm ơn tiệm.'; }},
+      {t:'👉 Chỉ bé ra chỗ bảo vệ chợ',sub:'Uy tín +0',run:()=>'Bé được bảo vệ chợ dẫn đi tìm mẹ.'}]}; },
+  wedding(){ return {icon:'💒',title:'Hàng xóm có đám cưới',text:'Cô Ba nhà bên cần gửi 10 thùng bia vào tủ mát của tiệm qua đêm cho đám cưới ngày mai.',opts:[
+      {t:'🤝 Cho gửi miễn phí',sub:'Uy tín +2 · có thể được đặt hàng cưới',kind:1,run:()=>{ repAdd(2); pend(1,'wedding'); return 'Cô Ba cảm ơn rối rít, hẹn đặt đồ cưới ở tiệm.'; }},
+      {t:'💵 Cho gửi, lấy phí 100k',sub:'+100k',run:()=>{ moneyAdd(100e3); return 'Cô Ba trả 100k, hơi không vui.'; }},
+      {t:'🙅 Tủ đầy rồi',sub:'Uy tín −1',run:()=>{ repAdd(-1); return 'Cô Ba đi gửi nhà khác.'; }}]}; },
+  tiktok(){ const cost=300e3; return {icon:'📸',title:'TikToker xin quay review',text:`Một bạn TikToker 50 nghìn follow xin quay clip review tiệm, muốn được tặng ${fmtS(cost)} tiền hàng.`,look:{...genPerson(false).look,hs:'twintail',hair:'#f4a7b9',f:true},opts:[
+      {t:'🎁 Tặng hàng, mời quay',sub:`−${fmtS(cost)} · clip có thể viral`,run:()=>{ moneyAdd(-cost); const hit=Math.random()<0.6; if(hit){ S.buzzDay=S.day+1; repAdd(3); } pend(1,'tiktok',{hit}); return 'Bạn ấy quay rất vui, hẹn tối đăng clip.'; }},
+      {t:'💬 Cho quay nhưng không tặng',sub:'50% bạn ấy vẫn quay',run:()=>{ if(Math.random()<0.5){ S.buzzDay=S.day+1; pend(1,'tiktok',{hit:true}); return 'Bạn ấy vẫn quay vì thấy tiệm dễ thương!'; } return 'Bạn ấy xin phép đi chỗ khác.'; }},
+      {t:'🙅 Không cho quay',sub:'Uy tín +0',run:()=>'TikToker đi mất.'}]}; },
+  change(){ const over=pick([50e3,100e3,200e3]); return {icon:'🧾',title:'Khách đưa dư tiền',text:`Bà cụ vội vàng đưa dư ${fmtS(over)} rồi quay đi, chưa đếm lại tiền thối.`,look:OLD_LOOK(true),opts:[
+      {t:'🏃 Chạy theo trả lại',sub:'Uy tín +3',kind:1,run:()=>{ repAdd(3); return 'Bà cụ cảm ơn, kể cho cả xóm nghe tiệm thật thà.'; }},
+      {t:'🤐 Im lặng giữ luôn',sub:`+${fmtS(over)} · có thể bị phát hiện`,run:()=>{ moneyAdd(over); if(Math.random()<0.35){ repAdd(-6); pend(1,'caught'); return 'Có người nhìn thấy…'; } return `Được thêm ${fmtS(over)}.`; }}]}; },
+  rain(){ return {icon:'🌧️',title:'Người trú mưa',text:'Mưa lớn bất chợt, vài người đứng nép trước hiên tiệm, ướt sũng.',opts:[
+      {t:'☕ Mời vào ngồi, rót trà nóng',sub:'−30k · Uy tín +2 · có người mua hàng',kind:1,run:()=>{ moneyAdd(-30e3); repAdd(2); const earn=rint(8,20)*10e3; moneyAdd(earn); return `Mọi người cảm ơn, tiện mua ít đồ: +${fmtS(earn)}.`; }},
+      {t:'🧥 Bán áo mưa giá gấp đôi',sub:'+ tiền, − uy tín',run:()=>{ moneyAdd(150e3); repAdd(-2); return 'Bán được 150k áo mưa, nhưng có người chê "chặt chém".'; }},
+      {t:'😶 Mặc kệ',sub:'Không có gì',run:()=>'Mưa tạnh, mọi người đi hết.'}]}; },
+  student(){ const w=genPerson(false); return {icon:'🙋',title:'Sinh viên xin làm thêm',text:`${w.name}, sinh viên năm 2, xin phụ bán buổi chiều nay để có tiền đóng học, lương tùy tiệm.`,look:w.look,opts:[
+      {t:'🤝 Nhận, trả 150k',sub:'Khách kiên nhẫn hơn 25% hôm nay',kind:1,run:()=>{ moneyAdd(-150e3); repAdd(1); R.patBoost=1.25; return `${w.name} rất nhanh nhẹn, khách đỡ phải chờ (kiên nhẫn +25% hôm nay).`; }},
+      {t:'🙏 Hẹn dịp khác',sub:'Không tốn gì',run:()=>`${w.name} cảm ơn rồi đi.`}]}; },
+};
+function storyRoll(){ return Math.random()<0.55?{t:rand(420,1100),id:pick(Object.keys(STORIES)),fired:false}:null; }
+let STORY_CUR=null;
+function fireStory(id){
+  const st=STORIES[id](); STORY_CUR=st; R.paused=true; sfx('alert'); cnt('story');
+  const face=avatar({...(st.look||genPerson(false).look),mood:'normal'});
+  modal(`<div class="story"><div class="row" style="align-items:flex-start;gap:10px"><img src="${face}" class="story-av" alt=""><div><h3>${st.icon} ${st.title}</h3><p style="margin:4px 0 0">${st.text}</p></div></div>
+    ${st.opts.map((o,i)=>`<button class="story-b${i===0?' primary':''}" onclick="storyPick(${i})">${o.t}<small>${o.sub}</small></button>`).join('')}</div>`);
+}
+window.storyPick=function(i){ const st=STORY_CUR; if(!st) return; const o=st.opts[i]; STORY_CUR=null; const msg=o.run(); if(o.kind) cnt('kind');
+  closeModal(); logMsg(`${st.icon} ${msg}`,o.kind?'ok':''); toast(`${st.icon} ${msg}`); if(R) R.paused=false; refreshAll(); titleCheck(); };
+// Hệ quả đến sau vài ngày: hiện trong báo cáo buổi sáng
+function storyMorning(){ if(!S.pend||!S.pend.length) return; const now=S.pend.filter(p=>p.day<=S.day); S.pend=S.pend.filter(p=>p.day>S.day); const out=[];
+  for(const p of now){
+    if(p.id==='debt'){ if(Math.random()<0.8){ const gift=rint(3,8)*10e3; S.money+=p.amt+gift; out.push(`📒 ${p.name} ghé trả ${fmtS(p.amt)} kèm túi quà quê (+${fmtS(gift)}).`); } else out.push(`📒 ${p.name} vẫn chưa trả nợ… chắc quên mất rồi.`); }
+    else if(p.id==='thanks'){ S.gems+=5; repAdd(1); out.push(`🎁 ${p.name} mang bánh tới cảm ơn, còn giới thiệu thêm khách. +5💎`); }
+    else if(p.id==='cat'){ S.gems+=10; out.push('🐈 Chú mèo hôm trước quay lại, tha tới trước cửa… một chiếc vòng may mắn! +10💎'); }
+    else if(p.id==='shady'){ S.money-=5e6; repAdd(-5); out.push(`📋 Quản lý thị trường phát hiện ${p.name.toLowerCase()} không rõ nguồn gốc. Phạt 5 triệu, uy tín −5.`); }
+    else if(p.id==='kidmom'){ S.money+=200e3; out.push('🧒 Mẹ bé đi lạc ghé mua một giỏ hàng lớn để cảm ơn (+200k).'); }
+    else if(p.id==='wedding'){ const m=rint(12,25)*100e3; S.money+=m; out.push(`💒 Cô Ba đặt đồ cho đám cưới ở tiệm: +${fmtS(m)}.`); }
+    else if(p.id==='tiktok') out.push(p.hit?'📸 Clip review của tiệm lên xu hướng! Hôm nay khách đông hơn 25%.':'📸 Clip review đăng rồi nhưng không ai xem mấy…');
+    else if(p.id==='caught') out.push('🧾 Chuyện giữ tiền dư của bà cụ lan khắp xóm. Uy tín đã bị trừ.');
+  }
+  if(out.length) S.storyNote=out.join('<br>');
+}
+
+/* ====== 🤝 Mặc cả: thỉnh thoảng khách ở quầy của bạn xin bớt giá ====== */
+let HAG=null;
+function haggleMaybe(c){
+  if(c.haggled||c.vip||autoOn()) return false; const total=c.want.reduce((a,w)=>a+w.amt,0);
+  if(total<80e3||Math.random()>0.16) return false;
+  c.haggled=true; const ask=Math.max(5e3,Math.round(total*rand(0.05,0.12)/5e3)*5e3), need=Math.round(ask*rand(0.35,0.85)/1e3)*1e3;
+  const pre=(c.name||'').split(' ')[0], me={Bé:'con',Chị:'chị',Anh:'anh',Cô:'cô',Chú:'chú',Bà:'bà',Ông:'ông'}[pre]||'mình', you={Bé:'chị',Chị:'em',Anh:'em'}[pre]||'con';
+  HAG={c,total,ask,need,off:Math.round(ask/2/1e3)*1e3,me,you}; R.paused=true; sfx('alert');
+  modal(`<div class="row" style="gap:10px"><img src="${avatar({...c.look,mood:'normal'})}" class="story-av" alt=""><div class="bubble-s"><small class="muted">${esc(c.name)}</small><br>Bớt cho ${me} <b>${fmtS(ask)}</b> đi ${you}, ${me} mua nhiều mà!</div></div>
+    <div class="row" style="justify-content:space-between;margin-top:10px;font-size:13px"><span>Giỏ hàng: <b>${fmt(total)}</b></span><span>Bớt: <b id="hgOff" style="color:var(--bad)"></b></span></div>
+    <input type="range" id="hgR" min="0" max="${ask}" step="1000" value="${HAG.off}" oninput="hagSet(+this.value)" class="hg-range">
+    <div class="row" style="justify-content:space-between;font-size:11.5px" class="muted"><span>Giữ giá</span><span id="hgMood"></span><span>Bớt đủ ${fmtS(ask)}</span></div>
+    <div class="row" style="margin-top:8px"><button class="primary" onclick="hagDone(false)">🤝 Chốt giá</button><button onclick="hagDone(true)">✋ Giữ nguyên giá</button></div>`);
+  hagSet(HAG.off); return true;
+}
+window.hagSet=function(v){ if(!HAG) return; HAG.off=v; const el=$('#hgOff'); if(el) el.textContent=v?'−'+fmt(v):'0đ';
+  const m=$('#hgMood'); if(m) m.textContent=v>=HAG.ask*0.9?'😍 Khách vui lắm':v>=HAG.need?'🙂 Chắc khách chịu':v>0?'😐 Khách còn lưỡng lự…':'😑 Khách không vui'; };
+window.hagDone=function(hold){ const H=HAG; HAG=null; closeModal(); if(!H||!R) return; R.paused=false; const c=H.c; if(R.cur!==c) return;
+  const off=hold?0:H.off;
+  if(off>=H.need||Math.random()<0.45){ c.discount=off; cnt('haggle'); if(off>=H.ask*0.9){ repAdd(1); say(c,`${H.you[0].toUpperCase()+H.you.slice(1)} dễ thương ghê, lần sau ${H.me} ghé nữa!`,10); } else if(off>=H.need) say(c,'Thôi được, lấy nha!',8); else say(c,'Hừm… thôi cũng được.',8);
+    if(off>0||hold) cnt('haggleOk'); collectPay(true); }
+  else { say(c,`Thôi, để ${H.me} qua tiệm khác…`,8); abandonCur(); c.mood='annoyed'; repAdd(-1); logMsg(`🤝 ${c.name} mặc cả không được nên bỏ về.`,'warn'); releaseCur(false); renderLive(); }
+  titleCheck(); };
+
+/* ====== 🎁 Quà đăng nhập 7 ngày & 🎡 Vòng quay may mắn ====== */
+const LOGIN_REW=[{gems:10},{money:1e6},{tix:1},{gems:20},{tix:1},{money:3e6},{gems:50,tix:2,rare:true}];
+function loginState(){ if(!S.login) S.login={i:0,last:'',streak:0,best:0}; return S.login; }
+const loginReady=()=>loginState().last!==vnDay();
+function rewTxt(r){ const a=[]; if(r.gems) a.push(`${r.gems}💎`); if(r.money) a.push(fmtS(r.money)); if(r.tix) a.push(`${r.tix} 🎟️`); if(r.rare) a.push('đồ hiếm'); return a.join(' + '); }
+function rareItem(){ const c=WARDROBE.filter(w=>!w.ev&&w.price>0&&w.price<=160&&!owns(w.id)&&['hair','outfit','hat','acc'].includes(w.slot)); return c.length?pick(c):null; }
+function grant(r){ const out=[]; if(r.gems){ S.gems+=r.gems; out.push(`${r.gems}💎`); } if(r.money){ S.money+=r.money; out.push(fmtS(r.money)); } if(r.tix){ S.tix=(S.tix||0)+r.tix; out.push(`${r.tix} vé quay`); }
+  if(r.rare){ const it=rareItem(); if(it){ S.owned[it.id]=true; out.push(`${it.icon||'✨'} ${it.name}`); } else { S.gems+=40; out.push('40💎'); } } return out.join(' + '); }
+window.openLogin=function(){ const L=loginState(), k=vnDay(), ready=L.last!==k;
+  modal(`<h3>📅 Quà đăng nhập 7 ngày</h3><p class="muted" style="font-size:12.5px;margin:0 0 8px">Mỗi ngày vào game nhận 1 ô. Không cần liên tục, bỏ ngày nào nhận tiếp ô đó.</p>
+    <div class="cal7">${LOGIN_REW.map((r,i)=>{ const got=i<L.i, today=i===L.i&&ready; return `<div class="${got?'got':''}${today?' today':''}${i===6?' d7':''}"><small>Ngày ${i+1}</small><span>${r.rare?'🎁':r.gems?'💎':r.money?'💵':'🎟️'}</span>${rewTxt(r)}${got?' ✓':''}</div>`; }).join('')}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">${ready?`<button class="primary" onclick="loginClaim()">🎁 Nhận quà hôm nay</button>`:'<span class="muted">Đã nhận hôm nay · mai quay lại nhé!</span>'}<button onclick="openWheel()">🎡 Vòng quay</button><button onclick="closeModal()">Đóng</button></div>`); };
+window.loginClaim=function(){ const L=loginState(), k=vnDay(); if(L.last===k) return; const yest=new Date(Date.parse(k+'T00:00:00Z')-864e5).toISOString().slice(0,10);
+  L.streak=L.last===yest?L.streak+1:1; L.best=Math.max(L.best,L.streak); L.last=k; const r=LOGIN_REW[L.i]; const got=grant(r); L.i=(L.i+1)%7; sfx('reward'); toast(`🎁 Quà ngày ${L.i||7}: ${got}`); autosaveSoft(); refreshAll(); titleCheck(); openLogin(); };
+const WHEEL=[{t:'💎5',w:30,r:{gems:5}},{t:'💵500k',w:24,r:{money:5e5}},{t:'🍀',w:10,r:{buzz:1},n:'Khách đông hơn 25% ngày mai'},{t:'💎20',w:8,r:{gems:20}},{t:'📦',w:12,r:{stock:1},n:'Hàng miễn phí'},{t:'💵2tr',w:9,r:{money:2e6}},{t:'🎟️',w:5,r:{tix:1}},{t:'👒',w:2,r:{rare:true},n:'Đồ hiếm Tủ đồ'}];
+const wheelFree=()=>(S.wheelDay||'')!==vnDay();
+window.openWheel=function(){ const free=wheelFree(), tix=S.tix||0;
+  modal(`<h3>🎡 Vòng quay may mắn</h3><p class="muted" style="font-size:12.5px;margin:0">Mỗi ngày 1 lượt miễn phí · lượt thêm dùng 🎟️ vé (bạn có <b>${tix}</b> vé)</p>
+    <div class="wh-wrap"><div class="wh" id="wh">${WHEEL.map((s,i)=>{ const a=(i*45+22.5)*Math.PI/180; return `<span style="left:${50+Math.sin(a)*34}%;top:${50-Math.cos(a)*34}%">${s.t}</span>`; }).join('')}</div><div class="wh-ptr"></div><button class="wh-hub" onclick="wheelSpin()" ${free||tix?'':'disabled'}>QUAY</button></div>
+    <p id="whRes" style="text-align:center;min-height:22px;margin:4px 0"></p>
+    <div class="row" style="justify-content:center"><button onclick="openLogin()">📅 Quà 7 ngày</button><button class="primary" onclick="closeModal()">Đóng</button></div>`); };
+let spinning=false, wheelRot=0;
+window.wheelSpin=function(){ if(spinning) return; const free=wheelFree(); if(!free&&!(S.tix>0)) return toast('Hết lượt quay hôm nay');
+  if(free) S.wheelDay=vnDay(); else S.tix--; spinning=true; cnt('spin');
+  let x=Math.random()*WHEEL.reduce((a,s)=>a+s.w,0), i=0; for(;i<WHEEL.length-1;i++){ x-=WHEEL[i].w; if(x<0) break; }
+  wheelRot+=360*5+(360-(wheelRot%360))-(i*45+22.5)+rand(-15,15); const el=$('#wh'); if(el){ el.style.transition='transform 3.2s cubic-bezier(.17,.67,.2,1)'; el.style.transform=`rotate(${wheelRot}deg)`; }
+  sfx('tick'); setTimeout(()=>{ spinning=false; const s=WHEEL[i]; let msg;
+    if(s.r.buzz){ S.buzzDay=S.day+(R?1:0); msg='🍀 Khách đông hơn 25% '+(R?'ngày mai':'hôm nay')+'!'; }
+    else if(s.r.stock){ const p=pick(PRODUCTS.filter(x=>!catLocked(x.cat))), n=rint(8,20); S.inv[p.id].push({q:n,d:lifeOf(p),c:0}); S.inv[p.id].sort((a,b)=>a.d-b.d); msg=`📦 ${n} ${p.unit} ${p.name.toLowerCase()} miễn phí!`; }
+    else { msg='Trúng '+grant(s.r)+'!'; if(s.r.rare) cnt('jackpot'); }
+    sfx('reward'); const r=$('#whRes'); if(r) r.innerHTML=`<b>${msg}</b>`; toast('🎡 '+msg.replace(/<[^>]+>/g,'')); autosaveSoft(); refreshAll(); titleCheck();
+    const hub=$('.wh-hub'); if(hub) hub.disabled=!(wheelFree()||S.tix>0); },3300); };
+
+/* ====== 🏅 Danh hiệu: đạt thành tựu → mở danh hiệu, chọn 1 cái hiện dưới tên tiệm & trên bảng xếp hạng ====== */
+const TITLES=[
+  {id:'haggle',icon:'🤝',name:'Vua mặc cả',desc:'Chốt 30 lần mặc cả',ok:()=>(S.cnt?.haggleOk||0)>=30,p:()=>[(S.cnt?.haggleOk||0),30]},
+  {id:'kind',icon:'💞',name:'Tấm lòng vàng',desc:'Chọn cách tử tế trong 15 tình huống',ok:()=>(S.cnt?.kind||0)>=15,p:()=>[(S.cnt?.kind||0),15]},
+  {id:'smart',icon:'🕵️',name:'Chủ tiệm tinh mắt',desc:'Phát hiện 5 vụ tiền giả / hàng lậu',ok:()=>(S.cnt?.smart||0)>=5,p:()=>[(S.cnt?.smart||0),5]},
+  {id:'streak',icon:'📅',name:'Chăm như ong',desc:'Vào game 7 ngày liền',ok:()=>(S.login?.best||0)>=7,p:()=>[(S.login?.best||0),7]},
+  {id:'lucky',icon:'🍀',name:'Tay may mắn',desc:'Quay trúng đồ hiếm',ok:()=>(S.cnt?.jackpot||0)>=1,p:()=>[(S.cnt?.jackpot||0),1]},
+  {id:'hand',icon:'✋',name:'Tận tay phục vụ',desc:'Tự tay phục vụ 500 khách',ok:()=>(S.manualServed||0)>=500,p:()=>[(S.manualServed||0),500]},
+  {id:'star',icon:'⭐',name:'Tiệm 5 sao',desc:'Nhận 50 đánh giá 5 sao',ok:()=>S.reviews.filter(r=>r.stars===5).length>=50,p:()=>[S.reviews.filter(r=>r.stars===5).length,50]},
+  {id:'trust',icon:'💚',name:'Cả xóm tin tưởng',desc:'Uy tín đạt 90',ok:()=>S.rep>=90,p:()=>[Math.round(S.rep),90]},
+  {id:'rich',icon:'💰',name:'Đại gia khu phố',desc:'Tổng tài sản 500 triệu',ok:()=>netWorth()>=500e6,p:()=>[Math.round(netWorth()/1e6),500]},
+  {id:'old',icon:'🏮',name:'Tiệm lâu năm',desc:'Kinh doanh 100 ngày',ok:()=>S.day>=100,p:()=>[S.day,100]},
+];
+const TMAP=Object.fromEntries(TITLES.map(t=>[t.id,t]));
+function titleCheck(){ if(!S) return; S.titles=S.titles||{}; for(const t of TITLES) if(!S.titles[t.id]&&t.ok()){ S.titles[t.id]=1; S.gems+=10; sfx('reward'); toast(`🏅 Mở danh hiệu "${t.icon} ${t.name}"! +10💎`); if(!S.title) S.title=t.id; autosaveSoft(); renderHeader(); } }
+window.openTitles=function(){ titleCheck(); const have=S.titles||{};
+  modal(`<h3>🏅 Danh hiệu</h3><p class="muted" style="font-size:12.5px;margin:0 0 8px">Chọn 1 danh hiệu để hiện dưới tên tiệm và trên bảng xếp hạng. Mỗi danh hiệu mới +10💎.</p>
+    <div class="ttl-grid">${TITLES.map(t=>{ const on=have[t.id], [a,b]=t.p(); return `<div class="${on?'':'lk'}${S.title===t.id?' sel':''}" ${on?`onclick="setTitle('${t.id}')"`:''}><span>${t.icon}</span><b>${t.name}</b><small>${t.desc}</small>${on?(S.title===t.id?'<i>Đang dùng</i>':'<i class="u">Dùng</i>'):`<small class="muted">${Math.min(a,b)}/${b}</small>`}</div>`; }).join('')}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">${S.title?'<button onclick="setTitle(\'\')">Bỏ danh hiệu</button>':''}<button class="primary" onclick="closeModal()">Xong</button></div>`); };
+window.setTitle=function(id){ S.title=id; autosaveSoft(); renderHeader(); lbSubmit(true); openTitles(); };
+const titleChip=id=>{ const t=TMAP[id]; return t?`<span class="ttl-chip">${t.icon} ${t.name}</span>`:''; };
+
+/* Hàng chờ bảng tự bật khi vào game: Có gì mới → Quà đăng nhập */
+function autoPopups(){ let tries=0; const go=()=>{ const busy=$('#modal').classList.contains('show')||($('#tut')&&!$('#tut').hidden)||R;
+    if(busy){ if(++tries<40) setTimeout(go,1500); return; }
+    if(newsUnseen()&&!(S.day<=1&&!(S.hist&&S.hist.length))){ openNews(false); tries=0; setTimeout(go,1500); return; }
+    if(loginReady()&&S.day>1) return openLogin(); };
+  setTimeout(go,1200); }
+
+/* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
+// Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
+const CHANGELOG=[
+  {v:'2026-09-29-w1',date:'29/09/2026',title:'✨ Bớt chán hơn: tình huống, mặc cả, quà mỗi ngày',items:[
+    ['💬','Tình huống có lựa chọn: ông Sáu quên ví, tiền giả, mèo lạc, TikToker xin review… mỗi lựa chọn có hệ quả vài ngày sau','new'],
+    ['🤝','Mặc cả: khách ở quầy của bạn thỉnh thoảng xin bớt giá, kéo thanh để chốt','new'],
+    ['🎁','Quà đăng nhập 7 ngày (ngày 7 có đồ hiếm) và 🎡 Vòng quay may mắn miễn phí mỗi ngày','new'],
+    ['🏅','10 danh hiệu: Vua mặc cả, Tấm lòng vàng, Tay may mắn… hiện trên bảng xếp hạng','new']]},
+  {v:'2026-09-29-cute',date:'29/09/2026',title:'🧸 Bộ sưu tập Dễ thương',items:[
+    ['💇','5 kiểu tóc mới: Hai bím cao thắt nơ, Bob bồng bềnh, Buộc lệch dây chun, Búi tai mèo, Tóc nấm bồng','new'],
+    ['👗','4 trang phục: Áo len tai gấu, Váy yếm nơ, Cardigan dâu tây, Váy cổ ren tím','new'],
+    ['🐰','3 mũ: Mũ thỏ bông, Mũ dâu tây, Gà con trên đầu · 4 phụ kiện: Kính trái tim, Nơ cổ, Hình dán má, Kẹp kẹo mút','new'],
+    ['👥','Đồng phục nhân viên Áo len tai gấu và Váy yếm nơ','new'],
+    ['📢','Bảng "Có gì mới" (chính là bảng này): xem lại bất cứ lúc nào trong ☰ Menu','new']]},
+  {v:'2026-09-29-fest',date:'29/09/2026',title:'🎪 Lễ hội theo ngày thật',items:[
+    ['📅','Lễ hội giờ tính theo ngày thật: cứ 10 ngày có 5 ngày lễ hội, mọi người chơi cùng lúc','new'],
+    ['🎃','Thêm 3 lễ hội: Đêm hội Halloween, Tuần tri ân Nhà giáo, Giáng Sinh an lành (mỗi lễ hội 3 đồ độc quyền)','new'],
+    ['📆','Tab Sự kiện có Lịch lễ hội để biết lễ hội nào sắp tới','new']]},
+  {v:'2026-09-28-fix',date:'28/09/2026',title:'🔧 Sửa lỗi & tối ưu',items:[
+    ['💳','Sửa lỗi "Không kết nối được máy chủ nạp" khi đặt trước Season Pass','fix'],
+    ['🏆','Bảng xếp hạng cập nhật 20 phút/lần để máy chủ chạy ổn định hơn','bal'],
+    ['⏱️','Một ngày trong game còn khoảng 6 phút; khách chờ lâu hơn 30% để kịp thao tác','bal']]},
+  {v:'2026-09-27-pass',date:'27/09/2026',title:'🌙 Season Pass Mùa Trăng Rằm',items:[
+    ['🌙','Season Pass Mùa 1 bắt đầu 01/10: 30 cấp quà, tóc & áo Hằng Nga, thỏ ngọc, khung tên chị Hằng','new'],
+    ['🎁','Đặt trước ngay để nhận giao diện Trăng Rằm cho cả game','new'],
+    ['📈','Bảng xếp hạng tuần / tháng có thưởng kim cương cho top 10','new']]},
+];
+const NEWS_KEY='clx-news';
+function newsSeenV(){ try{ return localStorage.getItem(NEWS_KEY)||''; }catch(e){ return ''; } }
+function newsUnseen(){ return newsSeenV()!==CHANGELOG[0].v; }
+function newsMark(){ try{ localStorage.setItem(NEWS_KEY,CHANGELOG[0].v); }catch(e){} const b=$('#btnPause'); if(b) b.classList.remove('news'); }
+function newsEntry(e,top){ const tg={new:'Mới',fix:'Sửa lỗi',bal:'Cân bằng'};
+  return `<div class="news-e${top?' top':''}"><div class="news-h"><b>${e.title}</b><span class="news-d">${e.date}</span></div>
+    ${e.items.map(([ic,t,k])=>`<div class="news-i"><span>${ic}</span><span>${t}${k?`<span class="ntag ${k}">${tg[k]}</span>`:''}</span></div>`).join('')}</div>`; }
+window.openNews=function(all){
+  // chỉ hiện các bản người chơi chưa xem (tối đa 3); all=true thì hiện toàn bộ lịch sử
+  const seen=newsSeenV(), idx=CHANGELOG.findIndex(e=>e.v===seen), fresh=all?CHANGELOG:CHANGELOG.slice(0,idx<0?2:Math.max(1,Math.min(3,idx)));
+  modal(`<h3>📢 Có gì mới trong Chợ Lá Xanh</h3>
+    <div class="news-scroll">${fresh.map((e,i)=>newsEntry(e,i===0)).join('')}</div>
+    <div class="row" style="justify-content:flex-end">${all?'':'<button onclick="openNews(true)">📜 Các bản trước</button>'}<button class="primary" onclick="closeModal()">Chơi tiếp 🎮</button></div>`);
+  newsMark(); };
+function newsOnStart(){
+  autoPopups(); titleCheck();
+  if(!newsUnseen()) return;
+  if(S.day<=1&&!(S.hist&&S.hist.length)) return newsMark();   // người chơi mới: không làm phiền
+  const b=$('#btnPause'); if(b) b.classList.add('news');
+}
 function startPlaying(){
   closeModal(); R=null; userPaused=false;
   $('#start').hidden=true;
@@ -3653,6 +3892,7 @@ function startPlaying(){
   $('#log').innerHTML=''; logMsg(`🏪 ${S.name} – ngày ${S.day}. Nhập hàng rồi mở cửa nhé!`,'ok');
   setTimeout(lbCheckRewards,2500); passLogin(); statPing();
   { const was=S.festNote; festMorning(); if(S.festNote&&S.festNote!==was){ const n=S.festNote; setTimeout(()=>toast('🎪 '+n.replace(/<[^>]+>/g,'').slice(0,90)),1200); } }
+  newsOnStart();
 }
 function toHome(){
   closeModal(); R=null; userPaused=false; $('#tut').hidden=true; tutI=-1;
