@@ -2730,6 +2730,11 @@ window.lbClaim=function(period,btn){ btn.disabled=true; btn.textContent='Đang n
     if(d.gems){ S.gems+=d.gems; (S.lbWins=S.lbWins||[]).push({period,rank:d.rank,gems:d.gems}); autosave(); sfx('reward'); btn.textContent=`✓ Đã nhận ${d.gems}💎`; renderHeader(); toast(`🏆 +${d.gems}💎 thưởng xếp hạng!`); }
     else { btn.textContent='Đã nhận trước đó'; } }).catch(()=>{ btn.disabled=false; btn.textContent='Thử lại'; }); };
 
+/* ====== 📈 Đếm người chơi ẩn danh (mỗi thiết bị 1 lần/ngày) ====== */
+function statPing(){ if(!S||!PAY_CFG.api) return; const k=vnDay(); try{ if(localStorage.getItem('clx-ping')===k) return; }catch(e){}
+  fetch(lbApi('/ping'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:devId()})}).then(r=>{ if(r.ok){ try{ localStorage.setItem('clx-ping',k); }catch(e){} } }).catch(()=>{}); }
+function devId(){ let d=null; try{ d=localStorage.getItem('clx-dev'); }catch(e){} if(!d){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; d=Array.from({length:6},()=>A[Math.random()*32|0]).join(''); try{ localStorage.setItem('clx-dev',d); }catch(e){} } return d; }
+
 /* ====== 📱 Cài game như ứng dụng (PWA) ====== */
 let installEvt=null;
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; });
@@ -3434,7 +3439,7 @@ function startPlaying(){
   selCat=CAT_KEYS[0];
   renderChips(); gotoTab('store'); refreshAll();
   $('#log').innerHTML=''; logMsg(`🏪 ${S.name} – ngày ${S.day}. Nhập hàng rồi mở cửa nhé!`,'ok');
-  setTimeout(lbCheckRewards,2500); passLogin();
+  setTimeout(lbCheckRewards,2500); passLogin(); statPing();
 }
 function toHome(){
   closeModal(); R=null; userPaused=false; $('#tut').hidden=true; tutI=-1;

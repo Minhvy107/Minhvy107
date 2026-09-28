@@ -141,6 +141,45 @@ async function leaderboard(req, env, path, url) {
   return json(env, { error: 'not_found' }, 404);
 }
 
+// ===== 📈 Thống kê người chơi (ẩn danh: chỉ mã người chơi ngẫu nhiên, không có thông tin cá nhân) =====
+const vnDay = ms => new Date(ms + 7 * 3600e3).toISOString().slice(0, 10);
+async function bump(env, key, ttl) { const n = Number((await env.ORDERS.get(key)) || 0) + 1; await env.ORDERS.put(key, String(n), ttl ? { expirationTtl: ttl } : undefined); return n; }
+async function stats(req, env, path) {
+  const now = Date.now(), today = vnDay(now);
+  if (req.method === 'POST' && path === '/ping') {
+    const b = await req.json().catch(() => null);
+    const pid = String(b && b.pid || '').toUpperCase();
+    if (!/^[A-Z0-9]{6}$/.test(pid)) return json(env, { error: 'bad_request' }, 400);
+    if (await env.ORDERS.get(`seen:${today}:${pid}`)) return json(env, { ok: true });   // hôm nay đã đếm
+    await env.ORDERS.put(`seen:${today}:${pid}`, '1', { expirationTtl: 3 * 86400 });
+    const isNew = !(await env.ORDERS.get('user:' + pid));
+    if (isNew) { await env.ORDERS.put('user:' + pid, today); await bump(env, 'stat:total'); await bump(env, 'stat:new:' + today, 400 * 86400); }
+    await bump(env, 'stat:dau:' + today, 400 * 86400);
+    return json(env, { ok: true, isNew });
+  }
+  if (req.method === 'GET' && path === '/stats') {
+    const days = [];
+    for (let i = 0; i < 30; i++) {
+      const d = vnDay(now - i * 86400e3);
+      days.push({ d, dau: Number((await env.ORDERS.get('stat:dau:' + d)) || 0), nw: Number((await env.ORDERS.get('stat:new:' + d)) || 0) });
+    }
+    const total = Number((await env.ORDERS.get('stat:total')) || 0);
+    const lb = JSON.parse((await env.ORDERS.get('lb:all')) || '[]').length;
+    const wk = days.slice(0, 7), sum = (a, k) => a.reduce((x, r) => x + r[k], 0);
+    const card = (l, v, s) => `<div class="c"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s || ''}</div></div>`;
+    const html = `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Thống kê Chợ Lá Xanh</title>
+<style>body{margin:0;font:600 15px/1.45 system-ui,sans-serif;background:#f5fbf6;color:#3b2e2a;padding:16px}h1{font-size:22px;margin:0 0 4px}.m{color:#7f8a7f;font-size:13px;margin-bottom:14px}
+.g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.c{background:#fff;border:2px solid #cfe6d5;border-radius:14px;padding:10px 12px}.l{font-size:12.5px;color:#7f8a7f}.v{font-size:28px;font-weight:800}.s{font-size:12px;color:#7f8a7f}
+table{width:100%;border-collapse:collapse;background:#fff;border:2px solid #cfe6d5;border-radius:14px;overflow:hidden;margin-top:14px;font-size:14px}th,td{padding:7px 10px;border-bottom:1px solid #e3efe6;text-align:right}th:first-child,td:first-child{text-align:left}th{font-size:12px;color:#7f8a7f;background:#f0f8f2}</style></head><body>
+<h1>📈 Thống kê người chơi</h1><div class="m">Chợ Lá Xanh · cập nhật lúc ${new Date(now + 7 * 3600e3).toISOString().slice(11, 16)} (giờ VN) · đếm từ khi bật thống kê</div>
+<div class="g">${card('👥 Tổng người chơi', total, 'mỗi thiết bị/trình duyệt tính 1 người')}${card('📅 Chơi hôm nay', days[0].dau, `${days[0].nw} người mới`)}${card('🗓️ Lượt chơi 7 ngày', sum(wk, 'dau'), `${sum(wk, 'nw')} người mới`)}${card('🏆 Trên bảng xếp hạng', lb, 'tiệm kinh doanh ≥ 14 ngày')}</div>
+<table><tr><th>Ngày</th><th>Người chơi</th><th>Người mới</th></tr>${days.map(r => `<tr><td>${r.d.slice(8, 10)}/${r.d.slice(5, 7)}</td><td>${r.dau}</td><td>${r.nw}</td></tr>`).join('')}</table>
+</body></html>`;
+    return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+  }
+  return json(env, { error: 'not_found' }, 404);
+}
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -224,6 +263,7 @@ export default {
 
     // 🏆 Bảng xếp hạng: chỉ tiệm kinh doanh từ LB_MIN_DAY ngày, xếp theo tổng vốn; có bảng tuần/tháng (giờ VN) và thưởng top 10
     if (path === '/lb' || path.startsWith('/lb/')) return leaderboard(req, env, path, url);
+    if (path === '/ping' || path === '/stats') return stats(req, env, path);
 
     return json(env, { error: 'not_found' }, 404);
   },
