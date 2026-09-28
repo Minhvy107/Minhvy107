@@ -13,6 +13,8 @@ const PACKS = {
   starter: { vnd: 29000, gems: 300 },
   card: { vnd: 49000, gems: 150 },
   lux: { vnd: 149000, gems: 700 },
+  // Season Pass (game tự mở Pass cao cấp + giao diện mùa)
+  pass_s1: { vnd: 69000, gems: 0 },
 };
 const CODE_RE = /CLX[A-Z0-9]{10}/;
 const PENDING_TTL = 24 * 3600;      // đơn chưa trả hết hạn sau 1 ngày
@@ -66,7 +68,7 @@ async function lbUpsert(env, key, row, ttl) {
   const i = list.findIndex(r => r.pid === row.pid);
   if (i >= 0) {
     const o = list[i];
-    if (o.worth === row.worth && o.day === row.day && o.shop === row.shop) return i + 1;   // không đổi thì khỏi ghi
+    if (o.worth === row.worth && o.day === row.day && o.shop === row.shop && (o.frame || '') === row.frame) return i + 1;   // không đổi thì khỏi ghi
     list.splice(i, 1);
   } else if (list.length >= 100 && row.worth <= list[99].worth) return 0;              // không đủ vào top 100
   list.push(row);
@@ -92,6 +94,7 @@ async function leaderboard(req, env, path, url) {
       worth: Math.max(0, Math.min(cap, Math.round(Number(b.worth) || 0))),
       rep: Math.max(0, Math.min(100, Math.round(Number(b.rep) || 0))),
       stars: Math.max(0, Math.min(5, Math.round((Number(b.stars) || 0) * 10) / 10)), at: now,
+      frame: ['hang'].includes(b.frame) ? b.frame : '',
     };
     const all = await lbUpsert(env, 'lb:all', row);
     const week = await lbUpsert(env, 'lb:' + P.week, row, 70 * 86400);
