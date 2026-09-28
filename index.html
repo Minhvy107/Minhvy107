@@ -2087,19 +2087,14 @@ const FESTS=[
   {id:'xmas',icon:'🎄',name:'Giáng Sinh an lành',tok:'🎁',tname:'Hộp quà',cat:['uong','tuoi'],fa:'#ffd6d6',fb:'#d4f0df',desc:'Các gia đình chuẩn bị tiệc Giáng Sinh: thịt cá và đồ uống cháy hàng.',items:['ev_dec_xmas','ev_aw_xmas','ev_uni_xmas']},
 ];
 const FMAP=Object.fromEntries(FESTS.map(f=>[f.id,f]));
-// Lễ hội chạy theo NGÀY THẬT (giờ Việt Nam). Tết & Trung thu theo âm lịch nên ghi sẵn ngày dương từng năm.
-const LUNAR={tet:{2026:'02-17',2027:'02-06',2028:'01-26',2029:'02-13',2030:'02-03',2031:'01-23'},trungthu:{2026:'09-25',2027:'09-15',2028:'10-03',2029:'09-22',2030:'09-12',2031:'10-01'}};
-const FEST_CAL={ // [bắt đầu, kết thúc] (MM-DD) hoặc lệch ngày so với ngày lễ âm lịch
-  green:['04-16','04-22'], fruit:['06-01','06-10'], halloween:['10-24','10-31'], teacher:['11-14','11-20'], xmas:['12-18','12-26'],
-  tet:{lunar:'tet',from:-10,to:3}, trungthu:{lunar:'trungthu',from:-10,to:1}};
+// Lễ hội tính theo NGÀY THẬT (giờ Việt Nam): mỗi vòng 10 ngày thật = 5 ngày lễ hội + 5 ngày nghỉ, lần lượt qua các lễ hội.
+const FEST_LEN=5, FEST_CYCLE=10, FEST_ANCHOR='2026-09-26';   // mốc: vòng đầu (Trung thu) bắt đầu 26/09/2026
 const dShift=(ymd,n)=>new Date(Date.parse(ymd+'T00:00:00Z')+n*864e5).toISOString().slice(0,10);
 const dDiff=(a,b)=>Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/864e5);
 const fmtD=ymd=>ymd.slice(8,10)+'/'+ymd.slice(5,7);
-function festWins(){ const y=+vnDay().slice(0,4), out=[];
-  for(const yy of [y-1,y,y+1]) for(const f of FESTS){ const c=FEST_CAL[f.id]; if(!c) continue;
-    if(Array.isArray(c)) out.push({f,start:`${yy}-${c[0]}`,end:`${yy}-${c[1]}`});
-    else { const d=LUNAR[c.lunar][yy]; if(d) out.push({f,start:dShift(`${yy}-${d}`,c.from),end:dShift(`${yy}-${d}`,c.to)}); } }
-  return out.sort((a,b)=>a.start<b.start?-1:1); }
+function festWins(){ const c0=Math.floor(dDiff(FEST_ANCHOR,vnDay())/FEST_CYCLE), out=[];
+  for(let c=c0-1;c<=c0+FESTS.length;c++){ const st=dShift(FEST_ANCHOR,c*FEST_CYCLE); out.push({f:FESTS[((c%FESTS.length)+FESTS.length)%FESTS.length],start:st,end:dShift(st,FEST_LEN-1)}); }
+  return out; }
 const FEST_MILES=[{pts:100,gems:15},{pts:400,item:0},{pts:800,gems:30,money:3e6},{pts:1300,item:1},{pts:2000,item:2,gems:40}];
 const FEST_MIS=[
   {k:'sell',n:200,pts:100,t:F=>`Bán 200 món ${F.cat.map(c=>CATS[c].icon+' '+CATS[c].name).join(', ')}`},
@@ -2110,8 +2105,9 @@ function nextFest(k=vnDay()){ const w=festWins().find(w=>w.start>k); return w?{.
 const festOn=()=>{ if(!S||!S.fest||S.fest.closed||typeof S.fest.start!=='string') return false; const k=vnDay(); return S.fest.start<=k&&k<=S.fest.end; };
 const festDef=()=>FMAP[S.fest.id];
 function festMorning(){
-  if(S.fest&&!S.fest.closed&&(typeof S.fest.start!=='string'||S.fest.end<vnDay())) festClose();   // lễ hội cũ (tính theo ngày game) cũng được đóng & trả quà
   const a=festNow();
+  if(S.fest&&!S.fest.closed&&typeof S.fest.start!=='string'&&a&&a.f.id===S.fest.id){ S.fest.start=a.start; S.fest.end=a.end; }   // save cũ (theo ngày game) đang cùng lễ hội: giữ tiến độ
+  if(S.fest&&!S.fest.closed&&(typeof S.fest.start!=='string'||S.fest.end<vnDay())) festClose();   // lễ hội cũ đã hết: đóng & tự cộng quà
   if(a&&(!S.fest||S.fest.start!==a.start)){ S.fest={id:a.f.id,start:a.start,end:a.end,pts:0,got:{},prog:{sell:0,hand:0,chal:0},mis:{},closed:false}; S.festNote=`<b>${a.f.icon} ${a.f.name}</b> đang diễn ra (${fmtD(a.start)} – ${fmtD(a.end)})! Xem tab 🎪 Sự kiện để biết cách nhận ${a.f.tok} ${a.f.tname} và quà độc quyền.`; }
 }
 function festGrant(i){ const F=festDef(), m=FEST_MILES[i], out=[]; S.fest.got[i]=true;
@@ -2150,8 +2146,8 @@ function renderEventTab(){
       <div style="font-size:12px;margin-top:6px">Mẹo: nhập sẵn nhiều ${F.cat.map(c=>CATS[c].name.toLowerCase()).join(', ')} trước ngày lễ hội.</div></div>`; }
   }
   { const k=vnDay(), up=festWins().filter(w=>w.end>=k).slice(0,7);
-    h+=`<h3 class="sec">📆 Lịch lễ hội (theo ngày thật)</h3><div class="card" style="padding:6px 12px">${up.map(w=>{ const on=w.start<=k;
-      return `<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:13px"><span>${w.f.icon} <b>${w.f.name}</b></span><span class="${on?'':'muted'}">${fmtD(w.start)} – ${fmtD(w.end)}${on?' · <b>đang diễn ra</b>':''}</span></div>`; }).join('')}</div>`; }
+    h+=`<h3 class="sec">📆 Lịch lễ hội (tính theo ngày thật)</h3><div class="card" style="padding:6px 12px">${up.map(w=>{ const on=w.start<=k;
+      return `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 8px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:13px"><span>${w.f.icon} <b>${w.f.name}</b></span><span class="${on?'':'muted'}">${fmtD(w.start)} – ${fmtD(w.end)}${on?' · <b>đang diễn ra</b>':''}</span></div>`; }).join('')}</div>`; }
   h+=`<h3 class="sec">⚡ Thử thách bất ngờ</h3><p class="muted" style="font-size:13px;margin:0 0 8px">Có thể xuất hiện bất cứ lúc nào khi tiệm mở cửa (trong lễ hội gần như ngày nào cũng có). Đã hoàn thành: <b>${S.chalDone||0}</b>.</p>
     <div class="chal-types"><div>📦 <b>Đơn đặt hàng lớn</b>: trường học, công ty… đặt nhiều món, trả thêm 30%. Nhận đơn rồi bấm <b>Giao đơn</b> trước hạn khi đủ hàng. Trễ hạn bị trừ uy tín.</div>
     <div>⭐ <b>Khách VIP</b>: food reviewer ghé quầy của bạn. Tự tay phục vụ để được 5 sao, +3 uy tín và +5💎. Để khách bỏ về sẽ mất 4 uy tín.</div>
