@@ -3,6 +3,9 @@
 // → SePay báo tiền về (POST /sepay) → game hỏi trạng thái (GET /order/:code) → nhận kim cương (POST /order/:code/claim).
 // Giá gói và số kim cương chỉ lấy ở đây, không tin số liệu gửi từ trình duyệt.
 
+import { Room, Lobby, handleRooms } from './rooms.js';
+export { Room, Lobby };
+
 const PACKS = {
   p1: { vnd: 22000, gems: 60 },
   p2: { vnd: 99000, gems: 350 },
@@ -96,7 +99,7 @@ async function leaderboard(req, env, path, url) {
       rep: Math.max(0, Math.min(100, Math.round(Number(b.rep) || 0))),
       stars: Math.max(0, Math.min(5, Math.round((Number(b.stars) || 0) * 10) / 10)), at: now,
       frame: ['hang'].includes(b.frame) ? b.frame : '',
-      title: ['haggle', 'kind', 'smart', 'streak', 'lucky', 'hand', 'star', 'trust', 'rich', 'old', 'mil'].includes(b.title) ? b.title : '',
+      title: ['haggle', 'kind', 'smart', 'streak', 'lucky', 'hand', 'star', 'trust', 'rich', 'old', 'mil', 'wolf', 'uno', 'boom', 'quiz'].includes(b.title) ? b.title : '',
     };
     // Tiết kiệm lượt ghi KV (gói miễn phí chỉ 1.000 lượt/ngày, cần để dành cho nạp tiền): mỗi tiệm tối đa 1 lần / LB_GAP
     const rankIn = async key => JSON.parse((await env.ORDERS.get(key)) || '[]').findIndex(r => r.pid === pid) + 1;
@@ -202,6 +205,7 @@ async function handle(req, env) {
     const url = new URL(req.url);
     const path = url.pathname.replace(/\/+$/, '');
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors(env) });
+    if (path.startsWith('/mp/')) { const r = await handleRooms(req, env, url, path, cors(env)); if (r) return r; }
     if (path === '/health') { await env.ORDERS.get('stat:total'); return json(env, { ok: true, t: Date.now() }); }
 
     // Game tạo đơn
