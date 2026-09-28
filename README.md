@@ -13,6 +13,9 @@ Trò chơi trình duyệt: mở tiệm tạp hóa – thực phẩm tươi sốn
 - **💇 Kiểu tóc nhân viên**: trong tab Nhân viên, mỗi người có thể đổi kiểu tóc và màu tóc riêng, dùng những kiểu tiệm đã mua trong Tủ đồ.
 - **🔊 Âm thanh tương tác** (tạo bằng Web Audio, không cần file): "tách" khi bấm, tiếng nhặt đồ, ting ting khi thu tiền, chuông khách tới, báo sai, nhạc nhận quà. Bật/tắt trong menu ☰.
 - **🎵 Nhạc nền** tự sáng tác bằng Web Audio (C–Am–F–G, lặp vô hạn) và **📲 loa báo chuyển khoản**: khách trả bằng chuyển khoản thì có tiếng "ting ting", banner báo tiền về và giọng đọc "Đã nhận được … đồng" (nếu máy có giọng tiếng Việt). Bật/tắt riêng từng thứ trong menu ☰.
+- **💡 Cố vấn kinh doanh**: mỗi tối phân tích vì sao lời/lỗ (hàng hỏng, giá cao/thấp/lỗ vốn, hết hàng, khách chờ, lương, dịch vụ, xui rủi, lãi vay) và gợi ý sửa, kèm nút đi tới đúng tab.
+- **🏦 Vay vốn** (lãi 0,3%/ngày, hạn 30 ngày, hạn mức theo uy tín) và **💱 đổi kim cương lấy tiền** (10💎→1tr, 50💎→5,5tr, 100💎→12tr): menu ☰ hoặc tab Báo cáo.
+- **📲 Mã lưu ngắn 8 ký tự** để chuyển game sang máy khác (lưu trên máy chủ 30 ngày; cần cập nhật `server/worker.js` lên Cloudflare).
 - **🔒 Đóng cửa sớm / 😴 Nghỉ một ngày**: đóng cửa bất cứ lúc nào (khách đang chờ vẫn được phục vụ; đóng trước 12:00 trừ 2 uy tín, trước 17:00 trừ 1) hoặc nghỉ bán cả ngày (trừ 3 uy tín, vẫn trả chi phí).
 - **🎪 Sự kiện**: cứ 10 ngày có một lễ hội 5 ngày (Trung thu, Chợ Tết, Lễ hội trái cây, Tuần lễ Sống xanh). Kiếm xu lễ hội, làm nhiệm vụ, nhận mốc thưởng và đồ độc quyền. Thử thách bất ngờ trong ngày: đơn đặt hàng lớn, khách VIP food reviewer, giờ cao điểm.
 - **💳 Nạp kim cương bằng chuyển khoản VietQR**: game tạo mã QR theo đơn, máy chủ nhỏ (thư mục `server/`, Cloudflare Worker + SePay) tự cộng kim cương khi tiền về. Có gói ưu đãi (Khởi nghiệp, Thẻ tháng, Tiểu thư), gói lớn và x2 lần nạp đầu. Xem `server/HUONG_DAN_NAP.md`.

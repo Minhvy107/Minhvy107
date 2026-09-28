@@ -96,6 +96,27 @@ export default {
       return json(env, { gems: o.gems });
     }
 
+    // Mã lưu ngắn: lưu bản game (JSON) 30 ngày, trả về mã 8 ký tự
+    if (req.method === 'POST' && path === '/save') {
+      const text = await req.text();
+      if (text.length > 600000) return json(env, { error: 'too_large' }, 413);
+      try { const d = JSON.parse(text); if (!d || !d.market || !d.day) throw 0; } catch (e) { return json(env, { error: 'bad_save' }, 400); }
+      const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 5; i++) {
+        code = Array.from(crypto.getRandomValues(new Uint8Array(8)), b => A[b % 32]).join('');
+        if (!(await env.ORDERS.get('save:' + code))) break;
+      }
+      await env.ORDERS.put('save:' + code, text, { expirationTtl: 30 * 24 * 3600 });
+      return json(env, { code, days: 30 });
+    }
+    m = path.match(/^\/save\/([A-Z0-9]{8})$/);
+    if (req.method === 'GET' && m) {
+      const raw = await env.ORDERS.get('save:' + m[1]);
+      if (!raw) return json(env, { error: 'missing' }, 404);
+      return new Response(raw, { headers: { 'content-type': 'application/json', ...cors(env) } });
+    }
+
     return json(env, { error: 'not_found' }, 404);
   },
 };
