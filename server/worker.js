@@ -117,6 +117,33 @@ export default {
       return new Response(raw, { headers: { 'content-type': 'application/json', ...cors(env) } });
     }
 
+    // 🏆 Bảng xếp hạng: lưu top 100 theo tổng tài sản (1 dòng mỗi người chơi)
+    if (req.method === 'POST' && path === '/lb') {
+      const b = await req.json().catch(() => null);
+      const pid = String(b && b.pid || '').toUpperCase();
+      if (!/^[A-Z0-9]{6}$/.test(pid)) return json(env, { error: 'bad_request' }, 400);
+      const clean = (s, n) => String(s || '').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, n);
+      const row = {
+        pid, shop: clean(b.shop, 28) || 'Tiệm tạp hóa',
+        worth: Math.max(0, Math.min(1e13, Math.round(Number(b.worth) || 0))),
+        day: Math.max(1, Math.min(100000, Math.round(Number(b.day) || 1))),
+        rep: Math.max(0, Math.min(100, Math.round(Number(b.rep) || 0))),
+        stars: Math.max(0, Math.min(5, Math.round((Number(b.stars) || 0) * 10) / 10)),
+        at: Date.now(),
+      };
+      const list = JSON.parse((await env.ORDERS.get('lb')) || '[]').filter(r => r.pid !== pid);
+      list.push(row);
+      list.sort((a, c) => c.worth - a.worth);
+      const top = list.slice(0, 100);
+      await env.ORDERS.put('lb', JSON.stringify(top));
+      const rank = top.findIndex(r => r.pid === pid) + 1;
+      return json(env, { ok: true, rank: rank || null, total: top.length });
+    }
+    if (req.method === 'GET' && path === '/lb') {
+      const list = JSON.parse((await env.ORDERS.get('lb')) || '[]');
+      return json(env, { list: list.slice(0, 50), total: list.length });
+    }
+
     return json(env, { error: 'not_found' }, 404);
   },
 };

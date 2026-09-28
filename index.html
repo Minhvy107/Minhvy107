@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chợ Lá Xanh</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#6fc18a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chợ Lá Xanh">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -35,6 +43,8 @@ a.btn.primary{background:#0068ff;border-color:#0052cc;color:#fff;box-shadow:0 3p
 .loan{background:#eef6ff;border:2px solid #b9d4ff;border-radius:16px;padding:10px 12px;margin:10px 0}.loan .row{flex-wrap:wrap;gap:6px}
 .loan .big{font:800 20px var(--display);color:#1d4f91}
 .savecode{font:800 26px var(--display);letter-spacing:3px;text-align:center;background:var(--panel2);border:2px dashed var(--line);border-radius:14px;padding:10px;margin:8px 0;user-select:all}
+.lb{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:8px}.lb td{padding:6px 4px;border-bottom:1px dashed var(--line);vertical-align:middle;text-align:left}
+.lb td.rk{font:800 16px var(--display);width:34px;text-align:center}.lb tr.me{background:#fff6d6}
 .supinfo{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:2px dashed var(--line);border-radius:12px;padding:8px 10px;font-size:12px;max-height:160px;overflow:auto;margin:6px 0 10px}
 button.primary:hover:not(:disabled){background:var(--brand2);border-color:var(--brandDk)}
 button.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--brandDk)}
@@ -302,7 +312,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <p class="st-sub">Nhập hàng, đón khách, mở tiệm nhỏ của riêng bạn</p>
     <div class="st-save" id="stSave"></div>
     <button class="pill" id="stMain">Bắt đầu chơi</button>
-    <div class="st-links"><button class="link" id="stNew2" hidden>Chơi mới</button><button class="link" id="stLoad">Tải bản lưu</button><button class="link" id="stHelp">Hướng dẫn</button><button class="link" id="stSupport" hidden onclick="openSupport('')">Báo lỗi</button></div>
+    <div class="st-links"><button class="link" id="stNew2" hidden>Chơi mới</button><button class="link" id="stLoad">Tải bản lưu</button><button class="link" id="stHelp">Hướng dẫn</button><button class="link" onclick="openLeaderboard()">🏆 Xếp hạng</button><button class="link" id="stInstall" onclick="openInstall()">📱 Cài app</button><button class="link" id="stSupport" hidden onclick="openSupport('')">Báo lỗi</button></div>
   </div>
   <div class="st-ver">v4.0</div>
   <div class="namecard" id="startName" hidden>
@@ -447,6 +457,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
   <!-- BÁO CÁO -->
   <section class="tab panel" id="tab-report">
     <div id="advBox"></div>
+    <div class="row" style="margin:6px 0"><button onclick="openLeaderboard()">🏆 Bảng xếp hạng</button></div>
     <div id="loanBox"></div>
     <div class="kpis" id="kpis"></div>
     <h3 class="sec">Kết quả từng ngày</h3>
@@ -2234,7 +2245,7 @@ function endDay(){
   S.lastAdv={day:S.day+1,profit,items:adviseDay(rec,x)};
   R=null; if(speed===0) setSpeedBtn(1);
   S.day++;
-  payCardTick();
+  payCardTick(); setTimeout(()=>lbSubmit(true),500);
   rollMorning(false);
   autosave();
   refreshAll();
@@ -2394,6 +2405,35 @@ function renderSvc(){
     <div class="foot"><button class="primary" data-branch="1" ${!okB||S.money<bc||S.gems<BRANCH_GEMS||R?'disabled':''}>Mở (${fmtS(bc)}${gemTxt(BRANCH_GEMS)})</button></div></div>`;
   $('#svcCards').innerHTML=html;
 }
+/* ====== 🏆 Bảng xếp hạng (dùng chung máy chủ Cloudflare) ====== */
+let lbLast=0;
+function lbSubmit(force){ if(!S||!PAY_CFG.api||S.over) return; if(!force&&Date.now()-lbLast<20000) return; lbLast=Date.now();
+  fetch(PAY_CFG.api.replace(/\/$/,'')+'/lb',{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:payId(),shop:S.name,worth:Math.round(netWorth()),day:S.day,rep:Math.round(S.rep),stars:+avgStars().toFixed(1)})})
+    .then(r=>r.ok?r.json():null).then(d=>{ if(d&&d.rank){ const was=S.lbRank; S.lbRank=d.rank; if(was&&d.rank<was) toast(`🏆 Lên hạng ${d.rank} bảng xếp hạng!`); } }).catch(()=>{}); }
+window.openLeaderboard=function(){ modal(`<h3>🏆 Bảng xếp hạng</h3><p class="muted" style="font-size:13px;margin-top:0">Xếp theo tổng tài sản (tiền + hàng tồn). Tiệm của bạn được cập nhật sau mỗi ngày bán.</p><div id="lbBody"><p class="muted">Đang tải…</p></div><div class="row"><button onclick="openLeaderboard()">↻ Tải lại</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
+  if(!PAY_CFG.api) return;
+  lbSubmit(true);
+  setTimeout(()=>fetch(PAY_CFG.api.replace(/\/$/,'')+'/lb').then(r=>{ if(!r.ok) throw 0; return r.json(); }).then(d=>{ const el=$('#lbBody'); if(!el) return; const me=S&&S.pid;
+    const medal=i=>['🥇','🥈','🥉'][i]||(i+1);
+    const rows=d.list.map((r,i)=>`<tr class="${r.pid===me?'me':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.pid===me?' <span class="viptag">Bạn</span>':''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b></td></tr>`).join('');
+    const mine=d.list.findIndex(r=>r.pid===me);
+    el.innerHTML=(rows?`<table class="lb">${rows}</table>`:'<p>Chưa có ai, bạn là người đầu tiên! 🎉</p>')+(me&&mine<0?`<p class="muted" style="font-size:13px">Tiệm của bạn (${fmtS(netWorth())}) chưa vào top ${d.list.length}. Cố lên!</p>`:''); })
+    .catch(()=>{ const el=$('#lbBody'); if(el) el.innerHTML=`<p>Không tải được bảng xếp hạng. Nếu bạn đang mở game trong app khác, hãy mở ở <a href="${PAY_CFG.site}" target="_blank" rel="noopener">trang chính</a>.</p>`; }),400); };
+
+/* ====== 📱 Cài game như ứng dụng (PWA) ====== */
+let installEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; });
+const isStandalone=()=>window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+if('serviceWorker' in navigator&&location.protocol==='https:'&&PAY_CFG.site&&location.href.startsWith(PAY_CFG.site)) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+window.openInstall=function(){
+  if(isStandalone()) return toast('📱 Game đang chạy như ứng dụng rồi!');
+  if(PAY_CFG.site&&!location.href.startsWith(PAY_CFG.site)) return modal(`<h3>📱 Cài game như app</h3><p>Hãy mở game ở trang chính rồi cài từ đó:</p><p style="text-align:center"><a href="${PAY_CFG.site}" target="_blank" rel="noopener"><b>${PAY_CFG.site.replace(/^https:\/\//,'')}</b></a></p><div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>`);
+  if(installEvt){ installEvt.prompt(); installEvt.userChoice.then(c=>{ if(c.outcome==='accepted') toast('🎉 Đã cài game vào màn hình chính'); installEvt=null; }); return; }
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  modal(`<h3>📱 Cài game như app</h3>${ios?`<ol><li>Mở game bằng <b>Safari</b>.</li><li>Bấm nút <b>Chia sẻ</b> <span style="font-size:18px">⬆️</span> (ô vuông có mũi tên ở thanh dưới).</li><li>Kéo xuống, chọn <b>"Thêm vào MH chính"</b>.</li><li>Bấm <b>Thêm</b>. Biểu tượng 🏪 Chợ Lá Xanh sẽ nằm trên màn hình chính.</li></ol>`
+    :`<ol><li>Mở game bằng <b>Chrome</b>.</li><li>Bấm <b>⋮</b> (góc trên bên phải).</li><li>Chọn <b>"Cài đặt ứng dụng"</b> hoặc <b>"Thêm vào màn hình chính"</b>.</li><li>Bấm <b>Cài đặt</b>.</li></ol>`}
+    <p class="muted" style="font-size:12.5px">Mở từ biểu tượng, game chạy toàn màn hình như app thật, không còn thanh địa chỉ. Tiến trình chơi giữ nguyên.</p><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`); };
+
 /* ====== 💡 Cố vấn kinh doanh: phân tích vì sao lời/lỗ và gợi ý sửa ====== */
 function adviseDay(rec,x){
   const r=x.r, out=[], add=(imp,icon,title,tip,tab,btn)=>out.push({imp,icon,title,tip,tab,btn});
@@ -2739,6 +2779,7 @@ function openMenu(){
       <div class="row"><span class="muted">Tốc độ:</span>${[1,2,4].map(s=>`<button class="sm ${speed===s?'on':''}" data-m="sp${s}">${s}x${(s===2&&!hasU('speed2'))||(s===4&&!hasU('speed4'))?' 🔒':''}</button>`).join('')}</div>
       ${R&&R.t<R.close?'<button data-m="early">🔒 Đóng cửa sớm</button>':''}
       <button data-m="finance">🏦 Vay vốn & đổi kim cương</button>
+      <div class="row"><button data-m="lb">🏆 Bảng xếp hạng</button>${isStandalone()?'':'<button data-m="install">📱 Cài như app</button>'}</div>
       <button data-m="save" ${R?'disabled':''}>💾 Lưu game${R?' (khi tiệm đóng cửa)':''}</button>
       <button data-m="help">❓ Hướng dẫn</button>
       <div class="row"><button data-m="sound">${SFX.on?'🔊 Âm thanh: Bật':'🔇 Âm thanh: Tắt'}</button><button data-m="music">${MUSIC.on?'🎵 Nhạc nền: Bật':'🎵 Nhạc nền: Tắt'}</button><button data-m="voice">${VOICE.on?'🗣️ Loa báo CK: Bật':'🗣️ Loa báo CK: Tắt'}</button></div>
@@ -2763,6 +2804,8 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='voice'){ toggleVoice(); b.textContent=VOICE.on?'🗣️ Loa báo CK: Bật':'🗣️ Loa báo CK: Tắt'; }
   else if(m==='early'){ closeMenu(); askCloseEarly(); }
   else if(m==='finance'){ closeMenu(); openFinance(); }
+  else if(m==='lb'){ closeMenu(); openLeaderboard(); }
+  else if(m==='install'){ closeMenu(); openInstall(); }
   else if(m==='home'){ userPaused=false; if(!R) autosave(); toHome(); }
 });
 
@@ -2987,6 +3030,7 @@ $('#stNew2').addEventListener('click',showNameCard);
 $('#stBack').addEventListener('click',()=>{ $('#startName').hidden=true; $('#stBottom').hidden=false; });
 $('#stLoad').addEventListener('click',()=>openSaves(true));
 if(zaloURL()) $('#stSupport').hidden=false;
+if(isStandalone()) $('#stInstall').hidden=true;
 $('#stHelp').addEventListener('click',()=>modal(`<h3>❓ Cách chơi</h3>${$('#tab-help').innerHTML.replace(/<div class="row">[\s\S]*?<\/div>\s*$/,'')}<div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`));
 const IDEAS=['Tạp hóa Cô Ba','Bách hóa Nhà Mình','Tiệm Xinh Đầu Hẻm','Chợ Nhỏ Yêu Đời','Tạp hóa Bé Na'];
 $('#nameIdeas').innerHTML=IDEAS.map(n=>`<button class="sm">${n}</button>`).join('');

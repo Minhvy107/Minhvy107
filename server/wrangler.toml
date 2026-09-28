@@ -2,7 +2,8 @@ name = "cholaxanh-nap"
 main = "worker.js"
 compatibility_date = "2026-09-01"
 
-# Tạo KV: npx wrangler kv namespace create ORDERS  → dán id vào đây
+# Tự động: GitHub Actions (.github/workflows/deploy-worker.yml) tìm kho KV tên ORDERS và điền id.
+# Chạy tay: npx wrangler kv namespace create ORDERS  → dán id vào đây
 [[kv_namespaces]]
 binding = "ORDERS"
 id = "DIEN_ID_KV_VAO_DAY"

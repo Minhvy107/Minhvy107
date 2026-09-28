@@ -1,0 +1,53 @@
+# Tự động đưa máy chủ nạp (server/worker.js) lên Cloudflare mỗi khi code trong thư mục server/ thay đổi trên main.
+# Cần 2 secret trong GitHub: Settings → Secrets and variables → Actions:
+#   CLOUDFLARE_API_TOKEN  (tạo từ mẫu "Edit Cloudflare Workers")
+#   CLOUDFLARE_ACCOUNT_ID (ID tài khoản Cloudflare)
+# Khóa SEPAY_API_KEY đã đặt trên Cloudflare được giữ nguyên, không cần đưa vào đây.
+name: Cập nhật máy chủ Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths: ['server/**', '.github/workflows/deploy-worker.yml']
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Kiểm tra khóa Cloudflare
+        id: chk
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$T" ] || [ -z "$A" ]; then
+            echo "::warning::Chưa có CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID nên bỏ qua bước cập nhật máy chủ."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Tìm ID kho KV "ORDERS"
+        if: steps.chk.outputs.ok == 'true'
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          ID=$(curl -fsS -H "Authorization: Bearer $T" \
+            "https://api.cloudflare.com/client/v4/accounts/$A/storage/kv/namespaces?per_page=100" \
+            | jq -r '.result[] | select(.title=="ORDERS" or (.title|endswith("-ORDERS"))) | .id' | head -n1)
+          if [ -z "$ID" ]; then echo "::error::Không tìm thấy kho KV tên ORDERS trong tài khoản Cloudflare."; exit 1; fi
+          sed -i "s/DIEN_ID_KV_VAO_DAY/$ID/" server/wrangler.toml
+          echo "Dùng kho KV ORDERS: $ID"
+
+      - name: Đưa máy chủ lên Cloudflare
+        if: steps.chk.outputs.ok == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: server
+          command: deploy
