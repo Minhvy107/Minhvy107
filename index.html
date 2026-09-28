@@ -2002,6 +2002,15 @@ const WARDROBE=[
   {id:'ev_dec_green',slot:'decor',name:'Góc sống xanh',icon:'🌿',price:0,ev:'green',decor:['🌿','♻️','🌱']},
   {id:'ev_aw_green',slot:'awning',name:'Mái hiên lá non',icon:'🌿',price:0,ev:'green',aw:['#3fa66b','#d9f2c4']},
   {id:'ev_uni_green',slot:'uniform',name:'Đồng phục lá xanh',icon:'🌿',price:0,ev:'green',uni:'#2e8b57'},
+  {id:'ev_dec_hal',slot:'decor',name:'Bí ngô & dơi Halloween',icon:'🎃',price:0,ev:'halloween',decor:['🎃','🦇','🍬']},
+  {id:'ev_aw_hal',slot:'awning',name:'Mái hiên cam tím',icon:'🎃',price:0,ev:'halloween',aw:['#ff8a1f','#4a3160']},
+  {id:'ev_hc_hal',slot:'haircolor',name:'Tím phù thủy',price:0,ev:'halloween',hc:'#7b3fa0'},
+  {id:'ev_dec_teach',slot:'decor',name:'Hoa & sách tri ân',icon:'💐',price:0,ev:'teacher',decor:['💐','📚','✏️']},
+  {id:'ev_aw_teach',slot:'awning',name:'Mái hiên phấn trắng',icon:'📚',price:0,ev:'teacher',aw:['#4f7fe0','#fff6dc']},
+  {id:'ev_uni_teach',slot:'uniform',name:'Đồng phục xanh học trò',icon:'🎒',price:0,ev:'teacher',uni:'#3d6fd1'},
+  {id:'ev_dec_xmas',slot:'decor',name:'Cây thông & hộp quà',icon:'🎄',price:0,ev:'xmas',decor:['🎄','🎁','⛄']},
+  {id:'ev_aw_xmas',slot:'awning',name:'Mái hiên kẹo gậy',icon:'🍭',price:0,ev:'xmas',aw:['#d9363e','#ffffff']},
+  {id:'ev_uni_xmas',slot:'uniform',name:'Áo len xanh thông',icon:'🧶',price:0,ev:'xmas',uni:'#1f7a4c'},
   // 🌙 Quà Season Pass Mùa Trăng Rằm (chỉ nhận qua Pass, không bán)
   {id:'hair_hangnga',slot:'hair',name:'Búi Hằng Nga',price:0,ev:'pass',hs:'hangnga',hcDef:'#2a1d1a',fem:true},
   {id:'fit_hangnga',slot:'outfit',name:'Áo Hằng Nga',icon:'👘',price:0,ev:'pass',outfit:'hangnga'},
@@ -2073,6 +2082,9 @@ const FESTS=[
   {id:'tet',icon:'🧧',name:'Chợ Tết',tok:'🧧',tname:'Lì xì',cat:['kho','uong','giavi'],fa:'#ffd1c4',fb:'#ffe98a',desc:'Nhà nhà sắm Tết: gạo, đồ khô, gia vị và nước ngọt bán chạy.',items:['ev_dec_tet','ev_aw_tet','ev_uni_tet']},
   {id:'fruit',icon:'🍉',name:'Lễ hội trái cây',tok:'🍉',tname:'Dưa hấu',cat:['trai','uong'],fa:'#ffd0da',fb:'#c9f1cf',desc:'Mùa trái chín rộ, trái cây và đồ uống giải nhiệt đắt hàng.',items:['ev_dec_fruit','ev_aw_fruit','ev_hc_fruit']},
   {id:'green',icon:'🌿',name:'Tuần lễ Sống xanh',tok:'🌿',tname:'Lá xanh',cat:['rau','hoa'],fa:'#d5f3dc',fb:'#eef8c9',desc:'Phong trào ăn xanh sống sạch: rau củ và hóa phẩm sinh học lên ngôi.',items:['ev_dec_green','ev_aw_green','ev_uni_green']},
+  {id:'halloween',icon:'🎃',name:'Đêm hội Halloween',tok:'🍬',tname:'Kẹo',cat:['banh','rau'],fa:'#ffd9b0',fb:'#e3d4f5',desc:'Trẻ con hóa trang đi xin kẹo, nhà nhà mua bí ngô khắc đèn: bánh kẹo và rau củ bán chạy.',items:['ev_dec_hal','ev_aw_hal','ev_hc_hal']},
+  {id:'teacher',icon:'💐',name:'Tuần tri ân Nhà giáo',tok:'💐',tname:'Hoa tri ân',cat:['canhan','sua'],fa:'#dfe8ff',fb:'#fff1d6',desc:'Học trò rủ nhau mua quà tặng thầy cô: đồ chăm sóc cá nhân và hộp sữa được chuộng.',items:['ev_dec_teach','ev_aw_teach','ev_uni_teach']},
+  {id:'xmas',icon:'🎄',name:'Giáng Sinh an lành',tok:'🎁',tname:'Hộp quà',cat:['uong','tuoi'],fa:'#ffd6d6',fb:'#d4f0df',desc:'Các gia đình chuẩn bị tiệc Giáng Sinh: thịt cá và đồ uống cháy hàng.',items:['ev_dec_xmas','ev_aw_xmas','ev_uni_xmas']},
 ];
 const FMAP=Object.fromEntries(FESTS.map(f=>[f.id,f]));
 const FEST_LEN=5, FEST_CYCLE=10, FEST_OFF=2;
