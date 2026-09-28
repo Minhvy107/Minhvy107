@@ -1836,7 +1836,7 @@ function renderWardrobe(){
    - memo: chữ đặt trước mã đơn trong nội dung chuyển khoản (VietinBank + SePay bắt buộc có "SEVQR"). */
 const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev',site:'https://minhvy107.github.io/cholaxanh/',memo:'SEVQR'};
 // 🐞 Hỗ trợ: link Zalo (https://zalo.me/...) hoặc số điện thoại Zalo của chủ game. Để trống = ẩn nút báo lỗi.
-const SUPPORT={zalo:'https://zaloapp.com/qr/p/1b3g1giwfxayr',qr:'https://zaloapp.com/qr/p/1b3g1giwfxayr'};
+const SUPPORT={zalo:'https://zalo.me/0917392049',qr:'https://zaloapp.com/qr/p/1b3g1giwfxayr'};
 const zaloURL=()=>{ const z=String(SUPPORT.zalo||'').trim(); if(!z) return ''; if(/^https?:\/\//.test(z)) return z; const d=z.replace(/\D/g,''); return d?'https://zalo.me/'+d.replace(/^84/,'0'):''; };
 let lastErr='';
 window.addEventListener('error',e=>{ lastErr=(e.message||'lỗi')+(e.lineno?` @${e.lineno}`:''); });
