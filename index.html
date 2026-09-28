@@ -2699,7 +2699,9 @@ function renderSvc(){
 /* ====== 🏆 Bảng xếp hạng: tuần / tháng / mọi thời đại, chỉ tiệm kinh doanh ≥ 14 ngày, thưởng top 10 ====== */
 const LB_MIN_DAY=14; let lbLast=0, lbTab='week';
 const lbApi=p=>PAY_CFG.api.replace(/\/$/,'')+p;
-function lbSubmit(force){ if(!S||!PAY_CFG.api||S.over||S.day<LB_MIN_DAY) return; if(!force&&Date.now()-lbLast<90000) return; lbLast=Date.now();
+function lbSubmit(force){ if(!S||!PAY_CFG.api||S.over||S.day<LB_MIN_DAY) return;
+  try{ lbLast=Math.max(lbLast,+localStorage.getItem('clx-lb')||0); }catch(e){}
+  if(Date.now()-lbLast<(force?20:30)*60000) return; lbLast=Date.now(); try{ localStorage.setItem('clx-lb',lbLast); }catch(e){}
   fetch(lbApi('/lb'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:payId(),shop:S.name,worth:Math.round(netWorth()),day:S.day,rep:Math.round(S.rep),stars:+avgStars().toFixed(1),frame:(wornItem('frame')||{}).frame||''})})
     .then(r=>r.ok?r.json():null).then(d=>{ const w=d&&d.rank&&d.rank.week; if(w){ const was=S.lbRank; S.lbRank=w; if(was&&w<was&&w<=10) toast(`🏆 Lên hạng ${w} bảng xếp hạng tuần!`); } }).catch(()=>{}); }
 function lbLeft(ms){ const s=Math.max(0,ms-Date.now())/1000, d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60); return d?`${d} ngày ${h} giờ`:h?`${h} giờ ${m} phút`:`${m} phút`; }

@@ -63,6 +63,7 @@ function periodInfo(ms) {
     prevWeek: isoWeek(vnDate(ms - 7 * DAY)), prevMonth: monthKey(vnDate(monthStart - 1000)),
   };
 }
+const LB_GAP = 20 * 60 * 1000;   // 20 phút
 async function lbUpsert(env, key, row, ttl) {
   const list = JSON.parse((await env.ORDERS.get(key)) || '[]');
   const i = list.findIndex(r => r.pid === row.pid);
@@ -96,6 +97,11 @@ async function leaderboard(req, env, path, url) {
       stars: Math.max(0, Math.min(5, Math.round((Number(b.stars) || 0) * 10) / 10)), at: now,
       frame: ['hang'].includes(b.frame) ? b.frame : '',
     };
+    // Tiết kiệm lượt ghi KV (gói miễn phí chỉ 1.000 lượt/ngày, cần để dành cho nạp tiền): mỗi tiệm tối đa 1 lần / LB_GAP
+    const rankIn = async key => JSON.parse((await env.ORDERS.get(key)) || '[]').findIndex(r => r.pid === pid) + 1;
+    const prev = JSON.parse((await env.ORDERS.get('lb:all')) || '[]').find(r => r.pid === pid);
+    if (prev && now - (prev.at || 0) < LB_GAP)
+      return json(env, { ok: true, eligible: true, throttled: true, rank: { all: await rankIn('lb:all'), week: await rankIn('lb:' + P.week), month: await rankIn('lb:' + P.month) } });
     const all = await lbUpsert(env, 'lb:all', row);
     const week = await lbUpsert(env, 'lb:' + P.week, row, 70 * 86400);
     const month = await lbUpsert(env, 'lb:' + P.month, row, 120 * 86400);
@@ -150,10 +156,12 @@ async function stats(req, env, path) {
     const b = await req.json().catch(() => null);
     const pid = String(b && b.pid || '').toUpperCase();
     if (!/^[A-Z0-9]{6}$/.test(pid)) return json(env, { error: 'bad_request' }, 400);
-    if (await env.ORDERS.get(`seen:${today}:${pid}`)) return json(env, { ok: true });   // hôm nay đã đếm
-    await env.ORDERS.put(`seen:${today}:${pid}`, '1', { expirationTtl: 3 * 86400 });
-    const isNew = !(await env.ORDERS.get('user:' + pid));
-    if (isNew) { await env.ORDERS.put('user:' + pid, today); await bump(env, 'stat:total'); await bump(env, 'stat:new:' + today, 400 * 86400); }
+    // user:{pid} = ngày chơi gần nhất → người cũ chỉ tốn 2 lượt ghi/ngày
+    const last = await env.ORDERS.get('user:' + pid);
+    if (last === today) return json(env, { ok: true });   // hôm nay đã đếm
+    const isNew = !last;
+    await env.ORDERS.put('user:' + pid, today);
+    if (isNew) { await bump(env, 'stat:total'); await bump(env, 'stat:new:' + today, 400 * 86400); }
     await bump(env, 'stat:dau:' + today, 400 * 86400);
     return json(env, { ok: true, isNew });
   }
