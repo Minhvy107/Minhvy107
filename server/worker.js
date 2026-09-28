@@ -39,7 +39,7 @@ function safeEq(a, b) {
 // ===== 🏆 Bảng xếp hạng =====
 const LB_MIN_DAY = 14;
 const LB_REWARD = {
-  week:  [300, 200, 150, 60, 60, 60, 60, 60, 60, 60],
+  week:  [150, 100, 70, 30, 30, 30, 30, 30, 30, 30],
   month: [500, 300, 200, 80, 80, 80, 80, 80, 80, 80],
 };
 const DAY = 864e5, VN = 7 * 3600e3;
