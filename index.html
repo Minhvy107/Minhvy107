@@ -2275,7 +2275,7 @@ const GEM_OFFERS=[
   {id:'starter',icon:'🌱',name:'Gói Khởi nghiệp',vnd:29000,gems:300,items:['fit_aodai','aw_rainbow'],once:true,tag:'Chỉ 1 lần',desc:'300💎 + Áo dài đỏ + Mái hiên cầu vồng'},
   {id:'card',icon:'📅',name:'Thẻ tháng',vnd:49000,gems:150,card:30,daily:30,tag:'Lời nhất',desc:'Nhận 150💎 ngay + 30💎 mỗi sáng trong 30 ngày (tổng 1.050💎)'},
   {id:'lux',icon:'👑',name:'Gói Tiểu thư',vnd:149000,gems:700,items:['fit_princess','hat_crown','cat_crown'],once:true,tag:'Chỉ 1 lần',desc:'700💎 + Váy công chúa hồng + Vương miện + Vương miện mèo'}];
-const PAY_ALL=[...GEM_PACKS.map(p=>({...p,gems:p.gems+p.bonus,base:p.gems})),...GEM_OFFERS,{id:'pass_s1',icon:'🌙',name:'Season Pass Mùa Trăng Rằm',vnd:69000,gems:0,pass:true}];
+const PAY_ALL=[...GEM_PACKS.map(p=>({...p,gems:p.gems+p.bonus,base:p.gems})),...GEM_OFFERS,{id:'pass_s1',icon:'🌙',name:'Season Pass Mùa Trăng Rằm',vnd:40000,gems:0,pass:true}];
 const payBought=id=>!!(S.payBought&&S.payBought[id]);
 const offerValue=o=>o.gems+(o.card?o.card*o.daily:0)+(o.items||[]).reduce((a,i)=>a+(WMAP[i]?WMAP[i].price:0),0);
 function offerLocked(o){ if(o.once&&payBought(o.id)) return 'Đã mua'; if(o.card&&S.card&&S.card.left>0) return `Thẻ còn ${S.card.left} ngày`; return ''; }
@@ -2748,7 +2748,7 @@ window.openInstall=function(){
    Mùa 1 "Trăng Rằm": 01/10 → 31/10 (giờ VN). Trước 01/10 được ĐẶT TRƯỚC: nhận ngay giao diện Trăng Rằm,
    Pass cao cấp tự mở từ 01/10. XP: 500/cấp, 30 cấp, tối đa 600 XP/ngày từ chơi + 50 XP đăng nhập mỗi ngày. */
 const VN_MS=7*3600e3;
-const SEASON={id:'s1',name:'Mùa Trăng Rằm',icon:'🌙',theme:'moon',start:Date.UTC(2026,9,1)-VN_MS,end:Date.UTC(2026,10,1)-VN_MS,price:69000,levels:30,xpPer:500,cap:600};
+const SEASON={id:'s1',name:'Mùa Trăng Rằm',icon:'🌙',theme:'moon',start:Date.UTC(2026,9,1)-VN_MS,end:Date.UTC(2026,10,1)-VN_MS,price:40000,levels:30,xpPer:500,cap:600};
 const PASS_PACK={id:'pass_s1',icon:'🌙',name:'Season Pass Mùa Trăng Rằm',vnd:SEASON.price,gems:0};
 const RG=n=>({gems:n}), RM=n=>({money:n}), RI=id=>({item:id});
 const PASS_REW=[null,

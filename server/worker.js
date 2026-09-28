@@ -14,7 +14,7 @@ const PACKS = {
   card: { vnd: 49000, gems: 150 },
   lux: { vnd: 149000, gems: 700 },
   // Season Pass (game tự mở Pass cao cấp + giao diện mùa)
-  pass_s1: { vnd: 69000, gems: 0 },
+  pass_s1: { vnd: 40000, gems: 0 },
 };
 const CODE_RE = /CLX[A-Z0-9]{10}/;
 const PENDING_TTL = 24 * 3600;      // đơn chưa trả hết hạn sau 1 ngày
