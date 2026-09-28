@@ -43,6 +43,9 @@ a.btn.primary{background:#0068ff;border-color:#0052cc;color:#fff;box-shadow:0 3p
 .loan{background:#eef6ff;border:2px solid #b9d4ff;border-radius:16px;padding:10px 12px;margin:10px 0}.loan .row{flex-wrap:wrap;gap:6px}
 .loan .big{font:800 20px var(--display);color:#1d4f91}
 .savecode{font:800 26px var(--display);letter-spacing:3px;text-align:center;background:var(--panel2);border:2px dashed var(--line);border-radius:14px;padding:10px;margin:8px 0;user-select:all}
+.lbtabs button.on{background:#e5738f;border-color:#c85a76;color:#fff}.lbinfo{font-size:13px;margin:4px 0}
+.lbrw{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}.lbrw span{background:#fff6d6;border:1px solid #f0d27a;border-radius:10px;padding:2px 8px;font-size:12.5px}
+.lbwin{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#fff6d6;border:2px solid #f0d27a;border-radius:14px;padding:8px 10px;margin:8px 0}
 .lb{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:8px}.lb td{padding:6px 4px;border-bottom:1px dashed var(--line);vertical-align:middle;text-align:left}
 .lb td.rk{font:800 16px var(--display);width:34px;text-align:center}.lb tr.me{background:#fff6d6}
 .loan .chips button.on{background:#4a8fd6;border-color:#2f6aa3;color:#fff}
@@ -2409,20 +2412,43 @@ function renderSvc(){
     <div class="foot"><button class="primary" data-branch="1" ${!okB||S.money<bc||S.gems<BRANCH_GEMS||R?'disabled':''}>Mở (${fmtS(bc)}${gemTxt(BRANCH_GEMS)})</button></div></div>`;
   $('#svcCards').innerHTML=html;
 }
-/* ====== 🏆 Bảng xếp hạng (dùng chung máy chủ Cloudflare) ====== */
-let lbLast=0;
-function lbSubmit(force){ if(!S||!PAY_CFG.api||S.over) return; if(!force&&Date.now()-lbLast<20000) return; lbLast=Date.now();
-  fetch(PAY_CFG.api.replace(/\/$/,'')+'/lb',{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:payId(),shop:S.name,worth:Math.round(netWorth()),day:S.day,rep:Math.round(S.rep),stars:+avgStars().toFixed(1)})})
-    .then(r=>r.ok?r.json():null).then(d=>{ if(d&&d.rank){ const was=S.lbRank; S.lbRank=d.rank; if(was&&d.rank<was) toast(`🏆 Lên hạng ${d.rank} bảng xếp hạng!`); } }).catch(()=>{}); }
-window.openLeaderboard=function(){ modal(`<h3>🏆 Bảng xếp hạng</h3><p class="muted" style="font-size:13px;margin-top:0">Xếp theo tổng tài sản (tiền + hàng tồn). Tiệm của bạn được cập nhật sau mỗi ngày bán.</p><div id="lbBody"><p class="muted">Đang tải…</p></div><div class="row"><button onclick="openLeaderboard()">↻ Tải lại</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
+/* ====== 🏆 Bảng xếp hạng: tuần / tháng / mọi thời đại, chỉ tiệm kinh doanh ≥ 14 ngày, thưởng top 10 ====== */
+const LB_MIN_DAY=14; let lbLast=0, lbTab='week';
+const lbApi=p=>PAY_CFG.api.replace(/\/$/,'')+p;
+function lbSubmit(force){ if(!S||!PAY_CFG.api||S.over||S.day<LB_MIN_DAY) return; if(!force&&Date.now()-lbLast<90000) return; lbLast=Date.now();
+  fetch(lbApi('/lb'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:payId(),shop:S.name,worth:Math.round(netWorth()),day:S.day,rep:Math.round(S.rep),stars:+avgStars().toFixed(1)})})
+    .then(r=>r.ok?r.json():null).then(d=>{ const w=d&&d.rank&&d.rank.week; if(w){ const was=S.lbRank; S.lbRank=w; if(was&&w<was&&w<=10) toast(`🏆 Lên hạng ${w} bảng xếp hạng tuần!`); } }).catch(()=>{}); }
+function lbLeft(ms){ const s=Math.max(0,ms-Date.now())/1000, d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60); return d?`${d} ngày ${h} giờ`:h?`${h} giờ ${m} phút`:`${m} phút`; }
+window.lbSetTab=function(t){ lbTab=t; openLeaderboard(true); };
+window.openLeaderboard=function(keep){ const tabs=[['week','📅 Tuần này'],['month','🗓️ Tháng này'],['all','👑 Mọi thời đại']];
+  modal(`<h3>🏆 Bảng xếp hạng</h3><div class="row chips lbtabs">${tabs.map(([k,l])=>`<button class="sm ${lbTab===k?'on':''}" onclick="lbSetTab('${k}')">${l}</button>`).join('')}</div>
+    <p class="muted" style="font-size:12.5px;margin:6px 0">Xếp theo <b>tổng vốn</b> (tiền + hàng tồn). Chỉ tiệm đã kinh doanh <b>từ ${LB_MIN_DAY} ngày</b> trở lên mới được xếp hạng.${S&&S.day<LB_MIN_DAY?` Tiệm của bạn: ngày ${S.day}/${LB_MIN_DAY}.`:''}</p>
+    <div id="lbBody"><p class="muted">Đang tải…</p></div><div class="row"><button onclick="openLeaderboard(true)">↻ Tải lại</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
   if(!PAY_CFG.api) return;
-  lbSubmit(true);
-  setTimeout(()=>fetch(PAY_CFG.api.replace(/\/$/,'')+'/lb').then(r=>{ if(!r.ok) throw 0; return r.json(); }).then(d=>{ const el=$('#lbBody'); if(!el) return; const me=S&&S.pid;
+  if(!keep) lbSubmit(true);
+  const pid=S&&S.pid?S.pid:'';
+  setTimeout(()=>fetch(lbApi(`/lb?board=${lbTab}&pid=${pid}`)).then(r=>{ if(!r.ok) throw 0; return r.json(); }).then(d=>{ const el=$('#lbBody'); if(!el) return;
     const medal=i=>['🥇','🥈','🥉'][i]||(i+1);
-    const rows=d.list.map((r,i)=>`<tr class="${r.pid===me?'me':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.pid===me?' <span class="viptag">Bạn</span>':''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b></td></tr>`).join('');
-    const mine=d.list.findIndex(r=>r.pid===me);
-    el.innerHTML=(rows?`<table class="lb">${rows}</table>`:'<p>Chưa có ai, bạn là người đầu tiên! 🎉</p>')+(me&&mine<0?`<p class="muted" style="font-size:13px">Tiệm của bạn (${fmtS(netWorth())}) chưa vào top ${d.list.length}. Cố lên!</p>`:''); })
-    .catch(()=>{ const el=$('#lbBody'); if(el) el.innerHTML=`<p>Không tải được bảng xếp hạng. Nếu bạn đang mở game trong app khác, hãy mở ở <a href="${PAY_CFG.site}" target="_blank" rel="noopener">trang chính</a>.</p>`; }),400); };
+    let h='';
+    if(d.endsAt) h+=`<div class="lbinfo">⏳ Kết thúc sau <b>${lbLeft(d.endsAt)}</b> · Top 10 nhận thưởng</div>
+      <div class="lbrw">${d.rewards.slice(0,4).map((g,i)=>`<span>${i<3?medal(i):'4–10'} <b>${g}💎</b></span>`).join('')}</div>`;
+    const rows=d.list.map((r,i)=>`<tr class="${r.me?'me':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.me?' <span class="viptag">Bạn</span>':''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b>${d.rewards&&i<10?`<br><small class="good">+${d.rewards[i]}💎</small>`:''}</td></tr>`).join('');
+    h+=rows?`<table class="lb">${rows}</table>`:`<p>Chưa có tiệm nào đủ ${LB_MIN_DAY} ngày kinh doanh. Hãy là người đầu tiên! 🎉</p>`;
+    if(S&&S.day>=LB_MIN_DAY&&!d.myRank) h+=`<p class="muted" style="font-size:13px">Tiệm của bạn (${fmtS(netWorth())}) chưa vào top ${Math.max(d.total,1)}. Cố lên!</p>`;
+    else if(d.myRank>50) h+=`<p class="muted" style="font-size:13px">Bạn đang hạng ${d.myRank}.</p>`;
+    el.innerHTML=h; })
+    .catch(()=>{ const el=$('#lbBody'); if(el) el.innerHTML=`<p>Không tải được bảng xếp hạng. Nếu bạn đang mở game trong app khác, hãy mở ở <a href="${PAY_CFG.site}" target="_blank" rel="noopener">trang chính</a>.</p>`; }),keep?50:400); };
+// Thưởng tuần/tháng: kiểm tra khi vào game, người chơi bấm nhận
+function lbCheckRewards(){ if(!S||!PAY_CFG.api||!S.pid) return;
+  fetch(lbApi('/lb/reward?pid='+S.pid)).then(r=>r.ok?r.json():null).then(d=>{ if(!d||!d.rewards||!d.rewards.length||$('#modal').classList.contains('show')) return;
+    const nm=x=>x.type==='week'?`tuần ${x.period.slice(-2)}`:`tháng ${+x.period.slice(-2)}/${x.period.slice(1,5)}`;
+    sfx('reward');
+    modal(`<h3>🏆 Chúc mừng! Bạn có thưởng xếp hạng</h3>${d.rewards.map(x=>`<div class="lbwin"><div>${['🥇','🥈','🥉'][x.rank-1]||'🏅'} Hạng <b>${x.rank}</b> bảng xếp hạng <b>${nm(x)}</b></div><button class="primary" onclick="lbClaim('${x.period}',this)">Nhận ${x.gems}💎</button></div>`).join('')}
+      <div class="row"><button onclick="closeModal()">Để sau</button></div>`); }).catch(()=>{}); }
+window.lbClaim=function(period,btn){ btn.disabled=true; btn.textContent='Đang nhận…';
+  fetch(lbApi('/lb/claim'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:S.pid,period})}).then(r=>r.json()).then(d=>{
+    if(d.gems){ S.gems+=d.gems; (S.lbWins=S.lbWins||[]).push({period,rank:d.rank,gems:d.gems}); autosave(); sfx('reward'); btn.textContent=`✓ Đã nhận ${d.gems}💎`; renderHeader(); toast(`🏆 +${d.gems}💎 thưởng xếp hạng!`); }
+    else { btn.textContent='Đã nhận trước đó'; } }).catch(()=>{ btn.disabled=false; btn.textContent='Thử lại'; }); };
 
 /* ====== 📱 Cài game như ứng dụng (PWA) ====== */
 let installEvt=null;
@@ -3053,6 +3079,7 @@ function startPlaying(){
   selCat=CAT_KEYS[0];
   renderChips(); gotoTab('store'); refreshAll();
   $('#log').innerHTML=''; logMsg(`🏪 ${S.name} – ngày ${S.day}. Nhập hàng rồi mở cửa nhé!`,'ok');
+  setTimeout(lbCheckRewards,2500);
 }
 function toHome(){
   closeModal(); R=null; userPaused=false; $('#tut').hidden=true; tutI=-1;
