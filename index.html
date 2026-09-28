@@ -27,6 +27,8 @@ button.primary{background:var(--brand);border-color:var(--brandDk);color:#fff;bo
 a.btn{display:inline-block;text-decoration:none;font-weight:800;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:6px 12px}
 a.btn.primary{background:#0068ff;border-color:#0052cc;color:#fff;box-shadow:0 3px 0 #0052cc}
 .supqr{display:flex;gap:10px;align-items:center;background:#eef5ff;border:2px solid #b9d4ff;border-radius:12px;padding:8px;margin:0 0 10px}.supqr img{width:96px;height:96px;flex:0 0 auto;border-radius:6px;background:#fff}
+#bankBanner{position:fixed;left:50%;top:10px;transform:translate(-50%,-140%);z-index:9999;background:#fff;color:#1c2b3a;border:2px solid #0068ff;border-radius:16px;padding:8px 14px;box-shadow:0 6px 18px rgba(0,60,160,.25);font-size:14px;line-height:1.3;min-width:220px;max-width:calc(100vw - 32px);transition:transform .35s cubic-bezier(.2,1.4,.4,1)}
+#bankBanner.show{transform:translate(-50%,0)}#bankBanner b{color:#0a8f3c;font-size:16px}
 .supinfo{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:2px dashed var(--line);border-radius:12px;padding:8px 10px;font-size:12px;max-height:160px;overflow:auto;margin:6px 0 10px}
 button.primary:hover:not(:disabled){background:var(--brand2);border-color:var(--brandDk)}
 button.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--brandDk)}
@@ -1253,6 +1255,52 @@ function sfx(name){ if(!SFX.on) return; const a=sfxCtx(); if(!a||!SOUNDS[name]) 
 // tiếng "tách" cho mọi nút chưa có âm riêng
 document.addEventListener('click',e=>{ const b=e.target.closest('button,a.btn,.pack,.offer,.wd-item,[data-tab]'); if(!b||b.disabled) return; if(performance.now()-SFX.last>60) sfx('tick'); });
 window.toggleSound=function(){ SFX.on=!SFX.on; try{ localStorage.setItem('clx-sound',SFX.on?'1':'0'); }catch(e){} if(SFX.on) sfx('ready'); toast(SFX.on?'🔊 Đã bật âm thanh':'🔇 Đã tắt âm thanh'); };
+/* ====== 🎵 Nhạc nền (tự sáng tác bằng Web Audio, lặp vô hạn) ====== */
+const MUSIC={on:true,gain:null,timer:null,step:0,next:0,bar:0};
+try{ MUSIC.on=localStorage.getItem('clx-music')!=='0'; }catch(e){}
+const mhz=m=>440*Math.pow(2,(m-69)/12);
+const M_CH=[[60,64,67],[57,60,64],[53,57,60],[55,59,62]];            // C – Am – F – G
+const _=null, M_MEL=[
+  [76,_,79,_,81,79,76,_, 72,_,76,_,74,_,72,_, 69,_,72,_,74,76,74,_, 71,_,74,_,79,_,_,_],
+  [79,_,81,_,84,81,79,_, 76,_,79,_,81,_,76,_, 77,_,81,_,84,_,81,_, 79,_,77,_,74,_,_,_]];
+const M_EIGHTH=60/96/2;
+function mNote(f,t,dur,type,vol){ const a=SFX.ctx, o=a.createOscillator(), g=a.createGain(); o.type=type; o.frequency.value=f;
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g); g.connect(MUSIC.gain); o.start(t); o.stop(t+dur+0.03); }
+function musicTick(){ const a=SFX.ctx; if(!a||!MUSIC.on||document.hidden) return;
+  if(MUSIC.next<a.currentTime) MUSIC.next=a.currentTime+0.05;
+  while(MUSIC.next<a.currentTime+0.35){ const st=MUSIC.step%32, bar=Math.floor(st/8), ch=M_CH[bar], t=MUSIC.next, i=st%8, phrase=M_MEL[Math.floor(MUSIC.step/32)%2];
+    const arp=[0,1,2,1,0,1,2,1][i], oct=i>=4?12:0; mNote(mhz(ch[arp]+oct),t,M_EIGHTH*1.6,'triangle',0.05);   // rải hợp âm
+    if(i===0||i===4) mNote(mhz(ch[0]-12),t,M_EIGHTH*3.2,'sine',0.12);                                       // bass
+    const m=phrase[st]; if(m) mNote(mhz(m),t,M_EIGHTH*(phrase[st+1]===_?2.2:1.2),'square',0.018);            // giai điệu
+    if(i%2===1) { const n=a.createBufferSource(), b=a.createBuffer(1,a.sampleRate*0.02,a.sampleRate), d=b.getChannelData(0); for(let k=0;k<d.length;k++) d[k]=(Math.random()*2-1)*(1-k/d.length); n.buffer=b; const hp=a.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=7000; const g=a.createGain(); g.gain.value=0.025; n.connect(hp); hp.connect(g); g.connect(MUSIC.gain); n.start(t); } // hi-hat nhẹ
+    MUSIC.step++; MUSIC.next+=M_EIGHTH; } }
+function musicStart(){ if(!MUSIC.on) return; const a=sfxCtx(); if(!a) return;
+  if(!MUSIC.gain){ MUSIC.gain=a.createGain(); MUSIC.gain.gain.value=0.55; MUSIC.gain.connect(a.destination); }
+  MUSIC.gain.gain.setTargetAtTime(0.55,a.currentTime,0.3);
+  if(!MUSIC.timer) MUSIC.timer=setInterval(musicTick,90); }
+function musicStop(){ clearInterval(MUSIC.timer); MUSIC.timer=null; if(MUSIC.gain&&SFX.ctx) MUSIC.gain.gain.setTargetAtTime(0.0001,SFX.ctx.currentTime,0.15); }
+['pointerdown','touchstart','keydown'].forEach(ev=>window.addEventListener(ev,()=>{ if(MUSIC.on&&!MUSIC.timer) musicStart(); },{passive:true}));
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&MUSIC.on&&SFX.ctx) MUSIC.next=0; });
+window.toggleMusic=function(){ MUSIC.on=!MUSIC.on; try{ localStorage.setItem('clx-music',MUSIC.on?'1':'0'); }catch(e){} if(MUSIC.on) musicStart(); else musicStop(); toast(MUSIC.on?'🎵 Đã bật nhạc nền':'🎵 Đã tắt nhạc nền'); };
+
+/* ====== 📲 Loa báo chuyển khoản (ting ting + giọng đọc) ====== */
+const VOICE={on:true,v:null};
+try{ VOICE.on=localStorage.getItem('clx-voice')!=='0'; }catch(e){}
+function pickViVoice(){ try{ const vs=speechSynthesis.getVoices(); VOICE.v=vs.find(v=>/^vi/i.test(v.lang))||null; }catch(e){} }
+if('speechSynthesis' in window){ pickViVoice(); speechSynthesis.addEventListener?.('voiceschanged',pickViVoice); }
+function soVN(n){ n=Math.round(n/100)*100; const tr=Math.floor(n/1e6), ng=Math.floor(n%1e6/1000), tm=Math.floor(n%1000/100), p=[];
+  if(tr) p.push(`${tr} triệu`); if(ng) p.push(`${ng} nghìn`); if(tm) p.push(`${tm} trăm`); return (p.join(' ')||'0')+' đồng'; }
+const khongDau=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toUpperCase();
+SOUNDS.bank=()=>{ tone(1568,0,0.16,{vol:0.22}); tone(2093,0.14,0.34,{vol:0.22}); tone(1568,0.42,0.14,{vol:0.18}); tone(2093,0.54,0.4,{vol:0.2}); };   // "ting ting"
+function bankNotify(c){ const amt=c.paidAmt||0; if(!amt) return; sfx('bank');
+  const bank=(PAY_BANKS&&PAY_BANKS[PAY_CFG.bin])||'Ngân hàng';
+  bankBanner(`📲 ${bank}: <b>+${fmtVND(amt)}</b><br><small>từ ${esc(khongDau(c.name.replace(/\s*\(.*\)$/,'')))} · CK mua hàng</small>`);
+  if(SFX.on&&VOICE.on&&VOICE.v&&'speechSynthesis' in window){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(`Đã nhận được ${soVN(amt)}`); u.voice=VOICE.v; u.lang=VOICE.v.lang; u.rate=1.05; u.volume=0.9; setTimeout(()=>speechSynthesis.speak(u),650); }catch(e){} } }
+let bankT=null;
+function bankBanner(html){ let el=$('#bankBanner'); if(!el){ el=document.createElement('div'); el.id='bankBanner'; document.body.appendChild(el); }
+  el.innerHTML=html; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); clearTimeout(bankT); bankT=setTimeout(()=>el.classList.remove('show'),2600); }
+window.toggleVoice=function(){ VOICE.on=!VOICE.on; try{ localStorage.setItem('clx-voice',VOICE.on?'1':'0'); }catch(e){} toast(VOICE.on?(VOICE.v?'🗣️ Đã bật loa đọc chuyển khoản':'🗣️ Đã bật, nhưng máy chưa có giọng tiếng Việt – chỉ có tiếng ting ting'):'🗣️ Đã tắt loa đọc chuyển khoản'); };
 function tapProduct(id){
   const el=$(`#bins [data-p="${id}"]`);
   const bump=cls=>{ sfx(cls==='pop'?'pick':'nope'); if(el){ el.classList.remove('pop','nope'); void el.offsetWidth; el.classList.add(cls); } };
@@ -1294,8 +1342,9 @@ function checkDone(c){
 function collectPay(){
   const c=R&&R.cur; if(!c||c.stage!=='pay') return;
   const fast=c.waited<c.patience*0.4;
-  c.byYou=true; sfx(c.method==='qr'?'qr':'coin');
-  if(finishCustomer(c)){ S.manualServed=(S.manualServed||0)+1; questProg('hand',1); festPts(2); festMis('hand',1); if(fast) questProg('fast',1); }
+  c.byYou=true;
+  const paid=finishCustomer(c); if(paid){ if(c.method==='qr') bankNotify(c); else sfx('coin'); }
+  if(paid){ S.manualServed=(S.manualServed||0)+1; questProg('hand',1); festPts(2); festMis('hand',1); if(fast) questProg('fast',1); }
   questProg('rev',R.st.rev+R.st.svc);
   if(fast&&Math.random()<0.5) say(c,pick(['Lẹ ghê, cảm ơn nha!','Tiệm dễ thương quá','Mai ghé nữa nha!']),12);
   moneyFloat('+'+fmtS(c.paidAmt||0));
@@ -2590,7 +2639,7 @@ function openMenu(){
       ${R&&R.t<R.close?'<button data-m="early">🔒 Đóng cửa sớm</button>':''}
       <button data-m="save" ${R?'disabled':''}>💾 Lưu game${R?' (khi tiệm đóng cửa)':''}</button>
       <button data-m="help">❓ Hướng dẫn</button>
-      <button data-m="sound">${SFX.on?'🔊 Âm thanh: Bật':'🔇 Âm thanh: Tắt'}</button>
+      <div class="row"><button data-m="sound">${SFX.on?'🔊 Âm thanh: Bật':'🔇 Âm thanh: Tắt'}</button><button data-m="music">${MUSIC.on?'🎵 Nhạc nền: Bật':'🎵 Nhạc nền: Tắt'}</button><button data-m="voice">${VOICE.on?'🗣️ Loa báo CK: Bật':'🗣️ Loa báo CK: Tắt'}</button></div>
       <button data-m="tut">📘 Hướng dẫn từng bước</button>
       ${zaloURL()?'<button data-m="support">🐞 Báo lỗi / Hỗ trợ qua Zalo</button>':''}
       <button data-m="home">🏠 Màn hình chính${R?' (ngày đang dở sẽ không lưu)':''}</button>
@@ -2608,6 +2657,8 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='tut'){ closeMenu(); startTut(); }
   else if(m==='support'){ openSupport(''); }
   else if(m==='sound'){ toggleSound(); b.textContent=SFX.on?'🔊 Âm thanh: Bật':'🔇 Âm thanh: Tắt'; }
+  else if(m==='music'){ toggleMusic(); b.textContent=MUSIC.on?'🎵 Nhạc nền: Bật':'🎵 Nhạc nền: Tắt'; }
+  else if(m==='voice'){ toggleVoice(); b.textContent=VOICE.on?'🗣️ Loa báo CK: Bật':'🗣️ Loa báo CK: Tắt'; }
   else if(m==='early'){ closeMenu(); askCloseEarly(); }
   else if(m==='home'){ userPaused=false; if(!R) autosave(); toHome(); }
 });
