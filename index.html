@@ -1233,7 +1233,7 @@ function orderHTML(c){
 function makeCustomer(){
   const p=genPerson(false);
   const c={...p, id:++R.cid, want:[], basket:[], missing:[], waited:0, mood:'normal', bubble:null, bubT:0, ops:[], addons:[], stage:'queue',
-           patience:rand(16,24)*p.pat*patienceMult()*(1+0.1*Math.min(2,staffOf('stocker').length))};
+           patience:rand(21,31)*p.pat*patienceMult()*(1+0.1*Math.min(2,staffOf('stocker').length))};
   const pool=PRODUCTS.filter(x=>!catLocked(x.cat));
   const n=1+Math.floor(Math.pow(Math.random(),1.2)*5), chosen=new Set();
   for(let i=0;i<n*2&&chosen.size<n;i++){
