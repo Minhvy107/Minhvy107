@@ -17,7 +17,7 @@ Trò chơi trình duyệt: mở tiệm tạp hóa – thực phẩm tươi sốn
 - **📱 Cài như app (PWA)**: thêm biểu tượng vào màn hình chính, chạy toàn màn hình, mở được khi mạng yếu (`manifest.webmanifest`, `sw.js`, `icon-*.png`).
 - **⚙️ Tự động cập nhật máy chủ**: GitHub Actions `.github/workflows/deploy-worker.yml` đưa `server/` lên Cloudflare khi có thay đổi (cần secret `CLOUDFLARE_API_TOKEN` và `CLOUDFLARE_ACCOUNT_ID`).
 - **💡 Cố vấn kinh doanh**: mỗi tối phân tích vì sao lời/lỗ (hàng hỏng, giá cao/thấp/lỗ vốn, hết hàng, khách chờ, lương, dịch vụ, xui rủi, lãi vay) và gợi ý sửa, kèm nút đi tới đúng tab.
-- **🏦 Vay vốn** (lãi 0,3%/ngày, hạn 30 ngày, hạn mức theo uy tín) và **💱 đổi kim cương lấy tiền** (10💎→1tr, 50💎→5,5tr, 100💎→12tr): menu ☰ hoặc tab Báo cáo.
+- **🏦 Vay vốn trả góp** (chọn 10–100 tr, kỳ hạn 3/6/12 tháng; 1 tháng = 10 ngày game; lãi 1,5%/tháng dư nợ giảm dần; góp đều mỗi tháng; xem hợp đồng + lịch trả nợ và tick đồng ý mới giải ngân; tất toán sớm không phí) và **💱 đổi kim cương lấy tiền** (10💎→1tr, 50💎→5,5tr, 100💎→12tr): menu ☰ hoặc tab Báo cáo.
 - **📲 Mã lưu ngắn 8 ký tự** để chuyển game sang máy khác (lưu trên máy chủ 30 ngày; cần cập nhật `server/worker.js` lên Cloudflare).
 - **🔒 Đóng cửa sớm / 😴 Nghỉ một ngày**: đóng cửa bất cứ lúc nào (khách đang chờ vẫn được phục vụ; đóng trước 12:00 trừ 2 uy tín, trước 17:00 trừ 1) hoặc nghỉ bán cả ngày (trừ 3 uy tín, vẫn trả chi phí).
 - **🎪 Sự kiện**: cứ 10 ngày có một lễ hội 5 ngày (Trung thu, Chợ Tết, Lễ hội trái cây, Tuần lễ Sống xanh). Kiếm xu lễ hội, làm nhiệm vụ, nhận mốc thưởng và đồ độc quyền. Thử thách bất ngờ trong ngày: đơn đặt hàng lớn, khách VIP food reviewer, giờ cao điểm.
