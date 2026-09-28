@@ -13,3 +13,16 @@ id = "DIEN_ID_KV_VAO_DAY"
 ALLOWED_ORIGIN = "*"
 
 # Khóa bí mật KHÔNG ghi ở đây. Chạy: npx wrangler secret put SEPAY_API_KEY
+
+# 🎪 Chơi chung thời gian thực (Durable Objects)
+[[durable_objects.bindings]]
+name = "ROOM"
+class_name = "Room"
+
+[[durable_objects.bindings]]
+name = "LOBBY"
+class_name = "Lobby"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room", "Lobby"]
