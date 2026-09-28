@@ -45,6 +45,10 @@ a.btn.primary{background:#0068ff;border-color:#0052cc;color:#fff;box-shadow:0 3p
 .savecode{font:800 26px var(--display);letter-spacing:3px;text-align:center;background:var(--panel2);border:2px dashed var(--line);border-radius:14px;padding:10px;margin:8px 0;user-select:all}
 .lb{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:8px}.lb td{padding:6px 4px;border-bottom:1px dashed var(--line);vertical-align:middle;text-align:left}
 .lb td.rk{font:800 16px var(--display);width:34px;text-align:center}.lb tr.me{background:#fff6d6}
+.loan .chips button.on{background:#4a8fd6;border-color:#2f6aa3;color:#fff}
+.loanbox{background:#fff;border:2px dashed #b9d4ff;border-radius:12px;padding:8px 10px;margin:8px 0;font-size:13.5px}
+.loantbl{width:100%;border-collapse:collapse;font-size:13.5px;table-layout:fixed}.loantbl td{white-space:normal!important;overflow-wrap:anywhere}.loantbl td:first-child{width:38%}.loantbl td,.loantbl th{padding:5px 4px;border-bottom:1px dashed var(--line);text-align:left}
+.loantbl td:last-child{text-align:right}.loantbl.sched{font-size:12px}.loantbl.sched td,.loantbl.sched th{text-align:right}.loantbl.sched td:first-child,.loantbl.sched th:first-child{text-align:center}
 .supinfo{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:2px dashed var(--line);border-radius:12px;padding:8px 10px;font-size:12px;max-height:160px;overflow:auto;margin:6px 0 10px}
 button.primary:hover:not(:disabled){background:var(--brand2);border-color:var(--brandDk)}
 button.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--brandDk)}
@@ -2215,7 +2219,7 @@ function endDay(){
     if(lost){ spoilList.push(`${p.icon} ${p.name} ×${lost}`); spoilVal.push({id:p.id,q:lost,v:lv}); }
   }
   const costs=dailyCosts(); S.money-=costs.total;
-  const loanInt=loanDaily();
+  const loanR=loanDaily(), loanInt=loanR.int;
   let night=0;
   if(Math.random()<0.05*(S.eq.camera?0.4:1)*(S.eq.alarm?0.2:1)){ night=round(rand(1.5e6,5e6),100e3); S.money-=night; }
   let branch=0; if(S.branches){ branch=Math.round(S.branches*(1.2e6+S.rep*45e3)*rand(0.8,1.2)); S.money+=branch; }
@@ -2241,7 +2245,7 @@ function endDay(){
 
   const top=Object.entries(R.sold).sort((a,b)=>b[1]*S.price[b[0]]-a[1]*S.price[a[0]]).slice(0,3).map(([id,q])=>`${PMAP[id].icon} ${PMAP[id].name} ×${q}`);
   const missed=Object.entries(R.missed).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([id,q])=>`${PMAP[id].icon} ${PMAP[id].name} (${q})`);
-  const x={costs,top,missed,spoilList,spoilVal,spoil,night,branch,tax,loanInt,repDelta:S.rep-repBefore,r,avg,nrev:todays.length,missedRaw:{...R.missed},sold:{...R.sold}};
+  const x={costs,top,missed,spoilList,spoilVal,spoil,night,branch,tax,loanInt,loanPay:loanR.pay,repDelta:S.rep-repBefore,r,avg,nrev:todays.length,missedRaw:{...R.missed},sold:{...R.sold}};
   S.lastAdv={day:S.day+1,profit,items:adviseDay(rec,x)};
   R=null; if(speed===0) setSpeedBtn(1);
   S.day++;
@@ -2470,7 +2474,7 @@ function adviseDay(rec,x){
   const bad=S.reviews.filter(v=>v.stars<=2&&!v.reply).length;
   if(S.rep<45||bad>=3) add((50-Math.min(50,S.rep))*40e3+bad*30e3,'💚',`Uy tín ${Math.round(S.rep)}${S.rep<45?' nên khách còn ít':''}`,`${bad?`Còn ${bad} đánh giá xấu chưa trả lời, trả lời để gỡ uy tín. `:''}Tự tay phục vụ nhanh để khách chấm 5 sao, giữ giá bằng chợ và đừng để kệ trống.`,'reviews','⭐ Xem đánh giá');
   // 9. Lãi vay
-  if(x.loanInt>0&&S.loan) add(x.loanInt*3,'🏦',`Trả lãi vay ${fmtS(x.loanInt)}/ngày`,`Còn nợ ${fmtS(S.loan.amt)}, hạn trả ngày ${S.loan.due}. Khi dư tiền, trả bớt nợ để đỡ tiền lãi.`,'report','🏦 Trả nợ');
+  if(S.loan&&S.loan.bal>0&&(x.loanPay||S.loan.next-S.day<=3)) add((x.loanInt||0)*3+200e3,'🏦',x.loanPay?`Vừa trả góp ${fmtS(x.loanPay)}`:`Sắp đến kỳ trả góp (ngày ${S.loan.next})`,`Còn nợ ${fmtS(S.loan.bal)}, đã trả ${S.loan.paid}/${S.loan.n} kỳ. Giữ đủ tiền trong tài khoản để khỏi bị phạt trễ hạn; dư tiền thì tất toán sớm để đỡ lãi.`,'report','🏦 Xem khoản vay');
   // 10. Xui rủi
   const bad2=r.incident+x.night+r.theft;
   if(bad2>300e3) add(bad2*0.6,'🎲',`Xui rủi mất ${fmtS(bad2)}`,[r.incident?`sự cố/phạt ${fmtS(r.incident)}`:'',x.night?`trộm đêm ${fmtS(x.night)}`:'',r.theft?`trộm vặt ${fmtS(r.theft)}`:''].filter(Boolean).join(', ')+`. ${(!S.eq.license||!S.eq.extinguisher)?'Mua đủ Giấy phép và Bình chữa cháy để khỏi bị phạt. ':''}${(x.night||r.theft)&&!S.eq.camera?'Camera và chuông báo trộm giúp giảm mất trộm.':''}`,'equip','🛠️ Nâng cấp');
@@ -2483,32 +2487,73 @@ function advHTML(a,inModal){ if(!a) return inModal?'':'<div class="adv"><div cla
   return `<div class="adv${lose?' lose':''}"><div class="adv-h">${head}</div>`+(items.length?items.map((it,i)=>`<div class="adv-i"><span class="adv-ic">${it.icon}</span><div><b>${i+1}. ${it.title}</b><div class="adv-t">${it.tip}</div>${it.tab?`<button class="sm" onclick="closeModal();${inModal?'checkMiles();':''}gotoTab('${it.tab}')">${it.btn}</button>`:''}</div></div>`).join('')
     :'<p style="margin:4px 0 0">Mọi thứ đang ổn: giá hợp lý, ít hàng hỏng, khách hài lòng. Cứ giữ phong độ nhé!</p>')+'</div>'; }
 
-/* ====== 🏦 Tài chính: vay vốn ngân hàng + đổi kim cương lấy tiền ====== */
-const LOAN_RATE=0.003, LOAN_DAYS=30;                       // lãi 0,3%/ngày, hạn 30 ngày
+/* ====== 🏦 Tài chính: vay trả góp hàng tháng + đổi kim cương lấy tiền ======
+   1 tháng trong game = 10 ngày. Lãi 1,5%/tháng tính trên dư nợ giảm dần, trả góp đều (gốc + lãi) mỗi tháng. */
+const LOAN_MONTH=10, LOAN_RATE=0.015, LOAN_TERMS=[3,6,12], LOAN_AMTS=[10e6,20e6,30e6,50e6,80e6,100e6];
 const loanLimit=()=>Math.min(100e6,round(15e6+S.rep*0.5e6+Math.max(0,S.day-1)*0.5e6,1e6));
 const GEM_SWAP=[[10,1e6],[50,5.5e6],[100,12e6]];            // 💎 → tiền
-function loanDaily(){ const L=S.loan; if(!L||L.amt<=0) return 0;
-  const over=S.day>L.due, int=Math.round(L.amt*LOAN_RATE*(over?2:1)/100)*100; S.money-=int;
-  if(over){ S.rep=clamp(S.rep-1,0,100); if(S.day>L.due+7){ S.money-=L.amt; S.loanNote=`🏦 Quá hạn 7 ngày, ngân hàng đã tự thu nợ ${fmtS(L.amt)} từ tài khoản.`; S.loan=null; } else S.loanNote=`🏦 Khoản vay đã quá hạn: lãi gấp đôi và uy tín −1 mỗi ngày. Hãy trả nợ sớm!`; }
-  return int; }
-function financeHTML(){ const L=S.loan, lim=loanLimit(), owe=L?L.amt:0, room=Math.max(0,lim-owe);
-  const opts=[5e6,10e6,20e6,50e6].filter(v=>v<=room);
-  let h=`<div class="loan"><div class="adv-h">🏦 Vay vốn ngân hàng</div>`;
-  if(L) h+=`<div>Đang nợ <span class="big">${fmtS(owe)}</span> · lãi ${fmtS(Math.round(owe*LOAN_RATE/100)*100)}/ngày · hạn trả <b>ngày ${L.due}</b>${S.day>L.due?' <span class="bad">(quá hạn!)</span>':` (còn ${L.due-S.day+1} ngày)`}</div>
-    <div class="row" style="margin-top:6px">${[5e6,10e6].filter(v=>v<owe).map(v=>`<button class="sm" onclick="loanRepay(${v})" ${S.money<v?'disabled':''}>Trả ${fmtS(v)}</button>`).join('')}<button class="sm primary" onclick="loanRepay(${owe})" ${S.money<owe?'disabled':''}>Trả hết ${fmtS(owe)}</button></div>`;
-  h+=`<div class="muted" style="font-size:12.5px;margin:6px 0">Lãi 0,3%/ngày (vay 10 tr trả 30k/ngày), hạn ${LOAN_DAYS} ngày, trả sớm lúc nào cũng được. Hạn mức theo uy tín và số ngày kinh doanh: <b>${fmtS(lim)}</b>. Quá hạn: lãi gấp đôi, trừ uy tín; quá 7 ngày ngân hàng tự thu.</div>`;
-  h+=opts.length?`<div class="row">${opts.map(v=>`<button class="sm" onclick="loanTake(${v})">Vay ${fmtS(v)}</button>`).join('')}</div>`:`<div class="muted" style="font-size:12.5px">Đã dùng hết hạn mức. Tăng uy tín để được vay thêm.</div>`;
+const loanPmt=(P,n)=>Math.ceil(P*LOAN_RATE/(1-Math.pow(1+LOAN_RATE,-n))/1000)*1000;   // khoản trả mỗi tháng
+function loanSchedule(P,n){ const A=loanPmt(P,n), rows=[]; let bal=P;
+  for(let k=1;k<=n;k++){ const int=Math.round(bal*LOAN_RATE/100)*100, prin=k===n?bal:Math.min(bal,A-int); bal-=prin; rows.push({k,pay:prin+int,prin,int,bal}); }
+  return rows; }
+function loanFix(){ const L=S.loan; if(L&&L.n==null){ const P=Math.max(0,L.amt||0); S.loan=P?{P,n:3,bal:P,paid:0,start:S.day,next:S.day+LOAN_MONTH,late:0}:null; } }
+function loanDaily(){ loanFix(); const L=S.loan; if(!L||S.day<L.next) return {int:0,pay:0};
+  const k=L.paid+1, int=Math.round(L.bal*LOAN_RATE/100)*100, prin=k>=L.n?L.bal:Math.min(L.bal,loanPmt(L.P,L.n)-int), pay=prin+int;
+  const short=S.money<pay; let fee=0;
+  if(short){ fee=Math.round(pay*0.05/1000)*1000; S.rep=clamp(S.rep-2,0,100); L.late=(L.late||0)+1; }
+  S.money-=pay+fee; L.bal-=prin; L.paid=k; L.next+=LOAN_MONTH;
+  S.loanNote=`🏦 Trả góp kỳ ${k}/${L.n}: ${fmtS(pay)} (gốc ${fmtS(prin)}, lãi ${fmtS(int)}).`+(short?` <b class="bad">Không đủ tiền trong tài khoản: phạt trễ hạn ${fmtS(fee)}, uy tín −2.</b>`:'')+(L.bal<=0?' 🎉 Đã trả hết khoản vay!':` Còn nợ ${fmtS(L.bal)}, kỳ sau ngày ${L.next}.`);
+  if(L.bal<=0) S.loan=null;
+  return {int:int+fee,pay:pay+fee}; }
+let loanPick={amt:0,n:6};
+function financeHTML(){ loanFix(); const L=S.loan, lim=loanLimit();
+  let h=`<div class="loan"><div class="adv-h">🏦 Vay vốn trả góp</div>`;
+  if(L){ const A=loanPmt(L.P,L.n);
+    h+=`<div>Đang nợ <span class="big">${fmtS(L.bal)}</span> <span class="muted">/ vay ${fmtS(L.P)}</span></div>
+      <div style="font-size:13px;margin:4px 0">📅 Đã trả <b>${L.paid}/${L.n}</b> kỳ · mỗi kỳ khoảng <b>${fmtS(A)}</b> · kỳ tới <b>tối ngày ${L.next}</b> (còn ${Math.max(0,L.next-S.day)} ngày)${L.late?` · <span class="bad">trễ ${L.late} lần</span>`:''}</div>
+      <div class="bar" style="height:8px;background:#dbe8f7;border-radius:5px;overflow:hidden;margin:4px 0 8px"><i style="display:block;height:100%;width:${Math.round((1-L.bal/L.P)*100)}%;background:#4a8fd6"></i></div>
+      <div class="row"><button class="sm" onclick="askPayoff()" ${S.money<L.bal?'disabled':''}>💰 Tất toán sớm ${fmtS(L.bal)}</button></div>
+      <div class="muted" style="font-size:12px;margin-top:6px">Trả hết khoản này mới vay được khoản mới. Tất toán sớm không mất phí, không tính lãi các tháng còn lại.</div>`; }
+  else { const amts=LOAN_AMTS.filter(v=>v<=lim); if(!amts.includes(loanPick.amt)) loanPick.amt=amts[0]||0;
+    h+=`<div class="muted" style="font-size:12.5px;margin-bottom:6px">Lãi <b>1,5%/tháng</b> trên dư nợ giảm dần · trả góp đều mỗi tháng (1 tháng = ${LOAN_MONTH} ngày trong game) · hạn mức của bạn: <b>${fmtS(lim)}</b> (tăng theo uy tín và số ngày kinh doanh).</div>`;
+    if(!amts.length) h+=`<div class="muted">Chưa đủ hạn mức để vay.</div>`;
+    else { const A=loanPmt(loanPick.amt,loanPick.n), tot=loanSchedule(loanPick.amt,loanPick.n).reduce((a,r)=>a+r.pay,0);
+      h+=`<div style="font-size:13px;font-weight:800">Số tiền vay</div><div class="row chips">${amts.map(v=>`<button class="sm ${v===loanPick.amt?'on':''}" onclick="loanSet('amt',${v})">${fmtS(v)}</button>`).join('')}</div>
+        <div style="font-size:13px;font-weight:800;margin-top:6px">Kỳ hạn</div><div class="row chips">${LOAN_TERMS.map(n=>`<button class="sm ${n===loanPick.n?'on':''}" onclick="loanSet('n',${n})">${n} tháng</button>`).join('')}</div>
+        <div class="loanbox"><div>Trả mỗi tháng: <b>${fmtS(A)}</b></div><div>Tổng lãi: <b>${fmtS(tot-loanPick.amt)}</b> · Tổng phải trả: <b>${fmtS(tot)}</b></div></div>
+        <div class="row"><button class="primary" onclick="askLoan()">Xem hợp đồng & vay</button></div>`; } }
   h+=`</div><div class="loan" style="background:#f3efff;border-color:#cdbdf5"><div class="adv-h">💱 Đổi kim cương lấy tiền</div><div class="muted" style="font-size:12.5px;margin-bottom:6px">Bạn có <b>${S.gems}💎</b>. Đổi càng nhiều càng được giá.</div>
     <div class="row">${GEM_SWAP.map(([g,m])=>`<button class="sm" onclick="gemSwap(${g})" ${S.gems<g?'disabled':''}>${g}💎 → ${fmtS(m)}</button>`).join('')}</div></div>`;
   return h; }
 function renderLoan(){ const el=$('#loanBox'); if(el) el.innerHTML=financeHTML(); }
 function financeRefresh(){ renderHeader(); renderLoan(); if($('#modal').classList.contains('show')&&$('#modalBox').dataset.fin) openFinance(); autosaveSoft(); }
 window.openFinance=function(){ modal(`<h3>🏦 Tài chính</h3>${financeHTML()}<div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>`); $('#modalBox').dataset.fin='1'; };
-window.loanTake=function(v){ const L=S.loan, room=loanLimit()-(L?L.amt:0); if(v>room) return toast('Vượt hạn mức vay');
-  S.loan={amt:(L?L.amt:0)+v,due:S.day+LOAN_DAYS,taken:S.day}; S.money+=v; sfx('coin'); toast(`🏦 Đã vay ${fmtS(v)}, hạn trả ngày ${S.loan.due}`); financeRefresh(); };
-window.loanRepay=function(v){ const L=S.loan; if(!L) return; v=Math.min(v,L.amt); if(S.money<v) return toast('Không đủ tiền để trả');
-  S.money-=v; L.amt-=v; if(L.amt<=0){ S.loan=null; sfx('reward'); toast('🎉 Đã trả hết nợ ngân hàng!'); } else { sfx('done'); toast(`Đã trả ${fmtS(v)}, còn nợ ${fmtS(L.amt)}`); } financeRefresh(); };
-window.gemSwap=function(g){ const o=GEM_SWAP.find(x=>x[0]===g); if(!o||S.gems<g) return; S.gems-=g; S.money+=o[1]; sfx('coin'); toast(`💱 Đổi ${g}💎 được ${fmtS(o[1])}`); financeRefresh(); };
+window.loanSet=function(k,v){ loanPick[k]=v; financeRefresh(); };
+window.askLoan=function(){ loanFix(); if(S.loan) return toast('Hãy trả hết khoản vay hiện tại trước');
+  const P=loanPick.amt, n=loanPick.n; if(!P||P>loanLimit()) return toast('Vượt hạn mức vay');
+  const rows=loanSchedule(P,n), tot=rows.reduce((a,r)=>a+r.pay,0);
+  modal(`<h3>📝 Hợp đồng vay vốn</h3>
+    <table class="loantbl"><tr><td>Số tiền vay</td><td><b>${fmt(P)}</b></td></tr><tr><td>Kỳ hạn</td><td><b>${n} tháng</b> (${n*LOAN_MONTH} ngày trong game)</td></tr>
+      <tr><td>Lãi suất</td><td><b>1,5%/tháng</b>, tính trên dư nợ giảm dần</td></tr><tr><td>Trả mỗi tháng</td><td><b>${fmt(rows[0].pay)}</b></td></tr>
+      <tr><td>Tổng lãi</td><td><b class="bad">${fmt(tot-P)}</b></td></tr><tr><td>Tổng phải trả</td><td><b>${fmt(tot)}</b></td></tr>
+      <tr><td>Kỳ trả đầu tiên</td><td><b>tối ngày ${S.day+LOAN_MONTH}</b></td></tr></table>
+    <details><summary style="cursor:pointer;font-weight:800;margin:6px 0">📅 Xem lịch trả nợ</summary><table class="loantbl sched"><tr><th>Kỳ</th><th>Ngày</th><th>Gốc</th><th>Lãi</th><th>Còn nợ</th></tr>
+      ${rows.map(r=>`<tr><td>${r.k}</td><td>${S.day+r.k*LOAN_MONTH}</td><td>${fmtS(r.prin)}</td><td>${fmtS(r.int)}</td><td>${fmtS(r.bal)}</td></tr>`).join('')}</table></details>
+    <ul style="font-size:12.5px;padding-left:18px"><li>Tiền góp tự trừ vào tài khoản cuối ngày đến hạn.</li><li>Không đủ tiền vẫn bị trừ (tài khoản có thể âm), phạt thêm 5% kỳ đó và <b>uy tín −2</b>.</li><li>Tất toán sớm lúc nào cũng được, không mất phí.</li><li>Nhớ: tài khoản âm 3 ngày liên tiếp là phá sản.</li></ul>
+    <label class="toggle" style="margin:6px 0"><input type="checkbox" id="loanAgree" onchange="$('#loanOk').disabled=!this.checked"> Tôi đã đọc và đồng ý với điều kiện vay</label>
+    <div class="row"><button onclick="openFinance()">Quay lại</button><button class="primary" id="loanOk" disabled onclick="loanTake(${P},${n})">✍️ Xác nhận vay ${fmtS(P)}</button></div>`); };
+window.loanTake=function(P,n){ loanFix(); if(S.loan) return; if(!$('#loanAgree')||!$('#loanAgree').checked) return toast('Hãy tick đồng ý điều kiện vay');
+  if(P>loanLimit()) return toast('Vượt hạn mức vay');
+  S.loan={P,n,bal:P,paid:0,start:S.day,next:S.day+LOAN_MONTH,late:0}; S.money+=P; sfx('coin');
+  toast(`🏦 Đã giải ngân ${fmtS(P)}. Trả ${fmtS(loanPmt(P,n))}/tháng, kỳ đầu tối ngày ${S.day+LOAN_MONTH}`); openFinance(); financeRefresh(); };
+window.askPayoff=function(){ const L=S.loan; if(!L) return; if(S.money<L.bal) return toast('Không đủ tiền để tất toán');
+  const saved=loanSchedule(L.P,L.n).slice(L.paid).reduce((a,r)=>a+r.int,0);
+  modal(`<h3>💰 Tất toán khoản vay?</h3><p>Trả một lần <b>${fmt(L.bal)}</b> để xóa nợ. Bạn tiết kiệm khoảng <b class="good">${fmtS(saved)}</b> tiền lãi các tháng còn lại.</p>
+    <div class="row"><button onclick="openFinance()">Để sau</button><button class="primary" onclick="loanPayoff()">Xác nhận tất toán</button></div>`); };
+window.loanPayoff=function(){ const L=S.loan; if(!L||S.money<L.bal) return; S.money-=L.bal; S.loan=null; sfx('reward'); toast('🎉 Đã tất toán, hết nợ ngân hàng!'); openFinance(); financeRefresh(); };
+window.gemSwap=function(g){ const o=GEM_SWAP.find(x=>x[0]===g); if(!o||S.gems<g) return;
+  modal(`<h3>💱 Đổi kim cương?</h3><p>Đổi <b>${g}💎</b> lấy <b>${fmt(o[1])}</b> tiền trong game. Kim cương đã đổi không lấy lại được.</p><div class="row"><button onclick="openFinance()">Thôi</button><button class="primary" onclick="gemSwapOk(${g})">Đồng ý đổi</button></div>`); };
+window.gemSwapOk=function(g){ const o=GEM_SWAP.find(x=>x[0]===g); if(!o||S.gems<g) return; S.gems-=g; S.money+=o[1]; sfx('coin'); toast(`💱 Đổi ${g}💎 được ${fmtS(o[1])}`); openFinance(); financeRefresh(); };
 
 /* ====== ☁️ Mã lưu ngắn: lưu bản game lên máy chủ, đổi lấy mã 8 ký tự ====== */
 const fmtCode=c=>c.slice(0,4)+'-'+c.slice(4);
@@ -2552,7 +2597,7 @@ function showReport(rec,x){
     ${row('💡 Điện nước','-'+fmt(x.costs.util))}
     ${x.costs.svc?row('🔧 Vận hành dịch vụ','-'+fmt(x.costs.svc)):''}
     ${x.tax?row('🧾 Thuế tuần (1,5% doanh thu)','-'+fmt(x.tax),'warn'):''}
-    ${x.loanInt?row('🏦 Lãi vay ngân hàng','-'+fmt(x.loanInt),'warn'):''}
+    ${x.loanPay?row('🏦 Trả góp ngân hàng (gốc + lãi)','-'+fmt(x.loanPay),'warn'):''}
     <tr><td colspan="2"><hr style="border:none;border-top:1px solid var(--line)"></td></tr>
     ${row('<b>Lãi ròng</b>','<b>'+fmt(rec.profit)+'</b>',rec.profit>=0?'good':'bad')}
     ${row('⭐ Đánh giá hôm nay',x.nrev?`${x.avg.toFixed(1)} sao (${x.nrev} lượt)`:'chưa có')}
