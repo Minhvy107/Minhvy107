@@ -27,7 +27,7 @@ export async function handleSocial(req, env, url, path, json) {
       return json({ shop: { ...s, notes: (s.notes || []).slice(-10).reverse() }, mine }); }
     if (!ID(me) || me === id) return json({ error: 'bad' }, 400);
     if (act === 'like') { if (await KV.get(`lk:${d}:${me}:${id}`)) return json({ error: 'done' }, 409); await KV.put(`lk:${d}:${me}:${id}`, '1', { expirationTtl: 2 * DAY }); s.likes = (s.likes || 0) + 1; await put('shop:' + id, s, 90 * DAY); return json({ ok: true, likes: s.likes }); }
-    if (act === 'gift') { if (await KV.get(`gf:${d}:${me}:${id}`)) return json({ error: 'done' }, 409); await KV.put(`gf:${d}:${me}:${id}`, '1', { expirationTtl: 2 * DAY });
+    if (act === 'gift') { const mine = await get('shop:' + me); if (!mine || (mine.day || 0) < 7) return json({ error: 'young' }, 403); if (await KV.get(`gf:${d}:${me}:${id}`)) return json({ error: 'done' }, 409); await KV.put(`gf:${d}:${me}:${id}`, '1', { expirationTtl: 2 * DAY });
       const inbox = (await get('inbox:' + id)) || []; inbox.push({ from: me, name: clean(body.name, 28), d }); await put('inbox:' + id, inbox.slice(-30), 30 * DAY); return json({ ok: true, gems: GIFT_GEMS }); }
     if (act === 'note') { const text = cleanChat(body.text); if (!text) return json({ error: 'empty' }, 400); if (await KV.get(`nt:${d}:${me}:${id}`)) return json({ error: 'done' }, 409);
       await KV.put(`nt:${d}:${me}:${id}`, '1', { expirationTtl: 2 * DAY }); s.notes = [...(s.notes || []), { name: clean(body.name, 28), text, d }].slice(-20); await put('shop:' + id, s, 90 * DAY); return json({ ok: true }); } }

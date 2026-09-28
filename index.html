@@ -537,9 +537,9 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <div class="chips" id="wdSlots" style="margin-bottom:10px"></div>
     <div class="wd-items" id="wdItems"></div>
     <h3 class="sec" style="margin-top:18px">📋 Nhiệm vụ hôm nay</h3>
-    <p class="muted" style="margin:0 0 8px;font-size:13px">Làm xong nhận kim cương. Nhiệm vụ đổi mỗi sáng, nhiệm vụ đã xong mà quên nhận sẽ được cộng tự động.</p>
+    <p class="muted" style="margin:0 0 8px;font-size:13px">Làm xong nhận kim cương. Nhiệm vụ đổi mỗi ngày (theo ngày thật), nhiệm vụ đã xong mà quên nhận sẽ được cộng tự động khi sang ngày mới.</p>
     <div id="wdQuests"></div>
-    <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: làm nhiệm vụ hằng ngày, đạt mốc thành tích (+20), thắng thử thách bất ngờ (+5), mốc thưởng lễ hội. Cần tiền gấp? <a href="#" onclick="openFinance();return false">💱 Đổi 💎 lấy tiền</a>.</p>
+    <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: nhiệm vụ mỗi ngày (~30), quà 7 ngày, vòng quay, thử thách bất ngờ (tối đa 15/ngày), mốc thành tích (+20), mốc thưởng lễ hội. Cần tiền gấp? <a href="#" onclick="openFinance();return false">💱 Đổi 💎 lấy tiền</a>.</p>
     <h3 class="sec" style="margin-top:14px">💳 Nạp kim cương</h3>
     <div id="wdOffers"></div>
     <div class="packs" id="wdPacks"></div>
@@ -2352,13 +2352,16 @@ function applyAwning(){ const aw=curTheme()==='moon'&&!(S&&S.wear&&S.wear.awning
   st.setProperty('--awg',`repeating-linear-gradient(90deg,${aw.map((c,i)=>`${c} ${i*32}px ${(i+1)*32}px`).join(',')})`);
   st.setProperty('--aws',aw.map((c,i)=>`radial-gradient(circle at ${i*32+16}px 0,${c} 15px,transparent 16px) 0 0/${n}px 14px repeat-x`).join(',')); }
 const QUESTS=[
-  {type:'hand',t:n=>`Tự tay phục vụ ${n} khách`,n:()=>rint(6,12),reward:15},
-  {type:'fast',t:n=>`Phục vụ nhanh ${n} khách (thanh kiên nhẫn còn trên 60%)`,n:()=>rint(4,8),reward:15},
-  {type:'five',t:n=>`Nhận ${n} đánh giá 5 sao`,n:()=>rint(2,4),reward:12},
-  {type:'rev',t:n=>`Doanh thu trong ngày đạt ${fmtS(n)}`,n:()=>round(rand(12e6,26e6),1e6),reward:20},
+  {type:'hand',t:n=>`Tự tay phục vụ ${n} khách`,n:()=>rint(25,45),reward:10},
+  {type:'fast',t:n=>`Phục vụ nhanh ${n} khách (thanh kiên nhẫn còn trên 60%)`,n:()=>rint(15,30),reward:10},
+  {type:'five',t:n=>`Nhận ${n} đánh giá 5 sao`,n:()=>rint(6,12),reward:8},
+  {type:'rev',t:n=>`Doanh thu trong ngày đạt ${fmtS(n)}`,n:()=>round(rand(12e6,26e6),1e6),reward:12},
 ];
-function rollQuests(){ if(!S) return; S.q=QUESTS.slice().sort(()=>Math.random()-0.5).slice(0,3).map(q=>({type:q.type,target:q.n(),prog:0,reward:q.reward,claimed:false})); }
-function settleQuests(){ if(!S||!S.q) return; let g=0; for(const q of S.q) if(!q.claimed&&q.prog>=q.target){ q.claimed=true; g+=q.reward; } if(g){ S.gems+=g; S.pendingGemNote=g; passXp(60*Math.round(g/15)); } }
+/* 💎 Giới hạn kim cương kiếm được mỗi ngày thật theo từng nguồn (không ảnh hưởng 💎 đã có) */
+const GEM_CAP={chal:15,game:20,gift:25};
+function gemGain(k,n){ S.gd=S.gd||{}; const d=vnDay(); if(S.gd.d!==d) S.gd={d}; const cap=GEM_CAP[k]||n, g=Math.max(0,Math.min(n,cap-(S.gd[k]||0))); S.gd[k]=(S.gd[k]||0)+g; S.gems+=g; return g; }
+function rollQuests(){ if(!S) return; if(S.qDay===vnDay()&&S.q&&S.q.length) return; S.qDay=vnDay(); S.q=QUESTS.slice().sort(()=>Math.random()-0.5).slice(0,3).map(q=>({type:q.type,target:q.n(),prog:0,reward:q.reward,claimed:false})); }
+function settleQuests(){ if(!S||!S.q||S.qDay===vnDay()) return; let g=0; for(const q of S.q) if(!q.claimed&&q.prog>=q.target){ q.claimed=true; g+=q.reward; } if(g){ S.gems+=g; S.pendingGemNote=g; passXp(60*Math.round(g/15)); } }
 function questProg(type,v){ if(!S||!S.q) return; for(const q of S.q){ if(q.type!==type||q.claimed) continue; const was=q.prog>=q.target; q.prog=Math.min(q.target,type==='rev'?v:q.prog+v); if(!was&&q.prog>=q.target) toast(`📋 Xong nhiệm vụ: ${QUESTS.find(x=>x.type===type).t(q.target)} – vào Tủ đồ nhận ${q.reward}💎`); } }
 /* ====== 🎪 SỰ KIỆN: lễ hội 5 ngày + thử thách bất ngờ trong ngày ====== */
 const FESTS=[
@@ -2462,7 +2465,7 @@ window.chalAns=function(yes){ const C=R&&R.chal; closeModal(); if(!C||C.state!==
   else { C.state='active'; R.rush={until:R.t+45,bad0:R.st.angry+R.st.missLeft}; logMsg('🚌 Giờ cao điểm bắt đầu! 45 phút khách đông gấp đôi.','ok'); }
   refreshAll(); };
 function chalDone(ok,msg){ const C=R.chal; if(!C||C.state==='done') return; C.state='done'; C.ok=ok; sfx(ok===true?'reward':ok===false?'sad':'done');
-  if(ok===true){ S.chalDone=(S.chalDone||0)+1; S.gems+=5; passXp(80); festPts(50); festMis('chal',1); } else if(ok==='part') festPts(15);
+  if(ok===true){ S.chalDone=(S.chalDone||0)+1; if(!gemGain('chal',5)) setTimeout(()=>toast('💎 Hôm nay đã nhận đủ kim cương từ thử thách, thưởng thêm tiền'),1500), S.money+=500e3; passXp(80); festPts(50); festMis('chal',1); } else if(ok==='part') festPts(15);
   logMsg(msg,ok===false?'warn':'ok'); toast(msg); }
 function vipResult(c,paid){ if(!R||!R.chal||R.chal.type!=='vip'||R.chal.state!=='active') return;
   if(!paid){ S.rep=clamp(S.rep-4,0,100); return chalDone(false,'⭐ Khách VIP bỏ về không vui. Uy tín -4.'); }
@@ -3302,7 +3305,7 @@ function showReport(rec,x){
   if(S.loanNote){ html+=`<p class="bad">${S.loanNote}</p>`; S.loanNote=''; }
   if(S.festNote){ html+=`<p>🎪 ${S.festNote}</p>`; S.festNote=''; }
   if(S.storyNote){ html+=`<div class="story-note">${S.storyNote}</div>`; S.storyNote=''; }
-  if(S.pendingGemNote){ html+=`<p>🎁 Nhiệm vụ hôm qua đã xong: <b>+${S.pendingGemNote}💎</b> được cộng tự động.</p>`; S.pendingGemNote=0; }
+  if(S.pendingGemNote){ html+=`<p>🎁 Nhiệm vụ hôm qua đã xong: <b>+${S.pendingGemNote}💎</b> được cộng tự động. Hôm nay có nhiệm vụ mới!</p>`; S.pendingGemNote=0; }
   if(x.top.length) html+=`<p><b>🔥 Bán chạy:</b> ${x.top.join(', ')}</p>`;
   if(x.missed.length) html+=`<p class="bad"><b>❌ Khách hỏi mà hết:</b> ${x.missed.join(', ')}</p>`;
   if(x.spoilList.length) html+=`<p class="warn"><b>🗑️ Hủy:</b> ${x.spoilList.join(', ')}</p>`;
@@ -4253,8 +4256,8 @@ const T=u=>`<span class="mp-t" data-until="${u}">${mpLeft(u)}s</span>`;
 function mpSettle(s){ const key=s.g+':'+(s.round||s.until);
   if(s.g==='bc'&&s.phase==='roll'&&s.myNet!=null&&!MP.done[key]){ MP.done[key]=1; if(s.myNet){ fairMoney(s.myNet,'bc'); toast(s.myNet>0?`🦀 Thắng ${fmtS(s.myNet)}!`:`🦀 Thua ${fmtS(-s.myNet)}`); if(s.myNet>0) sfx('reward'); } }
   if(s.g==='xd'&&s.phase==='done'&&s.myNet!=null&&!MP.done[key]){ MP.done[key]=1; if(s.myNet){ fairMoney(s.myNet,'xd'); if(s.myNet>0) sfx('reward'); } }
-  if(s.g==='mil'&&s.phase==='end'&&s.rank&&!MP.done[key]){ MP.done[key]=1; const i=s.rank.indexOf(MP.me); if(i===0){ S.money+=3e6; S.gems+=10; cnt('milDuel'); toast('🏆 Hạng nhất! +3tr +10💎'); sfx('reward'); } else if(i===1){ S.money+=1e6; toast('🥈 Hạng nhì! +1tr'); } autosaveSoft(); renderHeader(); }
-  if(['soi','uno','boom'].includes(s.g)&&s.phase==='end'&&s.winners&&!MP.done[key]){ MP.done[key]=1; if(s.winners.includes(MP.me)){ S.money+=1e6; S.gems+=3; cnt('win_'+s.g); toast('🏆 Bạn thắng! +1tr +3💎'); sfx('reward'); autosaveSoft(); renderHeader(); titleCheck(); } } }
+  if(s.g==='mil'&&s.phase==='end'&&s.rank&&!MP.done[key]){ MP.done[key]=1; const i=s.rank.indexOf(MP.me); const hum=s.players.filter(p=>!p.bot&&!p.spect).length; if(i===0){ S.money+=3e6; const g=hum>=2?gemGain('game',10):0; cnt('milDuel'); toast(`🏆 Hạng nhất! +3tr${g?` +${g}💎`:''}`); sfx('reward'); } else if(i===1){ S.money+=1e6; toast('🥈 Hạng nhì! +1tr'); } autosaveSoft(); renderHeader(); }
+  if(['soi','uno','boom'].includes(s.g)&&s.phase==='end'&&s.winners&&!MP.done[key]){ MP.done[key]=1; if(s.winners.includes(MP.me)){ S.money+=1e6; const g=s.players.filter(p=>!p.bot&&!p.spect).length>=2?gemGain('game',3):0; cnt('win_'+s.g); toast(`🏆 Bạn thắng! +1tr${g?` +${g}💎`:''}`); sfx('reward'); autosaveSoft(); renderHeader(); titleCheck(); } } }
 function mpRender(){ const el=$('#mpMain'); if(!el||!MP||!MP.st) return; const s=MP.st; el.innerHTML=({bc:mpBC,xd:mpXD,mil:mpMIL,uno:mpUNO,boom:mpBOOM,soi:mpSOI}[s.g])(s); }
 // 🦀
 function mpBC(s){ const blk=fairBlock(), mx=fairMax(), mine=(s.players.find(p=>p.id===MP.me)||{}).bets||{}, tot=Object.values(mine).reduce((a,b)=>a+b,0), hit=new Set(s.dice||[]);
@@ -4532,7 +4535,7 @@ const socApi=(p,body)=>fetch(PAY_CFG.api.replace(/\/$/,'')+p,body?{method:'POST'
 let socLast=0;
 function shopPub(force){ if(!S||!PAY_CFG.api) return; if(!force&&Date.now()-socLast<20*60e3) return; socLast=Date.now();
   socApi('/shop/pub',{day:S.day,worth:netWorth(),rep:S.rep,stars:+avgStars().toFixed(1),tier:S.tier||0,title:S.title||'',look:mpLook()}).catch(()=>{}); }
-function inboxCheck(){ if(!S||!PAY_CFG.api) return; socApi('/inbox?me='+payId()).then(d=>{ if(d.gifts&&d.gifts.length) socApi('/inbox',{}).then(r=>{ if(r.gems){ S.gems+=r.gems; autosaveSoft(); renderHeader(); toast(`🎁 ${r.gifts.length} người bạn tặng quà: +${r.gems}💎`); sfx('reward'); } }); }).catch(()=>{}); }
+function inboxCheck(){ if(!S||!PAY_CFG.api) return; socApi('/inbox?me='+payId()).then(d=>{ if(d.gifts&&d.gifts.length) socApi('/inbox',{}).then(r=>{ if(r.gems){ const g=gemGain('gift',r.gems); autosaveSoft(); renderHeader(); toast(`🎁 ${r.gifts.length} người bạn tặng quà${g?`: +${g}💎`:''}`); sfx('reward'); } }); }).catch(()=>{}); }
 window.openFriends=function(){ if(!PAY_CFG.api) return toast('Cần mạng để ghé tiệm bạn bè'); S.friends=S.friends||[]; shopPub(true);
   modal(`<h3>🏘️ Tiệm bạn bè</h3><div class="ch-goal" style="text-align:center">Mã tiệm của bạn: <b class="savecode" style="display:inline-block;padding:2px 12px;font-size:20px;margin:4px 0">${payId()}</b><br><button class="sm" onclick="navigator.clipboard&&navigator.clipboard.writeText('${payId()}');toast('Đã chép mã tiệm')">📋 Chép mã gửi bạn</button></div>
     <div class="row"><input id="frCode" maxlength="8" placeholder="Nhập mã tiệm của bạn bè" style="flex:1;min-width:0;text-transform:uppercase"><button class="primary" onclick="frAdd()">➕ Thêm</button></div>
@@ -4545,12 +4548,12 @@ window.frAdd=function(){ const id=($('#frCode').value||'').toUpperCase().replace
   socApi('/shop/'+id).then(()=>{ S.friends=S.friends||[]; if(!S.friends.includes(id)) S.friends.push(id); autosaveSoft(); toast('🏘️ Đã thêm bạn!'); frVisit(id); }).catch(()=>toast('Không tìm thấy tiệm có mã này')); };
 window.frVisit=function(id){ socApi('/shop/'+id+'?me='+payId()).then(d=>{ const s=d.shop, M=d.mine||{};
   modal(`<div class="row" style="gap:10px">${s.look?`<img class="story-av" src="${avatar({...s.look,mood:'happy'})}" alt="">`:''}<div><h3 style="margin:0">${esc(s.name)}</h3>${s.title&&TMAP[s.title]?titleChip(s.title):''}<div class="muted" style="font-size:12.5px">Ngày ${s.day} · ${TIERS[s.tier||0].n} · 💰 ${fmtS(s.worth)} · ⭐ ${s.stars||'–'} · 💚 ${s.rep}</div><div style="font-size:13px">❤️ ${s.likes||0} lượt thích</div></div></div>
-    <div class="row" style="margin-top:10px"><button class="primary" onclick="frDo('${id}','gift')" ${M.gifted?'disabled':''}>🎁 ${M.gifted?'Đã tặng hôm nay':'Tặng quà (+5💎 cả hai)'}</button><button onclick="frDo('${id}','like')" ${M.liked?'disabled':''}>❤️ ${M.liked?'Đã thích':'Thả tim'}</button></div>
+    <div class="row" style="margin-top:10px"><button class="primary" onclick="frDo('${id}','gift')" ${M.gifted?'disabled':''}>🎁 ${M.gifted?'Đã tặng hôm nay':'Tặng quà (+5💎)'}</button><button onclick="frDo('${id}','like')" ${M.liked?'disabled':''}>❤️ ${M.liked?'Đã thích':'Thả tim'}</button></div>
     <div class="ch-goal"><b>📝 Sổ lưu bút</b>${(s.notes||[]).map(n=>`<div style="font-size:12.5px;border-top:1px dashed var(--line);padding:3px 0"><b>${esc(n.name)}:</b> ${esc(n.text)}</div>`).join('')||'<div class="muted" style="font-size:12px">Chưa có lời nhắn nào.</div>'}
       ${M.noted?'':`<div class="row" style="margin-top:6px"><input id="frNote" maxlength="120" placeholder="Viết lời nhắn…" style="flex:1;min-width:0"><button class="sm" onclick="frDo('${id}','note')">✍️ Gửi</button></div>`}</div>
     <div class="row" style="justify-content:flex-end"><button onclick="openFriends()">‹ Bạn bè</button><button class="primary" onclick="closeModal()">Đóng</button></div>`); }).catch(()=>toast('Không tải được tiệm này')); };
 window.frDo=function(id,act){ const body=act==='note'?{text:($('#frNote')||{}).value||''}:{};
-  socApi(`/shop/${id}/${act}`,body).then(r=>{ if(act==='gift'){ S.gems+=r.gems||0; cnt('gift'); toast(`🎁 Đã tặng quà! +${r.gems}💎 cho bạn`); sfx('reward'); autosaveSoft(); renderHeader(); } if(act==='like') toast('❤️ Đã thả tim'); if(act==='note') toast('📝 Đã gửi lời nhắn'); frVisit(id); }).catch(e=>toast(e.code==='done'?'Hôm nay bạn đã làm rồi':'Không gửi được')); };
+  socApi(`/shop/${id}/${act}`,body).then(r=>{ if(act==='gift'){ const g=gemGain('gift',r.gems||0); cnt('gift'); toast(`🎁 Đã tặng quà!${g?` +${g}💎 cho bạn`:' (hôm nay đã đủ 💎 từ tặng quà)'}`); sfx('reward'); autosaveSoft(); renderHeader(); } if(act==='like') toast('❤️ Đã thả tim'); if(act==='note') toast('📝 Đã gửi lời nhắn'); frVisit(id); }).catch(e=>toast(e.code==='done'?'Hôm nay bạn đã làm rồi':e.code==='young'?'Tiệm cần kinh doanh từ ngày 7 mới tặng quà được':'Không gửi được')); };
 
 // 🤝 Hội chủ tiệm
 let GU=null;
@@ -4579,6 +4582,12 @@ function guildAdd(sold){ if(!S.guild||!PAY_CFG.api||!sold) return; socApi('/guil
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-09-29-bal',date:'29/09/2026',title:'⚖️ Cân bằng kim cương',items:[
+    ['📋','Nhiệm vụ nhận 💎 đổi theo ngày thật (3 nhiệm vụ, khoảng 30💎/ngày)','bal'],
+    ['⚡','Thử thách bất ngờ: tối đa 15💎/ngày, vượt mức thưởng tiền','bal'],
+    ['🎮','Trò chơi chung: 💎 chỉ khi có từ 2 người thật trong ván, tối đa 20💎/ngày','bal'],
+    ['🎁','Tặng quà bạn bè: tối đa 25💎/ngày; tiệm từ ngày 7 mới tặng được quà','bal'],
+    ['💎','Kim cương bạn đang có được giữ nguyên','bal']]},
   {v:'2026-09-29-soc',date:'29/09/2026',title:'🏘️ Bạn bè & 🤝 Hội chủ tiệm',items:[
     ['🏘️','Ghé tiệm bạn bè bằng mã tiệm: thả tim, viết sổ lưu bút, tặng quà mỗi ngày (cả hai +5💎)','new'],
     ['🤝','Hội chủ tiệm 20 người: mục tiêu bán hàng mỗi tuần, thưởng 20 · 50 · 150💎, khung chat chung','new']]},
