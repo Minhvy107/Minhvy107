@@ -11,6 +11,7 @@ Trò chơi trình duyệt: mở tiệm tạp hóa – thực phẩm tươi sốn
 - Khách **khen/chê từng sản phẩm** (tươi ngon, rẻ, héo, mắc) ngay tại quầy và trong đánh giá.
 - **👗 Tủ đồ & 💎 kim cương**: mua kiểu tóc (búi messy, sóng dài, afro, song bím, bob mái, wolf cut, búi nửa đầu, vương miện tết, rẽ ngôi, đầu đinh), màu tóc, mũ, trang phục, phụ kiện cho chủ tiệm, màu mái hiên, phụ kiện cho mèo, đồng phục nhân viên. Kim cương kiếm bằng cách chơi (nhiệm vụ hằng ngày, mốc thành tích, thử thách, lễ hội); khách thanh toán chỉ cộng tiền.
 - **💇 Kiểu tóc nhân viên**: trong tab Nhân viên, mỗi người có thể đổi kiểu tóc và màu tóc riêng, dùng những kiểu tiệm đã mua trong Tủ đồ.
+- **🔒 Đóng cửa sớm / 😴 Nghỉ một ngày**: đóng cửa bất cứ lúc nào (khách đang chờ vẫn được phục vụ; đóng trước 12:00 trừ 2 uy tín, trước 17:00 trừ 1) hoặc nghỉ bán cả ngày (trừ 3 uy tín, vẫn trả chi phí).
 - **🎪 Sự kiện**: cứ 10 ngày có một lễ hội 5 ngày (Trung thu, Chợ Tết, Lễ hội trái cây, Tuần lễ Sống xanh). Kiếm xu lễ hội, làm nhiệm vụ, nhận mốc thưởng và đồ độc quyền. Thử thách bất ngờ trong ngày: đơn đặt hàng lớn, khách VIP food reviewer, giờ cao điểm.
 - **💳 Nạp kim cương bằng chuyển khoản VietQR**: game tạo mã QR theo đơn, máy chủ nhỏ (thư mục `server/`, Cloudflare Worker + SePay) tự cộng kim cương khi tiền về. Có gói ưu đãi (Khởi nghiệp, Thẻ tháng, Tiểu thư), gói lớn và x2 lần nạp đầu. Xem `server/HUONG_DAN_NAP.md`.
 - **Tính năng cần 💎 để mở**: tốc độ 2x/4x, nhập theo gợi ý, ô lưu 2 và 3, tự động phục vụ; một số thiết bị, quảng cáo, dịch vụ, chi nhánh cần thêm 💎; săn ứng viên 5 sao bằng 💎.

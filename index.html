@@ -337,6 +337,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <div class="staffrow" id="staffRow"></div>
     <div class="ctl">
       <span class="row speed" id="speed"><button data-s="1" class="on">1x</button><button data-s="2">2x</button><button data-s="4">4x</button></span>
+      <button class="sm" id="btnEarly" hidden onclick="askCloseEarly()">🔒 Đóng cửa sớm</button>
     </div>
     <label class="toggle"><input type="checkbox" id="flash"> Xả hàng tươi sắp hết hạn sau 18:00 (giảm 30%)</label>
     <div id="autoBox"></div>
@@ -1151,7 +1152,7 @@ function startDay(){
   R={t:OPEN, base:dailyBase()*rand(0.9,1.12), queue:[], cur:null, curDelay:0.3, serv:{}, leaving:[], cid:0, shipBusy:{},
      paused:false, ff:false, blackoutUntil:0, slipUntil:0, closedLogged:false, deliv:0,
      st:{visitors:0,served:0,angry:0,missLeft:0,rev:0,svc:0,svcCogs:0,cogs:0,theft:0,caught:0,thieves:0,incident:0,deliv:0},
-     sold:{}, missed:{}, reviews:[], incident:null, chal:chalRoll(), rush:null};
+     sold:{}, missed:{}, reviews:[], incident:null, chal:chalRoll(), rush:null, close:CLOSE};
   if(Math.random()<0.42){
     let pool=INCIDENTS.slice(); if(!S.eq.fridge) pool=pool.filter(x=>x!=='fridge');
     R.incident={t:rand(480,1200), id:pick(pool), fired:false};
@@ -1309,7 +1310,7 @@ function simStep(dt){
   if(R.chal&&R.chal.state==='wait'&&R.t>=R.chal.t){ if($('#modal').classList.contains('show')) R.chal.t+=5; else { chalFire(); if(R.paused) return; } }
   chalTick();
   // khách đến trong giờ mở cửa
-  if(R.t<CLOSE&&R.t>=R.blackoutUntil){
+  if(R.t<R.close&&R.t>=R.blackoutUntil){
     let rate=R.base/(CLOSE-OPEN)*prof(R.t)/PROF_AVG; if(R.t<R.slipUntil) rate*=0.6; if(R.rush&&R.t<R.rush.until) rate*=2.2;
     if(Math.random()<rate*dt){
       if(Math.random()<0.03*(S.eq.camera?0.55:1)) thiefEvent();
@@ -1318,7 +1319,7 @@ function simStep(dt){
     }
     if(S.svc.delivery&&staffOf('shipper').length&&R.deliv<staffOf('shipper').length*18&&Math.random()<rate*0.16*((S.event||{}).deliv||1)*dt) deliveryOrder();
   }
-  if(R.t>=CLOSE&&!R.closedLogged){ R.closedLogged=true; logMsg('🔒 21:30 – Đóng cửa, không nhận thêm khách.','ok'); }
+  if(R.t>=R.close&&!R.closedLogged){ R.closedLogged=true; logMsg(`🔒 ${hhmm(R.close)} – Đóng cửa${R.close<CLOSE?' sớm':''}, không nhận thêm khách.`,'ok'); }
   // quầy của bạn
   if(R.cur){
     const c=R.cur; c.bubT-=dt;
@@ -1350,9 +1351,9 @@ function simStep(dt){
     else { const k=R.queue.findIndex((c,i)=>i>=(R.cur?0:1)&&!c.vip); if(k>=0){ const c=R.queue.splice(k,1)[0]; R.serv[s.id]={c,t:serveTime(c,s.speed)}; } }
   }
   // hết ngày
-  if(R.t>=CLOSE){
+  if(R.t>=R.close){
     const busy=R.cur||R.queue.length||Object.keys(R.serv).length;
-    if(!busy||R.t>=CLOSE+60){
+    if(!busy||R.t>=R.close+60){
       if(R.cur){ finishCustomerAuto(R.cur); R.cur=null; }
       for(const c of R.queue) autoComplete(c);
       for(const k in R.serv) autoComplete(R.serv[k].c);
@@ -1444,7 +1445,7 @@ function renderClosed(){
   const ev=S.event;
   setHTML(ov,S.over?`<h3>💥 Tiệm đã phá sản</h3><p>Âm tiền 3 ngày liên tiếp. Về màn hình chính để chơi lại.</p><button class="pill" onclick="toHome()">🏠 Màn hình chính</button>`:
     `<img class="ownerbig" src="${avatar(ownerView())}" alt="Chủ tiệm"><h3>☀️ Sáng ${DOW[dowOf(S.day)]} · Ngày ${S.day}</h3><p>${ev?`${ev.icon} <b>${ev.name}</b> – ${ev.desc}`:isWeekend(S.day)?'🛍️ Cuối tuần, mọi người hay đi chợ nhiều hơn.':'🌤️ Trời đẹp, ngày bình thường.'}</p>
-     ${festLine()}<p>Nhập hàng ở tab <b>Kho</b> trước khi mở cửa nhé.</p><button class="pill" id="btnOpen">🔓 Mở cửa (6:30)</button>`);
+     ${festLine()}<p>Nhập hàng ở tab <b>Kho</b> trước khi mở cửa nhé.</p><button class="pill" id="btnOpen">🔓 Mở cửa (6:30)</button><br><button class="link" style="margin-top:8px" onclick="askDayOff()">😴 Nghỉ hôm nay</button>`);
 }
 function renderLive(){
   renderQueue(); renderOrder(); renderTray(); renderCats(); renderBins(); renderStaffRow(); renderClosed();
@@ -1452,6 +1453,7 @@ function renderLive(){
   const chip=$('#evChip'); const t=(ev?ev.icon+' '+ev.name:'')+(ads.length?' '+ads.map(a=>a.icon).join(''):'');
   chip.hidden=!t; chip.textContent=t;
   $('#flash').checked=S.flash; renderAutoBox(); renderSpeedBtns(); renderChalBox();
+  $('#btnEarly').hidden=!(R&&R.t<R.close);
 }
 function renderEvent(){}
 const AUTO_COST=8e6, AUTO_SERVED=30, AUTO_REP=45, AUTO_GEMS=60;
@@ -1786,6 +1788,33 @@ function chalTick(){ const C=R.chal; if(!C||C.state!=='active') return;
   if(C.type==='order'&&R.t>=C.due){ S.rep=clamp(S.rep-3,0,100); chalDone(false,`📦 Trễ hạn đơn của ${C.who}. Uy tín -3.`); }
   if(C.type==='rush'&&R.rush&&R.t>=R.rush.until){ const bad=R.st.angry+R.st.missLeft-R.rush.bad0; R.rush=null;
     if(bad<=2) chalDone(true,`🚌 Qua giờ cao điểm êm đẹp (${bad} khách bỏ về): +5💎!`); else chalDone('part',`🚌 Giờ cao điểm kết thúc, ${bad} khách bỏ về. Lần sau cố lên!`); } }
+/* ====== 🔒 Đóng cửa sớm / nghỉ một ngày ====== */
+const earlyRep=t=>t<720?2:t<1020?1:0; // trước 12:00: -2 uy tín, trước 17:00: -1
+function askCloseEarly(){ if(!R||R.t>=R.close) return; const t=R.t, waiting=R.queue.length+(R.cur?1:0)+Object.keys(R.serv).length, pen=earlyRep(t), C=R.chal, notes=[];
+  if(pen) notes.push(`Khách quen tới thấy đóng cửa: <b>uy tín -${pen}</b> (đóng sau 17:00 thì không bị trừ).`);
+  if(C&&C.type==='order'&&C.state==='active') notes.push(`📦 Đơn của <b>${esc(C.who)}</b> chưa giao sẽ bị hủy: <b>uy tín -3</b>. Nên bấm <b>Giao đơn</b> trước khi đóng.`);
+  if(C&&C.type==='rush'&&C.state==='active') notes.push('🚌 Giờ cao điểm sẽ kết thúc ngay khi đóng cửa.');
+  modal(`<h3>🔒 Đóng cửa sớm lúc ${hhmm(t)}?</h3><ul>
+    <li>Không nhận thêm khách mới.${waiting?` <b>${waiting} khách</b> đang chờ vẫn được phục vụ xong.`:''}</li>
+    <li>Lương nhân viên vẫn trả đủ cả ngày, hàng tươi vẫn giảm hạn như bình thường.</li>
+    ${notes.map(n=>`<li>${n}</li>`).join('')}</ul>
+    <div class="row"><button onclick="closeModal()">Mở tiếp</button><button class="primary" onclick="closeEarly()">Đóng cửa</button></div>`); }
+window.askCloseEarly=askCloseEarly;
+window.closeEarly=function(){ closeModal(); if(!R||R.t>=R.close) return;
+  const pen=earlyRep(R.t); if(pen) S.rep=clamp(S.rep-pen,0,100);
+  const C=R.chal;
+  if(C&&C.state==='wait') R.chal=null;
+  else if(C&&C.state==='active'){ if(C.type==='order'){ S.rep=clamp(S.rep-3,0,100); chalDone(false,`📦 Đóng cửa sớm, đơn của ${C.who} bị hủy. Uy tín -3.`); } else if(C.type==='rush'&&R.rush){ R.rush.until=R.t; chalTick(); } }
+  R.close=R.t; R.incident&&!R.incident.fired&&(R.incident.fired=true);
+  logMsg(`🔒 Chủ tiệm cho đóng cửa sớm lúc ${hhmm(R.t)}${pen?` (uy tín -${pen})`:''}.`,'warn'); toast(`🔒 Đóng cửa lúc ${hhmm(R.t)}`);
+  userPaused=false; refreshAll(); };
+function askDayOff(){ if(R||S.over) return;
+  const fresh=PRODUCTS.filter(p=>isFresh(p)&&stockOf(p.id)>0).length;
+  modal(`<h3>😴 Nghỉ bán hôm nay?</h3><ul><li>Tiệm đóng cửa cả ngày, không có doanh thu.</li><li>Vẫn trả lương nhân viên, tiền điện, mặt bằng như mọi ngày.</li>
+    ${fresh?`<li>Hàng tươi (${fresh} mặt hàng) vẫn giảm hạn, có thể bị hỏng.</li>`:''}<li>Khách quen tới thấy đóng cửa: <b>uy tín -3</b>.</li></ul>
+    <div class="row"><button onclick="closeModal()">Thôi, mở cửa</button><button class="primary" onclick="dayOff()">Nghỉ hôm nay</button></div>`); }
+window.askDayOff=askDayOff;
+window.dayOff=function(){ closeModal(); if(R||S.over) return; startDay(); if(!R) return; R.chal=null; R.incident=null; R.close=OPEN; S.rep=clamp(S.rep-3,0,100); logMsg('😴 Hôm nay tiệm nghỉ bán (uy tín -3).','warn'); simStep(0.25); };
 function renderChalBox(){ const el=$('#chalBox'); if(!el) return; const C=R&&R.chal;
   if(!C||C.state!=='active'){ setHTML(el,''); return; }
   let h='';
@@ -2489,7 +2518,7 @@ $('#svcCards').addEventListener('click',e=>{
 function renderHeader(){
   $('#hName').textContent=S.name;
   $('#sDay').textContent=`Ngày ${S.day}`;
-  $('#sClock').textContent=R?hhmm(Math.min(R.t,CLOSE+59)):'06:30';
+  $('#sClock').textContent=R?hhmm(Math.min(R.t,R.close+59)):'06:30';
   $('#sMoney').textContent=fmtS(S.money);
   $('#sMoney').style.color=S.money<0?'var(--bad)':'';
   const a=avgStars();
@@ -2526,6 +2555,7 @@ function openMenu(){
     <div class="col">
       ${R?'<button class="pill" data-m="resume">▶ Chơi tiếp</button>':''}
       <div class="row"><span class="muted">Tốc độ:</span>${[1,2,4].map(s=>`<button class="sm ${speed===s?'on':''}" data-m="sp${s}">${s}x${(s===2&&!hasU('speed2'))||(s===4&&!hasU('speed4'))?' 🔒':''}</button>`).join('')}</div>
+      ${R&&R.t<R.close?'<button data-m="early">🔒 Đóng cửa sớm</button>':''}
       <button data-m="save" ${R?'disabled':''}>💾 Lưu game${R?' (khi tiệm đóng cửa)':''}</button>
       <button data-m="help">❓ Hướng dẫn</button>
       <button data-m="tut">📘 Hướng dẫn từng bước</button>
@@ -2544,6 +2574,7 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='help'){ closeMenu(); gotoTab('help'); }
   else if(m==='tut'){ closeMenu(); startTut(); }
   else if(m==='support'){ openSupport(''); }
+  else if(m==='early'){ closeMenu(); askCloseEarly(); }
   else if(m==='home'){ userPaused=false; if(!R) autosave(); toHome(); }
 });
 
