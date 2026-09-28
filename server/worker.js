@@ -40,7 +40,7 @@ function safeEq(a, b) {
 const LB_MIN_DAY = 14;
 const LB_REWARD = {
   week:  [300, 200, 150, 60, 60, 60, 60, 60, 60, 60],
-  month: [1000, 600, 400, 150, 150, 150, 150, 150, 150, 150],
+  month: [500, 300, 200, 80, 80, 80, 80, 80, 80, 80],
 };
 const DAY = 864e5, VN = 7 * 3600e3;
 const vnDate = ms => new Date(ms + VN);             // đọc các trường UTC = giờ Việt Nam
