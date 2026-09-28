@@ -206,6 +206,7 @@ input[type=text],textarea{font:inherit;padding:8px 12px;border:2px solid var(--l
 .mil-life{display:flex;gap:8px;justify-content:center;margin:10px 0}.mil-life button{border-radius:50%;width:56px;height:38px;padding:0;background:rgba(93,123,255,.2);border:2px solid #8fb0ff;color:#fff;font-size:12px}.mil-life .used{opacity:.3;text-decoration:line-through}
 .mil-lad{margin-top:10px;border-radius:12px;background:rgba(0,0,0,.25);padding:6px 10px;font-size:11.5px;columns:2;column-gap:12px}.mil-lad div{display:flex;justify-content:space-between;padding:1px 4px;border-radius:6px;color:#b9c6ff}.mil-lad .mk{color:#fff;font-weight:900}.mil-lad .past{opacity:.5}.mil-lad .cur{background:linear-gradient(90deg,#ffb93b,#e07b0a);color:#1b1b1b}
 .mil button:not(.primary):not(.fx-back){color:#fff}.mil .row button:not(.primary){background:rgba(255,255,255,.12);border-color:#8fb0ff}
+.mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.mgrid button{padding:6px 1px;font-size:11px;line-height:1.1;position:relative;border-radius:14px;letter-spacing:-.2px;min-height:58px}.mgrid span{display:block;font-size:22px;margin-bottom:2px}.mg2{margin-top:2px}.mgrid i.on{background:#2e9e5b}.mgrid i.off{background:#9aa19b}.mgrid i{position:absolute;top:3px;right:5px;background:var(--bad,#e0303f);color:#fff;border-radius:8px;font-style:normal;font-size:10px;padding:0 5px}
 .story-av{width:64px;height:64px;border-radius:50%;flex:none;background:var(--panel2)}
 .story-b{display:block;width:100%;text-align:left;margin-top:8px;padding:9px 12px}.story-b small{display:block;font-weight:700;font-size:11.5px;opacity:.8}
 .story-note{background:#f3f9ff;border:2px solid #cfe2f7;border-radius:14px;padding:8px 10px;margin:8px 0;font-size:13px;line-height:1.6}
@@ -3520,19 +3521,15 @@ function openMenu(){
       ${R?'<button class="pill" data-m="resume">▶ Chơi tiếp</button>':''}
       <div class="row"><span class="muted">Tốc độ:</span>${[1,2,4].map(s=>`<button class="sm ${speed===s?'on':''}" data-m="sp${s}">${s}x${(s===2&&!hasU('speed2'))||(s===4&&!hasU('speed4'))?' 🔒':''}</button>`).join('')}</div>
       ${R&&R.t<R.close?'<button data-m="early">🔒 Đóng cửa sớm</button>':''}
-      <div class="row"><button data-m="login">🎁 Quà 7 ngày${loginReady()?' <span class="ntag fix">!</span>':''}</button><button data-m="wheel">🎡 Vòng quay${wheelFree()?' <span class="ntag fix">1</span>':''}</button><button data-m="titles">🏅 Danh hiệu</button></div>
-      <div class="row"><button data-m="story">📜 Cốt truyện</button><button data-m="regs">👵 Khách quen</button><button data-m="book">📒 Sổ khách</button></div>
-      <div class="row"><button data-m="cat">🐱 Mèo</button><button data-m="rival">🏬 Đối thủ</button><button data-m="tier">🏪 Nâng cấp tiệm</button></div>
-      <div class="row"><button data-m="friends">🏘️ Tiệm bạn bè</button><button data-m="guild">🤝 Hội chủ tiệm</button></div>
-      <div class="row"><button data-m="fair">🎪 Hội chợ</button><button data-m="mp">🎮 Chơi chung${MP&&MP.ws?' <span class="ntag new">đang trong phòng</span>':''}</button></div>
-      <button data-m="news">📢 Có gì mới${newsUnseen()?' <span class="ntag fix">MỚI</span>':''}</button>
-      <button data-m="finance">🏦 Vay vốn & đổi kim cương</button>
-      ${owns('theme_moon')?`<button data-m="theme">${S.wear.theme==='theme_moon'?'🌙 Giao diện mùa: Bật':'🍃 Giao diện mùa: Tắt'}</button>`:''}
-      <div class="row"><button data-m="lb">🏆 Bảng xếp hạng</button>${isStandalone()?'':'<button data-m="install">📱 Cài như app</button>'}</div>
-      <button data-m="save" ${R?'disabled':''}>💾 Lưu game${R?' (khi tiệm đóng cửa)':''}</button>
-      <button data-m="help">❓ Hướng dẫn</button>
-      <div class="row"><button data-m="sound">${SFX.on?'🔊 Âm thanh: Bật':'🔇 Âm thanh: Tắt'}</button><button data-m="music">${MUSIC.on?'🎵 Nhạc nền: Bật':'🎵 Nhạc nền: Tắt'}</button><button data-m="voice">${VOICE.on?'🗣️ Loa báo CK: Bật':'🗣️ Loa báo CK: Tắt'}</button></div>
-      <button data-m="tut">📘 Hướng dẫn từng bước</button>
+      <div class="mgrid">${[['login','🎁','Quà ngày',loginReady()?'!':''],['wheel','🎡','Vòng quay',wheelFree()?'1':''],['titles','🏅','Danh hiệu',''],['story','📜','Cốt truyện',''],
+        ['regs','👵','Khách quen',''],['book','📒','Sổ khách',''],['cat','🐱','Mèo',''],['rival','🏬','Đối thủ',''],
+        ['tier','🏪','Nâng cấp',''],['friends','🏘️','Bạn bè',''],['guild','🤝','Hội',''],['fair','🎪','Hội chợ',''],['mp','🎮','Chơi chung',MP&&MP.ws?'●':''],
+        ['news','📢','Có gì mới',newsUnseen()?'MỚI':''],['lb','🏆','Xếp hạng',''],['finance','🏦','Vay & đổi','']]
+        .map(([k,ic,t,b])=>`<button data-m="${k}"><span>${ic}</span>${t}${b?`<i>${b}</i>`:''}</button>`).join('')}</div>
+      <div class="mgrid mg2">${[owns('theme_moon')?['theme',S.wear.theme==='theme_moon'?'🌙':'🍃','Giao diện mùa',S.wear.theme==='theme_moon'?'Bật':'Tắt']:null,
+        ['save','💾','Lưu game',R?'🔒':''],['sound',SFX.on?'🔊':'🔇','Âm thanh',SFX.on?'Bật':'Tắt'],['music','🎵','Nhạc nền',MUSIC.on?'Bật':'Tắt'],['voice','🗣️','Loa báo CK',VOICE.on?'Bật':'Tắt'],
+        ['help','❓','Hướng dẫn',''],['tut','📘','Từng bước',''],isStandalone()?null:['install','📱','Cài app','']].filter(Boolean)
+        .map(([k,ic,t,b])=>`<button data-m="${k}" ${k==='save'&&R?'disabled':''}><span>${ic}</span>${t}${b?`<i class="${b==='Bật'?'on':b==='Tắt'?'off':''}">${b}</i>`:''}</button>`).join('')}</div>
       ${zaloURL()?'<button data-m="support">🐞 Báo lỗi / Hỗ trợ qua Zalo</button>':''}
       <button data-m="home">🏠 Màn hình chính${R?' (ngày đang dở sẽ không lưu)':''}</button>
       ${R?'':'<button data-m="close">Đóng</button>'}
