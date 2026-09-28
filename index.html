@@ -292,7 +292,8 @@ button.mini{padding:0 6px;font-size:11px;border-radius:8px;border:1.5px solid va
 .pat{display:flex;align-items:center;gap:8px;margin-top:7px;font:800 11px var(--display);letter-spacing:1px}
 .pb{flex:1;height:12px;border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}
 .pb i{display:block;height:100%;border-radius:6px;transition:width .25s}
-.closedov{position:absolute;inset:0;z-index:4;background:rgba(240,250,243,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:12px}
+.closedov{position:absolute;inset:0;z-index:4;background:rgba(240,250,243,.92);display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:6px;text-align:center;padding:10px 12px;overflow-y:auto}
+.closedov .wx div{min-width:64px;padding:2px 6px}.closedov .wx span{font-size:18px}
 .closedov[hidden]{display:none}
 .closedov h3{font-size:22px}
 .ownerbig{width:78px;height:78px;border-radius:50%;border:3px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.18);background:#fdebd9}
@@ -1726,7 +1727,8 @@ function renderClosed(){
   const ev=S.event;
   setHTML(ov,S.over?`<h3>💥 Tiệm đã phá sản</h3><p>Âm tiền 3 ngày liên tiếp. Về màn hình chính để chơi lại.</p><button class="pill" onclick="toHome()">🏠 Màn hình chính</button>`:
     `<img class="ownerbig" src="${avatar(ownerView())}" alt="Chủ tiệm"><h3>☀️ Sáng ${DOW[dowOf(S.day)]} · Ngày ${S.day}</h3><p>${ev?`${ev.icon} <b>${ev.name}</b> – ${ev.desc}`:isWeekend(S.day)?'🛍️ Cuối tuần, mọi người hay đi chợ nhiều hơn.':'📅 Ngày thường, không có sự kiện đặc biệt.'}</p>
-     ${wxHTML()}${festLine()}<div class="row" style="justify-content:center;gap:6px;margin:4px 0"><button class="sm" onclick="openMarket()">🌅 Chợ đầu mối</button><button class="sm" onclick="openJuice()">🧃 Nước mía${S.juice&&S.juice.own&&S.juice.day!==S.day?' <span class="ntag fix">!</span>':''}</button><button class="sm" onclick="openStory()">📜 Cốt truyện</button></div><p>Nhập hàng ở tab <b>Kho</b> trước khi mở cửa nhé.</p><button class="pill" id="btnOpen">🔓 Mở cửa (6:30)</button><br><button class="link" style="margin-top:8px" onclick="askDayOff()">😴 Nghỉ hôm nay</button>`);
+     <button class="pill" id="btnOpen">🔓 Mở cửa (6:30)</button><button class="link" onclick="askDayOff()">😴 Nghỉ hôm nay</button>
+     ${wxHTML()}${festLine()}<div class="row" style="justify-content:center;gap:6px;margin:2px 0;flex-wrap:wrap"><button class="sm" onclick="openMarket()">🌅 Chợ đầu mối</button><button class="sm" onclick="openJuice()">🧃 Nước mía${S.juice&&S.juice.own&&S.juice.day!==S.day?' <span class="ntag fix">!</span>':''}</button><button class="sm" onclick="openStory()">📜 Cốt truyện</button></div><p>Nhập hàng ở tab <b>Kho</b> trước khi mở cửa nhé.</p>`);
 }
 function renderLive(){
   renderQueue(); renderOrder(); renderTray(); renderCats(); renderBins(); renderStaffRow(); renderClosed();
@@ -2832,6 +2834,7 @@ function endDay(){
 
   const rec={day:S.day, cust:r.served, angry:r.angry+r.missLeft, rev:r.rev+r.svc, cogs:r.cogs+r.svcCogs, loss:spoil+r.theft+night, ops:costs.total+r.incident, tax, profit, stars:avg, rep:S.rep};
   S.hist.push(rec); if(S.hist.length>150) S.hist.shift();
+  try{ guildAdd(Object.values(R.sold||{}).reduce((a,b)=>a+b,0)); shopPub(); }catch(e){}
   S.negDays=S.money<0?S.negDays+1:0; if(S.negDays>=3) S.over=true;
   S.ads.forEach(a=>a.left--); S.ads=S.ads.filter(a=>a.left>0);
 
@@ -3520,6 +3523,7 @@ function openMenu(){
       <div class="row"><button data-m="login">🎁 Quà 7 ngày${loginReady()?' <span class="ntag fix">!</span>':''}</button><button data-m="wheel">🎡 Vòng quay${wheelFree()?' <span class="ntag fix">1</span>':''}</button><button data-m="titles">🏅 Danh hiệu</button></div>
       <div class="row"><button data-m="story">📜 Cốt truyện</button><button data-m="regs">👵 Khách quen</button><button data-m="book">📒 Sổ khách</button></div>
       <div class="row"><button data-m="cat">🐱 Mèo</button><button data-m="rival">🏬 Đối thủ</button><button data-m="tier">🏪 Nâng cấp tiệm</button></div>
+      <div class="row"><button data-m="friends">🏘️ Tiệm bạn bè</button><button data-m="guild">🤝 Hội chủ tiệm</button></div>
       <div class="row"><button data-m="fair">🎪 Hội chợ</button><button data-m="mp">🎮 Chơi chung${MP&&MP.ws?' <span class="ntag new">đang trong phòng</span>':''}</button></div>
       <button data-m="news">📢 Có gì mới${newsUnseen()?' <span class="ntag fix">MỚI</span>':''}</button>
       <button data-m="finance">🏦 Vay vốn & đổi kim cương</button>
@@ -3554,6 +3558,7 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='wheel'){ closeMenu(); openWheel(); }
   else if(m==='titles'){ closeMenu(); openTitles(); }
   else if(m==='fair'){ closeMenu(); openFair(); }
+  else if(m==='friends'){ closeMenu(); openFriends(); } else if(m==='guild'){ closeMenu(); openGuild(); }
   else if(m==='story'){ closeMenu(); openStory(); } else if(m==='regs'){ closeMenu(); openRegulars(); } else if(m==='book'){ closeMenu(); openBook(); }
   else if(m==='cat'){ closeMenu(); openCat(); } else if(m==='rival'){ closeMenu(); openRival(); } else if(m==='tier'){ closeMenu(); openTier(); }
   else if(m==='mp'){ closeMenu(); MP&&MP.ws?mpShow():openMPHub(); }
@@ -3910,6 +3915,7 @@ const TITLES=[
   {id:'cat',icon:'🐱',name:'Sen chính hiệu',desc:'Mèo của tiệm đạt cấp 10',ok:()=>(S.catPet?.lv||0)>=10,p:()=>[(S.catPet?.lv||1),10]},
   {id:'king',icon:'👑',name:'Vua khu phố',desc:'Hạ tiệm đối thủ',ok:()=>(S.cnt?.rivalWin||0)>=1,p:()=>[(S.cnt?.rivalWin||0),1]},
   {id:'mart',icon:'🏢',name:'Đại gia siêu thị',desc:'Nâng tiệm lên Siêu thị',ok:()=>(S.tier||0)>=3,p:()=>[(S.tier||0),3]},
+  {id:'gift',icon:'🎁',name:'Người hào phóng',desc:'Tặng quà bạn bè 30 lần',ok:()=>(S.cnt?.gift||0)>=30,p:()=>[(S.cnt?.gift||0),30]},
   {id:'mil',icon:'💰',name:'Triệu phú chợ',desc:'Trả lời đúng cả 15 câu Ai là triệu phú',ok:()=>(S.cnt?.milWin||0)>=1,p:()=>[(S.cnt?.milWin||0),1]},
 ];
 const TMAP=Object.fromEntries(TITLES.map(t=>[t.id,t]));
@@ -4524,9 +4530,61 @@ window.openTier=function(){ const t=S.tier||0, nx=TIERS[t+1];
       <div class="row"><button class="primary" onclick="tierUp()" ${R||netWorth()<nx.need[0]||S.rep<nx.need[1]||S.money<nx.cost?'disabled':''}>⬆️ Nâng cấp</button><button onclick="closeModal()">Đóng</button></div>`:'<p>🏆 Tiệm đã là siêu thị lớn nhất khu phố!</p><div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>'}`); };
 window.tierUp=function(){ const t=S.tier||0, nx=TIERS[t+1]; if(!nx||R||netWorth()<nx.need[0]||S.rep<nx.need[1]||S.money<nx.cost) return; S.money-=nx.cost; S.tier=t+1; _sbg=null; sfx('reward'); toast(`🎉 Tiệm đã lên cấp ${nx.n}!`); chCheck(); titleCheck(); autosaveSoft(); refreshAll(); openTier(); };
 
+/* ====== 🏘️ Ghé tiệm bạn bè & 🤝 Hội chủ tiệm (qua máy chủ) ====== */
+const socApi=(p,body)=>fetch(PAY_CFG.api.replace(/\/$/,'')+p,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({me:payId(),name:S.name,...body})}:{}).then(async r=>{ const j=await r.json().catch(()=>({})); if(!r.ok) throw Object.assign(new Error(j.error||'http'),{code:j.error}); return j; });
+let socLast=0;
+function shopPub(force){ if(!S||!PAY_CFG.api) return; if(!force&&Date.now()-socLast<20*60e3) return; socLast=Date.now();
+  socApi('/shop/pub',{day:S.day,worth:netWorth(),rep:S.rep,stars:+avgStars().toFixed(1),tier:S.tier||0,title:S.title||'',look:mpLook()}).catch(()=>{}); }
+function inboxCheck(){ if(!S||!PAY_CFG.api) return; socApi('/inbox?me='+payId()).then(d=>{ if(d.gifts&&d.gifts.length) socApi('/inbox',{}).then(r=>{ if(r.gems){ S.gems+=r.gems; autosaveSoft(); renderHeader(); toast(`🎁 ${r.gifts.length} người bạn tặng quà: +${r.gems}💎`); sfx('reward'); } }); }).catch(()=>{}); }
+window.openFriends=function(){ if(!PAY_CFG.api) return toast('Cần mạng để ghé tiệm bạn bè'); S.friends=S.friends||[]; shopPub(true);
+  modal(`<h3>🏘️ Tiệm bạn bè</h3><div class="ch-goal" style="text-align:center">Mã tiệm của bạn: <b class="savecode" style="display:inline-block;padding:2px 12px;font-size:20px;margin:4px 0">${payId()}</b><br><button class="sm" onclick="navigator.clipboard&&navigator.clipboard.writeText('${payId()}');toast('Đã chép mã tiệm')">📋 Chép mã gửi bạn</button></div>
+    <div class="row"><input id="frCode" maxlength="8" placeholder="Nhập mã tiệm của bạn bè" style="flex:1;min-width:0;text-transform:uppercase"><button class="primary" onclick="frAdd()">➕ Thêm</button></div>
+    <div id="frList" style="margin-top:8px">${S.friends.length?'<p class="muted">Đang tải…</p>':'<p class="muted">Chưa có bạn nào. Gửi mã tiệm cho bạn bè để ghé thăm nhau, tặng quà mỗi ngày (cả hai cùng +5💎).</p>'}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:8px"><button onclick="openGuild()">🤝 Hội chủ tiệm</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
+  inboxCheck();
+  Promise.all(S.friends.map(id=>socApi('/shop/'+id+'?me='+payId()).then(d=>d.shop).catch(()=>({pid:id,missing:true})))).then(list=>{ const el=$('#frList'); if(!el||!list.length) return;
+    el.innerHTML=list.map(s=>`<div class="reg" onclick="frVisit('${s.pid}')" style="cursor:pointer">${s.look?`<img src="${avatar({...s.look,mood:'happy'})}" alt="">`:'<span class="mp-av bot">🏪</span>'}<div><b>${s.missing?'Mã '+s.pid+' (chưa có tiệm)':esc(s.name)}</b>${s.title&&TMAP[s.title]?' '+titleChip(s.title):''}<small>${s.missing?'':`Ngày ${s.day} · ${TIERS[s.tier||0].n} · ${fmtS(s.worth)} · ❤️ ${s.likes||0}`}</small></div></div>`).join(''); }); };
+window.frAdd=function(){ const id=($('#frCode').value||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(id.length<4) return toast('Mã tiệm không hợp lệ'); if(id===payId()) return toast('Đây là mã tiệm của bạn');
+  socApi('/shop/'+id).then(()=>{ S.friends=S.friends||[]; if(!S.friends.includes(id)) S.friends.push(id); autosaveSoft(); toast('🏘️ Đã thêm bạn!'); frVisit(id); }).catch(()=>toast('Không tìm thấy tiệm có mã này')); };
+window.frVisit=function(id){ socApi('/shop/'+id+'?me='+payId()).then(d=>{ const s=d.shop, M=d.mine||{};
+  modal(`<div class="row" style="gap:10px">${s.look?`<img class="story-av" src="${avatar({...s.look,mood:'happy'})}" alt="">`:''}<div><h3 style="margin:0">${esc(s.name)}</h3>${s.title&&TMAP[s.title]?titleChip(s.title):''}<div class="muted" style="font-size:12.5px">Ngày ${s.day} · ${TIERS[s.tier||0].n} · 💰 ${fmtS(s.worth)} · ⭐ ${s.stars||'–'} · 💚 ${s.rep}</div><div style="font-size:13px">❤️ ${s.likes||0} lượt thích</div></div></div>
+    <div class="row" style="margin-top:10px"><button class="primary" onclick="frDo('${id}','gift')" ${M.gifted?'disabled':''}>🎁 ${M.gifted?'Đã tặng hôm nay':'Tặng quà (+5💎 cả hai)'}</button><button onclick="frDo('${id}','like')" ${M.liked?'disabled':''}>❤️ ${M.liked?'Đã thích':'Thả tim'}</button></div>
+    <div class="ch-goal"><b>📝 Sổ lưu bút</b>${(s.notes||[]).map(n=>`<div style="font-size:12.5px;border-top:1px dashed var(--line);padding:3px 0"><b>${esc(n.name)}:</b> ${esc(n.text)}</div>`).join('')||'<div class="muted" style="font-size:12px">Chưa có lời nhắn nào.</div>'}
+      ${M.noted?'':`<div class="row" style="margin-top:6px"><input id="frNote" maxlength="120" placeholder="Viết lời nhắn…" style="flex:1;min-width:0"><button class="sm" onclick="frDo('${id}','note')">✍️ Gửi</button></div>`}</div>
+    <div class="row" style="justify-content:flex-end"><button onclick="openFriends()">‹ Bạn bè</button><button class="primary" onclick="closeModal()">Đóng</button></div>`); }).catch(()=>toast('Không tải được tiệm này')); };
+window.frDo=function(id,act){ const body=act==='note'?{text:($('#frNote')||{}).value||''}:{};
+  socApi(`/shop/${id}/${act}`,body).then(r=>{ if(act==='gift'){ S.gems+=r.gems||0; cnt('gift'); toast(`🎁 Đã tặng quà! +${r.gems}💎 cho bạn`); sfx('reward'); autosaveSoft(); renderHeader(); } if(act==='like') toast('❤️ Đã thả tim'); if(act==='note') toast('📝 Đã gửi lời nhắn'); frVisit(id); }).catch(e=>toast(e.code==='done'?'Hôm nay bạn đã làm rồi':'Không gửi được')); };
+
+// 🤝 Hội chủ tiệm
+let GU=null;
+window.openGuild=function(){ if(!PAY_CFG.api) return toast('Cần mạng để vào hội'); modal('<h3>🤝 Hội chủ tiệm</h3><p class="muted">Đang tải…</p>');
+  socApi('/guild?me='+payId()).then(d=>{ GU=d; guildRender(); }).catch(()=>modal('<h3>🤝 Hội chủ tiệm</h3><p class="fx-warn">Không kết nối được máy chủ.</p><div class="row"><button onclick="closeModal()">Đóng</button></div>')); };
+function guildRender(){ const d=GU; if(!d||!d.guild) return modal(`<h3>🤝 Hội chủ tiệm</h3><p style="font-size:13px">Vào hội 10–20 người, cùng làm <b>mục tiêu bán hàng mỗi tuần</b>. Đạt 25% · 50% · 100% mục tiêu thì mỗi thành viên nhận 20 · 50 · 150💎. Có khung chat chung của hội.</p>
+    <div class="ch-goal"><b>➕ Lập hội mới</b><div class="row" style="margin-top:6px"><input id="guName" maxlength="28" placeholder="Tên hội, ví dụ Chợ Xanh Sài Gòn" style="flex:1;min-width:0"><button class="primary" onclick="guildNew()">Lập hội</button></div></div>
+    <div class="ch-goal"><b>🔑 Vào hội bằng mã</b><div class="row" style="margin-top:6px"><input id="guCode" maxlength="5" placeholder="Mã hội 5 ký tự" style="flex:1;min-width:0;text-transform:uppercase"><button onclick="guildJoin()">Vào hội</button></div></div>
+    <div class="row" style="justify-content:flex-end"><button onclick="openFriends()">🏘️ Bạn bè</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
+  const g=d.guild, w=g.week, pct=Math.min(100,Math.round(w.sold/g.goal*100)), top=Object.entries(w.contrib||{}).sort((a,b)=>b[1]-a[1]), nm=pid=>(g.members.find(x=>x.pid===pid)||{}).name||'?';
+  modal(`<h3>🤝 ${esc(g.name)}</h3><div class="muted" style="font-size:12.5px">Mã hội: <b style="letter-spacing:2px">${g.id}</b> <button class="sm" onclick="navigator.clipboard&&navigator.clipboard.writeText('${g.id}');toast('Đã chép mã hội')">📋</button> · ${g.members.length}/20 thành viên</div>
+    <div class="ch-goal"><b>🎯 Mục tiêu tuần: bán ${g.goal.toLocaleString('vi-VN')} món</b><div class="pbar" style="height:12px"><i style="width:${pct}%"></i></div><small>${w.sold.toLocaleString('vi-VN')} / ${g.goal.toLocaleString('vi-VN')} (${pct}%) · món bán mỗi ngày tự cộng khi hết ngày</small>
+      <div class="row" style="margin-top:6px;gap:6px">${[[0.25,20],[0.5,50],[1,150]].map(([f,gm],i)=>`<button class="sm${w.sold>=g.goal*f&&!d.claimed[i]?' primary':''}" onclick="guildClaim(${i})" ${w.sold>=g.goal*f&&!d.claimed[i]?'':'disabled'}>${Math.round(f*100)}%: ${gm}💎 ${d.claimed[i]?'✓':''}</button>`).join('')}</div></div>
+    <div class="ch-goal"><b>🏅 Đóng góp tuần</b>${top.slice(0,8).map(([p,n],i)=>`<div style="display:flex;justify-content:space-between;font-size:12.5px"><span>${i+1}. ${esc(nm(p))}${p===payId()?' (bạn)':''}</span><b>${n.toLocaleString('vi-VN')}</b></div>`).join('')||'<small class="muted">Chưa ai đóng góp tuần này.</small>'}</div>
+    <div class="mp-feed" id="guChat" style="max-height:150px">${(g.chat||[]).map(c=>c.sys?`<div class="sys">${esc(c.text)}</div>`:`<div><b>${esc(c.name)}:</b> ${esc(c.text)}</div>`).join('')||'<div class="sys">Chưa có tin nhắn.</div>'}</div>
+    <div class="row" style="margin-top:6px"><input id="guMsg" maxlength="120" placeholder="Nhắn cho cả hội… (lọc từ tục, link, SĐT)" style="flex:1;min-width:0" onkeydown="if(event.key==='Enter')guildChat()"><button class="primary" onclick="guildChat()">Gửi</button></div>
+    <div class="row" style="justify-content:space-between;margin-top:8px"><button class="sm" onclick="if(confirm('Rời hội?'))guildLeave()">🚪 Rời hội</button><span><button class="sm" onclick="openGuild()">↻</button> <button class="primary" onclick="closeModal()">Đóng</button></span></div>`);
+  const c=$('#guChat'); if(c) c.scrollTop=c.scrollHeight; }
+window.guildNew=()=>socApi('/guild/new',{gname:$('#guName').value}).then(d=>{ GU=d; S.guild=d.guild.id; autosaveSoft(); toast('🤝 Đã lập hội!'); guildRender(); }).catch(e=>toast(e.code==='in'?'Bạn đang ở trong 1 hội rồi':'Không lập được hội'));
+window.guildJoin=()=>socApi('/guild/join',{id:($('#guCode').value||'').toUpperCase()}).then(d=>{ GU=d; S.guild=d.guild.id; autosaveSoft(); toast('🤝 Đã vào hội!'); guildRender(); }).catch(e=>toast({in:'Bạn đang ở trong 1 hội rồi',full:'Hội đã đủ 20 người',missing:'Không tìm thấy hội'}[e.code]||'Không vào được hội'));
+window.guildLeave=()=>socApi('/guild/leave',{}).then(()=>{ S.guild=null; autosaveSoft(); GU=null; openGuild(); });
+window.guildClaim=i=>socApi('/guild/claim',{i}).then(r=>{ S.gems+=r.gems; cnt('guildClaim'); autosaveSoft(); renderHeader(); toast(`🤝 Thưởng hội: +${r.gems}💎`); sfx('reward'); openGuild(); }).catch(()=>toast('Chưa nhận được'));
+window.guildChat=function(){ const i=$('#guMsg'); const t=(i&&i.value||'').trim(); if(!t) return; i.value=''; socApi('/guild/chat',{text:t}).then(r=>{ if(GU&&GU.guild){ GU.guild.chat=r.chat; guildRender(); } }).catch(()=>toast('Không gửi được')); };
+function guildAdd(sold){ if(!S.guild||!PAY_CFG.api||!sold) return; socApi('/guild/add',{sold}).catch(()=>{}); }
+
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-09-29-soc',date:'29/09/2026',title:'🏘️ Bạn bè & 🤝 Hội chủ tiệm',items:[
+    ['🏘️','Ghé tiệm bạn bè bằng mã tiệm: thả tim, viết sổ lưu bút, tặng quà mỗi ngày (cả hai +5💎)','new'],
+    ['🤝','Hội chủ tiệm 20 người: mục tiêu bán hàng mỗi tuần, thưởng 20 · 50 · 150💎, khung chat chung','new']]},
   {v:'2026-09-29-e1',date:'29/09/2026',title:'📜 Cốt truyện, khách quen & đời sống khu phố',items:[
     ['📜','Cốt truyện "Tiệm của bà ngoại": 10 chương, mỗi chương một mục tiêu và phần thưởng','new'],
     ['👵','8 khách quen có câu chuyện riêng, thân thiết ❤️ để mở chuyện đời và quà','new'],
@@ -4587,7 +4645,7 @@ window.openNews=function(all){
     <div class="row" style="justify-content:flex-end">${all?'':'<button onclick="openNews(true)">📜 Các bản trước</button>'}<button class="primary" onclick="closeModal()">Chơi tiếp 🎮</button></div>`);
   newsMark(); };
 function newsOnStart(){
-  autoPopups(); titleCheck();
+  autoPopups(); titleCheck(); setTimeout(()=>{ shopPub(true); inboxCheck(); },3000);
   if(!newsUnseen()) return;
   if(S.day<=1&&!(S.hist&&S.hist.length)) return newsMark();   // người chơi mới: không làm phiền
   const b=$('#btnPause'); if(b) b.classList.add('news');
