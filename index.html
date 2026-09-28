@@ -1835,14 +1835,14 @@ function renderWardrobe(){
    - memo: chữ đặt trước mã đơn trong nội dung chuyển khoản (VietinBank + SePay bắt buộc có "SEVQR"). */
 const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev',site:'https://minhvy107.github.io/cholaxanh/',memo:'SEVQR'};
 // 🐞 Hỗ trợ: link Zalo (https://zalo.me/...) hoặc số điện thoại Zalo của chủ game. Để trống = ẩn nút báo lỗi.
-const SUPPORT={zalo:''};
+const SUPPORT={zalo:'https://zaloapp.com/qr/p/1b3g1giwfxayr'};
 const zaloURL=()=>{ const z=String(SUPPORT.zalo||'').trim(); if(!z) return ''; if(/^https?:\/\//.test(z)) return z; const d=z.replace(/\D/g,''); return d?'https://zalo.me/'+d.replace(/^84/,'0'):''; };
 let lastErr='';
 window.addEventListener('error',e=>{ lastErr=(e.message||'lỗi')+(e.lineno?` @${e.lineno}`:''); });
 function supportInfo(ctx){ const L=[`Game: Chợ Lá Xanh ${($('.st-ver')||{}).textContent||''}`];
   if(S){ L.push(`Tiệm: ${S.name} · Ngày ${S.day} · Tiền ${fmtS(S.money)} · ${S.gems}💎`); if(S.pid) L.push(`Mã người chơi: ${S.pid}`); if(S.payOrder) L.push(`Đơn nạp đang chờ: ${S.payOrder.code} (${fmtVND(S.payOrder.vnd)})`); if(S.payLog&&S.payLog.length){ const x=S.payLog[S.payLog.length-1]; L.push(`Lần nạp gần nhất: ${x.code} +${x.g}💎`); } }
   if(ctx) L.push(`Vấn đề: ${ctx}`); if(lastErr) L.push(`Lỗi gần nhất: ${lastErr}`);
-  L.push(`Thiết bị: ${navigator.userAgent.replace(/\s*\(KHTML.*$/,'').slice(0,120)}`, `Trang: ${location.href.split('?')[0]}`, `Lúc: ${new Date().toLocaleString('vi-VN')}`);
+  L.push(`Lúc: ${new Date().toLocaleString('vi-VN')}`);
   return L.join('\n'); }
 window.openSupport=function(ctx){ const url=zaloURL(); if(!url) return toast('Chưa có kênh hỗ trợ');
   const info=supportInfo(ctx);
