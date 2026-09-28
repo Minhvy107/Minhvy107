@@ -1,0 +1,17 @@
+{
+  "name": "Chợ Lá Xanh – Tiệm tạp hóa",
+  "short_name": "Chợ Lá Xanh",
+  "description": "Game mô phỏng kinh doanh tiệm tạp hóa: nhập hàng, đón khách, mở chuỗi cửa hàng.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#d6eedc",
+  "theme_color": "#6fc18a",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

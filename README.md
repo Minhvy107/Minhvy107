@@ -13,6 +13,9 @@ Trò chơi trình duyệt: mở tiệm tạp hóa – thực phẩm tươi sốn
 - **💇 Kiểu tóc nhân viên**: trong tab Nhân viên, mỗi người có thể đổi kiểu tóc và màu tóc riêng, dùng những kiểu tiệm đã mua trong Tủ đồ.
 - **🔊 Âm thanh tương tác** (tạo bằng Web Audio, không cần file): "tách" khi bấm, tiếng nhặt đồ, ting ting khi thu tiền, chuông khách tới, báo sai, nhạc nhận quà. Bật/tắt trong menu ☰.
 - **🎵 Nhạc nền** tự sáng tác bằng Web Audio (C–Am–F–G, lặp vô hạn) và **📲 loa báo chuyển khoản**: khách trả bằng chuyển khoản thì có tiếng "ting ting", banner báo tiền về và giọng đọc "Đã nhận được … đồng" (nếu máy có giọng tiếng Việt). Bật/tắt riêng từng thứ trong menu ☰.
+- **🏆 Bảng xếp hạng**: top 50 tiệm giàu nhất (tổng tài sản), tự cập nhật sau mỗi ngày bán; dùng chung máy chủ Cloudflare.
+- **📱 Cài như app (PWA)**: thêm biểu tượng vào màn hình chính, chạy toàn màn hình, mở được khi mạng yếu (`manifest.webmanifest`, `sw.js`, `icon-*.png`).
+- **⚙️ Tự động cập nhật máy chủ**: GitHub Actions `.github/workflows/deploy-worker.yml` đưa `server/` lên Cloudflare khi có thay đổi (cần secret `CLOUDFLARE_API_TOKEN` và `CLOUDFLARE_ACCOUNT_ID`).
 - **💡 Cố vấn kinh doanh**: mỗi tối phân tích vì sao lời/lỗ (hàng hỏng, giá cao/thấp/lỗ vốn, hết hàng, khách chờ, lương, dịch vụ, xui rủi, lãi vay) và gợi ý sửa, kèm nút đi tới đúng tab.
 - **🏦 Vay vốn** (lãi 0,3%/ngày, hạn 30 ngày, hạn mức theo uy tín) và **💱 đổi kim cương lấy tiền** (10💎→1tr, 50💎→5,5tr, 100💎→12tr): menu ☰ hoặc tab Báo cáo.
 - **📲 Mã lưu ngắn 8 ký tự** để chuyển game sang máy khác (lưu trên máy chủ 30 ngày; cần cập nhật `server/worker.js` lên Cloudflare).
