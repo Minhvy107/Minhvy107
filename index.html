@@ -2292,20 +2292,24 @@ function vietQR(bin,acct,amount,memo){ // chuẩn EMVCo / NAPAS VietQR
 let qrLib=null;
 function loadQR(){ if(qrLib) return qrLib; qrLib=new Promise((ok,no)=>{ if(window.qrcode) return ok(window.qrcode); const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'; sc.onload=()=>ok(window.qrcode); sc.onerror=()=>{ qrLib=null; no(); }; document.head.appendChild(sc); }); return qrLib; }
 function payId(){ if(!S.pid){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; S.pid=Array.from({length:6},()=>A[Math.random()*A.length|0]).join(''); } return S.pid; }
-async function payApi(path,body){ const r=await fetch(PAY_CFG.api.replace(/\/$/,'')+path,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+async function payApi(path,body,retry=1){
+  let r; try{ r=await fetch(PAY_CFG.api.replace(/\/$/,'')+path,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{}); }
+  catch(e){ if(retry>0){ await new Promise(ok=>setTimeout(ok,1500)); return payApi(path,body,retry-1); } const x=new Error(e.message||'mạng'); x.net=true; throw x; }
+  if(!r.ok){ let d=''; try{ const j=await r.json(); d=j.detail||j.error||''; }catch(e){} throw new Error('HTTP '+r.status+(d?' · '+d:'')); }
+  return r.json(); }
 window.payOpen=async function(packId){
   if(S.payOrder&&S.payOrder.pack!==packId){ if(!confirm(`Bạn còn đơn ${S.payOrder.code} chưa thanh toán. Hủy đơn đó và tạo đơn mới?`)) return payShow(); }
   else if(S.payOrder) return payShow();
   const p=PAY_ALL.find(x=>x.id===packId); if(!p) return; if(p.pass&&S.pass&&S.pass.sid===SEASON.id&&S.pass.prem) return toast('Bạn đã có Season Pass'); const lk=GEM_OFFERS.includes(p)&&offerLocked(p); if(lk) return toast(`${p.name}: ${lk}`);
   const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', code='CLX'+payId()+Array.from({length:4},()=>A[Math.random()*A.length|0]).join('');
   const o={code,pack:p.id,gems:p.gems,vnd:p.vnd,at:Date.now()};
-  if(PAY_LIVE()){ try{ await payApi('/order',{code,pack:p.id}); } catch(e){
+  if(PAY_LIVE()){ try{ await payApi('/order',{code,pack:p.id}); } catch(e){ if(!/^HTTP 409/.test(e.message)) {
     const onSite=PAY_CFG.site&&location.href.startsWith(PAY_CFG.site);
-    return modal(onSite?`<h3>💳 Không kết nối được máy chủ nạp</h3><p>Vui lòng thử lại sau ít phút. (${esc(e.message)})</p><div class="row">${supBtn('Không kết nối được máy chủ nạp: '+e.message)}<button class="primary" onclick="closeModal()">Đóng</button></div>`
+    return modal(onSite?`<h3>💳 Không kết nối được máy chủ nạp</h3><p>${e.net?'Điện thoại chưa kết nối được tới máy chủ nạp. Hãy thử: <b>đổi Wi-Fi ↔ 4G</b>, tắt VPN / chặn quảng cáo, rồi bấm lại.':'Máy chủ nạp đang gặp lỗi, vui lòng thử lại sau ít phút.'}</p><p class="muted" style="font-size:12px">Chi tiết: ${esc(e.message)}</p><div class="row">${supBtn('Không kết nối được máy chủ nạp: '+e.message)}<button class="primary" onclick="closeModal()">Đóng</button></div>`
       :`<h3>💳 Nạp trên trang chính của game</h3><p>Trang bạn đang mở (bản xem trước) không cho phép kết nối máy chủ nạp. Hãy mở game tại trang chính để nạp kim cương:</p>
         <p style="text-align:center"><a href="${PAY_CFG.site}" target="_blank" rel="noopener"><b>${PAY_CFG.site.replace(/^https:\/\//,'')}</b></a></p>
         <p class="muted" style="font-size:12.5px">Mỗi trang lưu tiến trình riêng. Muốn mang tiệm sang trang chính, vào ☰ → 💾 Lưu game → <b>Xuất mã</b>, rồi ở trang chính chọn <b>Nhập mã</b>.</p>
-        <div class="row"><button onclick="navigator.clipboard&&navigator.clipboard.writeText('${PAY_CFG.site}');toast('Đã sao chép link')">Chép link</button><button class="primary" onclick="closeModal()">Đóng</button></div>`); } }
+        <div class="row"><button onclick="navigator.clipboard&&navigator.clipboard.writeText('${PAY_CFG.site}');toast('Đã sao chép link')">Chép link</button><button class="primary" onclick="closeModal()">Đóng</button></div>`); } } }
   S.payOrder=o; autosaveSoft(); payShow(); };
 window.payShow=function(){ const o=S.payOrder; if(!o) return; const live=PAY_LIVE();
   const bin=live?PAY_CFG.bin:'970436', acct=live?PAY_CFG.acct:'0000000000', holder=live?PAY_CFG.holder:'TAI KHOAN THU NGHIEM';

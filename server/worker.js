@@ -181,10 +181,19 @@ table{width:100%;border-collapse:collapse;background:#fff;border:2px solid #cfe6
 }
 
 export default {
+  // Bọc mọi lỗi (vd. vượt hạn mức KV) thành JSON có CORS, để game hiện đúng lỗi thay vì "Load failed"
   async fetch(req, env) {
+    try { return await handle(req, env); }
+    catch (e) { return json(env, { error: 'server', detail: String(e && e.message || e).slice(0, 200) }, 500); }
+  },
+};
+
+async function handle(req, env) {
+  {
     const url = new URL(req.url);
     const path = url.pathname.replace(/\/+$/, '');
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors(env) });
+    if (path === '/health') { await env.ORDERS.get('stat:total'); return json(env, { ok: true, t: Date.now() }); }
 
     // Game tạo đơn
     if (req.method === 'POST' && path === '/order') {
@@ -266,5 +275,5 @@ export default {
     if (path === '/ping' || path === '/stats') return stats(req, env, path);
 
     return json(env, { error: 'not_found' }, 404);
-  },
-};
+  }
+}
