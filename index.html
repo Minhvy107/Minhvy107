@@ -23,7 +23,7 @@
   --display:"Baloo 2","Nunito",system-ui,sans-serif; --body:"Nunito","Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
 }
-html[data-theme="moon"]{--bg:#2b2350;--page:#f6f1ff;--panel:#ffffff;--panel2:#efe7ff;--line:#dccff7;--brand:#e5627a;--brand2:#d44d67;--brandDk:#b83c55;--sun:#f2c94c;--mint:#b69be8;--muted:#7d7392}
+html[data-theme="moon"]{--bg:#2b2350;--page:#f3e9d8;--panel:#fffaf0;--panel2:#f6e7c8;--line:#e3c88f;--brand:#c8423a;--brand2:#a8322c;--brandDk:#7a2e2e;--sun:#f2c94c;--mint:#d8b16a;--muted:#8a6f55;--ink:#4a2a22}
 html[data-theme="moon"] body{background:#2b2350 radial-gradient(circle,rgba(255,246,200,.55) 1px,transparent 1.7px) 0 0/28px 28px}
 html[data-theme="moon"] .navbar,html[data-theme="moon"] nav{background:#f6f1ff}
 html[data-theme="moon"] .st-links .link,html[data-theme="moon"] .st-ver{color:#ffe9a8;text-shadow:0 1px 3px rgba(0,0,0,.7)}
@@ -46,6 +46,27 @@ html[data-theme="moon"] .stf{background:#fff8ea;border-color:#e3c88f}
 html[data-theme="moon"] .bnav{background:#2b2350;border-top:3px solid #f2c94c}
 html[data-theme="moon"] .bnav button{color:#d9ccf5}
 html[data-theme="moon"] .bnav button.on{background:#f2c94c;color:#5a1f24}
+html[data-theme="moon"] #hdr{background:linear-gradient(180deg,#1f1840,#3b2d6b);color:#fff3d6;box-shadow:0 2px 0 #f2c94c;overflow:hidden}
+html[data-theme="moon"] #hdr::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,246,200,.8) 1px,transparent 1.6px) 0 0/34px 22px,radial-gradient(circle,rgba(255,246,200,.5) 1px,transparent 1.5px) 17px 11px/34px 22px;pointer-events:none;opacity:.6}
+html[data-theme="moon"] #hdr::after{content:"";position:absolute;right:-18px;top:-26px;width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fffbe0,#ffe7a0);box-shadow:0 0 30px rgba(255,236,160,.6);opacity:.35;pointer-events:none}
+html[data-theme="moon"] #hdr>*{position:relative;z-index:1}
+html[data-theme="moon"] .pausebtn{background:#7a2e2e;color:#ffe9a8;border-color:#f2c94c;box-shadow:0 0 0 4px rgba(242,201,76,.25)}
+html[data-theme="moon"] .hday b:first-child{color:#ffe9a8}
+html[data-theme="moon"] .hday span,html[data-theme="moon"] .hmid small,html[data-theme="moon"] .hstars span{color:#d9ccf5}
+html[data-theme="moon"] .hmid .nm{color:#ffb3a0}
+html[data-theme="moon"] .hmid b{color:#fff3d6;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+html[data-theme="moon"] .hstars .stars{color:#f2c94c}
+html[data-theme="moon"] .tab{background:#f3e9d8 radial-gradient(circle at 20px 20px,rgba(216,177,106,.18) 6px,transparent 7px) 0 0/80px 80px}
+html[data-theme="moon"] h3.sec{color:#7a2e2e}
+html[data-theme="moon"] h3.sec::before{content:"🏮 ";font-size:.85em}
+html[data-theme="moon"] .card,html[data-theme="moon"] .kpi,html[data-theme="moon"] .tblwrap,html[data-theme="moon"] .quest,html[data-theme="moon"] .wd-item,html[data-theme="moon"] .mile{background:#fffaf0;border-color:#e3c88f;box-shadow:0 3px 0 #d8b16a}
+html[data-theme="moon"] .wd-item.worn{background:#fdf1d8;border-color:#c8423a}
+html[data-theme="moon"] .wd-top canvas{border:3px solid #f2c94c;box-shadow:0 0 0 2px #5b3a33}
+html[data-theme="moon"] th{color:#9e6b3a;background:#f6e7c8}
+html[data-theme="moon"] .chips button{background:#fff8ea;border-color:#e3c88f;color:#7a2e2e}
+html[data-theme="moon"] .chips button.on,html[data-theme="moon"] button.on{background:#9e2b2b;border-color:#f2c94c;color:#ffe9a8}
+html[data-theme="moon"] button.primary,html[data-theme="moon"] .pill{background:#b8322f;border-color:#7a2e2e;color:#fff3d6;box-shadow:0 3px 0 #7a2e2e}
+html[data-theme="moon"] .modal .box{background:#fffaf0;border-color:#7a2e2e;box-shadow:0 0 0 3px #f2c94c,0 6px 0 rgba(90,58,50,.3)}
 html[data-theme="moon"] .awning{height:18px;background:#4a2a1e;border-top:3px solid #f2c94c;border-bottom:3px solid #f2c94c}
 html[data-theme="moon"] .awning::after{height:12px;background:radial-gradient(circle at 9px 0,#7a2e2e 8px,#5b3a33 8.5px 9.5px,transparent 10px) 0 0/18px 12px repeat-x}
 *{box-sizing:border-box}
@@ -2087,7 +2108,7 @@ function drawWardrobePreview(){
   const d=window.devicePixelRatio||1; cv.width=Math.round(w*d); cv.height=Math.round(h*d);
   const g=cv.getContext('2d'); g.setTransform(d,0,0,d,0,0);
   const over=wdPreview?{[WMAP[wdPreview].slot]:wdPreview}:{};
-  const aw=(WMAP[over.awning||S.wear.awning]||WMAP.aw_green).aw, catAcc=(WMAP[over.cat||S.wear.cat]||WMAP.cat_none).cat, uniIt=(WMAP[over.uniform||S.wear.uniform]||WMAP.uni_green);
+  const aw=curTheme()==='moon'&&!over.awning&&(!S.wear.awning||S.wear.awning==='aw_green')?MOON.awning:(WMAP[over.awning||S.wear.awning]||WMAP.aw_green).aw, catAcc=(WMAP[over.cat||S.wear.cat]||WMAP.cat_none).cat, uniIt=(WMAP[over.uniform||S.wear.uniform]||WMAP.uni_green);
   g.drawImage(stageBg(w,h,d),0,0,w,h);
   const sw=w/10; for(let i=0;i<10;i++){ g.fillStyle=aw[i%aw.length]; g.strokeStyle=OL; g.lineWidth=2; g.beginPath(); g.moveTo(i*sw,0); g.lineTo(i*sw+sw,0); g.lineTo(i*sw+sw,18); g.arc(i*sw+sw/2,18,sw/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
   g.fillStyle='#e7c39c'; g.strokeStyle=OL; g.lineWidth=2.5; rr(g,-4,h-30,w+8,36,6); g.fill(); g.stroke();
