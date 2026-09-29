@@ -60,7 +60,7 @@ html[data-theme="moon"] .hstars .stars{color:#f2c94c}
 html[data-theme="moon"] .tab{background:#f3e9d8 radial-gradient(circle at 20px 20px,rgba(216,177,106,.18) 6px,transparent 7px) 0 0/80px 80px}
 html[data-theme="moon"] h3.sec{color:#7a2e2e}
 html[data-theme="moon"] h3.sec::before{content:"🏮 ";font-size:.85em}
-html[data-theme="moon"] .card,html[data-theme="moon"] .kpi,html[data-theme="moon"] .tblwrap,html[data-theme="moon"] .quest,html[data-theme="moon"] .wd-item,html[data-theme="moon"] .mile{background:#fffaf0;border-color:#e3c88f;box-shadow:0 3px 0 #d8b16a}
+html[data-theme="moon"] .card,html[data-theme="moon"] .kho-it,html[data-theme="moon"] .kpi,html[data-theme="moon"] .tblwrap,html[data-theme="moon"] .quest,html[data-theme="moon"] .wd-item,html[data-theme="moon"] .mile{background:#fffaf0;border-color:#e3c88f;box-shadow:0 3px 0 #d8b16a}
 html[data-theme="moon"] .wd-item.worn{background:#fdf1d8;border-color:#c8423a}
 html[data-theme="moon"] .wd-top canvas{border:3px solid #f2c94c;box-shadow:0 0 0 2px #5b3a33}
 html[data-theme="moon"] th{color:#9e6b3a;background:#f6e7c8}
@@ -391,6 +391,13 @@ details.logbox summary{cursor:pointer;font-family:var(--display)}
 
 /* ---------- Other tabs ---------- */
 .panel{background:transparent}
+.kho-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:8px;margin-top:10px}
+.kho-cat{grid-column:1/-1;font:800 16px var(--display);margin:8px 2px 0}
+.kho-it{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:6px 8px;display:flex;flex-direction:column;gap:4px}.kho-it.empty{border-color:#f3b0b0}
+.kho-top{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:6px;align-items:center}.kho-ic{font-size:26px;line-height:1}.kho-nm b{font-size:15px}
+.kho-st{text-align:right;line-height:1.05}.kho-st b{font:800 19px var(--display)}.kho-st small{font-size:10.5px;color:var(--muted)}.kho-st .pill{font-size:10px;margin:1px 0 0;padding:0 6px}
+.kho-mid{display:flex;justify-content:space-between;gap:6px;font-size:12px;background:var(--panel2);border-radius:9px;padding:2px 8px}
+.kho-bot{display:flex;align-items:flex-end;gap:6px}.kho-pr small{display:block;font-size:10.5px;color:var(--muted);line-height:1.2}.kho-pr .pill{font-size:9.5px;padding:0 5px;margin:0}.kho-bot .stepper{white-space:nowrap}.kho-bot .stepper button{width:28px;height:28px;padding:0}.kho-bot .stepper b{min-width:58px;display:inline-block;text-align:center;font-size:13px}.kho-buy{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-left:auto;flex:1;max-width:190px}.kho-buy button{padding:5px 0;font-size:12.5px}
 .tblwrap{overflow-x:auto;margin-top:10px;background:var(--panel);border:2px solid var(--line);border-radius:14px}
 table{border-collapse:collapse;width:100%;font-size:13px}
 th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -565,12 +572,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
       <button class="sm" data-bulk="1.05">+5% giá chợ</button>
       <button class="sm" data-bulk="1.1">+10% giá chợ</button>
     </div>
-    <div class="tblwrap">
-      <table>
-        <thead><tr><th>Sản phẩm</th><th>Tồn</th><th>Giá nhập</th><th>Giá chợ</th><th>Giá bán của bạn</th><th>Lãi/sp</th><th>Nhập hàng (trả tiền ngay)</th></tr></thead>
-        <tbody id="khoBody"></tbody>
-      </table>
-    </div>
+    <div class="kho-list" id="khoBody"></div>
   </section>
 
   <!-- NHÂN VIÊN -->
@@ -2876,22 +2878,22 @@ function renderKho(){
   for(const ck of CAT_KEYS){
     if(catFilter!=='all'&&catFilter!==ck) continue;
     const c=CATS[ck], locked=catLocked(ck);
-    html+=`<tr class="cathead"><td colspan="7">${c.icon} ${c.name}${locked?' <span class="pill warn">🔒 Cần mua Tủ đông ở tab Nâng cấp tiệm</span>':''}</td></tr>`;
+    html+=`<div class="kho-cat">${c.icon} ${c.name}${locked?' <span class="pill warn">🔒 Cần mua Tủ đông ở tab Nâng cấp tiệm</span>':''}</div>`;
     if(locked) continue;
     for(const p of PRODUCTS.filter(x=>x.cat===ck)){
       const m=S.market[p.id], price=S.price[p.id], st=stockOf(p.id), bs=S.inv[p.id];
       const near=bs.length?Math.min(...bs.map(b=>b.d)):null;
-      const tag=st===0?'<span class="pill bad">hết</span>':(near!=null&&p.life<100?`<span class="pill ${near<=1?'warn':''}">còn ${near} ngày</span>`:'');
+      const tag=st===0?'<span class="pill bad">hết hàng</span>':(near!=null&&p.life<100?`<span class="pill ${near<=1?'warn':''}">còn ${near} ngày</span>`:'');
       const diff=(price/m.ref-1)*100;
       const dtag=Math.abs(diff)<0.5?'<span class="pill">= chợ</span>':`<span class="pill ${diff<0?'good':diff>30?'bad':'warn'}">${diff>0?'+':''}${diff.toFixed(0)}%</span>`;
       const mg=price-m.cost;
-      html+=`<tr>
-        <td>${p.icon} <b>${p.name}</b> <span class="muted" style="font-size:12px">/${p.unit}</span><div class="muted" style="font-size:11px">để được ${lifeOf(p)>=100?'lâu':lifeOf(p)+' ngày'}${S.fb&&S.fb[p.id]?` · 👍${S.fb[p.id].g} 👎${S.fb[p.id].b}`:''}</div></td>
-        <td>${st} ${tag}</td><td>${fmt(m.cost)}</td><td class="muted">${fmt(m.ref)}</td>
-        <td><span class="stepper"><button data-act="p-" data-id="${p.id}" aria-label="Giảm giá">−</button><b style="min-width:74px;display:inline-block;text-align:center">${fmt(price)}</b><button data-act="p+" data-id="${p.id}" aria-label="Tăng giá">+</button></span>${dtag}</td>
-        <td class="${mg>0?'good':'bad'}">${fmt(mg)}</td>
-        <td><span class="row" style="gap:4px;flex-wrap:nowrap;justify-content:flex-end">${[5,10,20,50].map(n=>`<button class="sm" data-buy="${n}" data-id="${p.id}" ${S.money<n*m.cost?'disabled':''} title="${fmt(n*m.cost)}">+${n}</button>`).join('')}</span></td>
-      </tr>`;
+      html+=`<div class="kho-it${st===0?' empty':''}">
+        <div class="kho-top"><span class="kho-ic">${p.icon}</span><div class="kho-nm"><b>${p.name}</b> <small class="muted">/${p.unit}</small><div class="muted" style="font-size:11px">để được ${lifeOf(p)>=100?'lâu':lifeOf(p)+' ngày'}${S.fb&&S.fb[p.id]?` · 👍${S.fb[p.id].g} 👎${S.fb[p.id].b}`:''}</div></div>
+          <div class="kho-st"><b>${st}</b> <small>tồn</small><br>${tag}</div></div>
+        <div class="kho-mid"><span>Nhập <b>${fmt(m.cost)}</b></span><span class="muted">Chợ ${fmt(m.ref)}</span><span class="${mg>0?'good':'bad'}">Lãi ${fmt(mg)}</span></div>
+        <div class="kho-bot"><span class="kho-pr"><small>Giá bán ${dtag}</small><span class="stepper"><button data-act="p-" data-id="${p.id}" aria-label="Giảm giá">−</button><b>${fmt(price)}</b><button data-act="p+" data-id="${p.id}" aria-label="Tăng giá">+</button></span></span>
+          <span class="kho-buy">${[5,10,20,50].map(n=>`<button class="sm" data-buy="${n}" data-id="${p.id}" ${S.money<n*m.cost?'disabled':''} title="${fmt(n*m.cost)}">+${n}</button>`).join('')}</span></div>
+      </div>`;
     }
   }
   $('#khoBody').innerHTML=html;
@@ -3527,7 +3529,7 @@ function openMenu(){
       <div class="mgrid">${[['login','🎁','Quà ngày',loginReady()?'!':''],['wheel','🎡','Vòng quay',wheelFree()?'1':''],['titles','🏅','Danh hiệu',''],['story','📜','Cốt truyện',''],
         ['regs','👵','Khách quen',''],['book','📒','Sổ khách',''],['cat','🐱','Mèo',''],['rival','🏬','Đối thủ',''],
         ['tier','🏪','Nâng cấp',''],['friends','🏘️','Bạn bè',''],['guild','🤝','Hội',''],['fair','🎪','Hội chợ',''],['mp','🎮','Chơi chung',MP&&MP.ws?'●':''],
-        ['news','📢','Có gì mới',newsUnseen()?'MỚI':''],['lb','🏆','Xếp hạng',''],['finance','🏦','Vay & đổi','']]
+        ['news','📢','Có gì mới',newsUnseen()?'MỚI':''],['lb','🏆','Xếp hạng',''],['finance','🏦','Vay & đổi',''],['rename','✏️','Đổi tên tiệm','']]
         .map(([k,ic,t,b])=>`<button data-m="${k}"><span>${ic}</span>${t}${b?`<i>${b}</i>`:''}</button>`).join('')}</div>
       <div class="mgrid mg2">${[owns('theme_moon')?['theme',S.wear.theme==='theme_moon'?'🌙':'🍃','Giao diện mùa',S.wear.theme==='theme_moon'?'Bật':'Tắt']:null,
         ['save','💾','Lưu game',R?'🔒':''],['sound',SFX.on?'🔊':'🔇','Âm thanh',SFX.on?'Bật':'Tắt'],['music','🎵','Nhạc nền',MUSIC.on?'Bật':'Tắt'],['voice','🗣️','Loa báo CK',VOICE.on?'Bật':'Tắt'],
@@ -3558,6 +3560,7 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='wheel'){ closeMenu(); openWheel(); }
   else if(m==='titles'){ closeMenu(); openTitles(); }
   else if(m==='fair'){ closeMenu(); openFair(); }
+  else if(m==='rename'){ closeMenu(); openRename(); }
   else if(m==='friends'){ closeMenu(); openFriends(); } else if(m==='guild'){ closeMenu(); openGuild(); }
   else if(m==='story'){ closeMenu(); openStory(); } else if(m==='regs'){ closeMenu(); openRegulars(); } else if(m==='book'){ closeMenu(); openBook(); }
   else if(m==='cat'){ closeMenu(); openCat(); } else if(m==='rival'){ closeMenu(); openRival(); } else if(m==='tier'){ closeMenu(); openTier(); }
@@ -4579,9 +4582,26 @@ window.guildClaim=i=>socApi('/guild/claim',{i}).then(r=>{ S.gems+=r.gems; cnt('g
 window.guildChat=function(){ const i=$('#guMsg'); const t=(i&&i.value||'').trim(); if(!t) return; i.value=''; socApi('/guild/chat',{text:t}).then(r=>{ if(GU&&GU.guild){ GU.guild.chat=r.chat; guildRender(); } }).catch(()=>toast('Không gửi được')); };
 function guildAdd(sold){ if(!S.guild||!PAY_CFG.api||!sold) return; socApi('/guild/add',{sold}).catch(()=>{}); }
 
+/* ====== ✏️ Đổi tên cửa hàng: lần đầu miễn phí, sau đó 20💎 ====== */
+const RENAME_GEMS=20;
+window.openRename=function(){ const free=!S.renamed;
+  modal(`<h3>✏️ Đổi tên cửa hàng</h3><p class="muted" style="font-size:12.5px;margin:0 0 8px">Tên mới hiện trên biển hiệu, bảng xếp hạng và khi bạn bè ghé tiệm. ${free?'<b>Lần đầu miễn phí.</b>':`Mỗi lần đổi: <b>${RENAME_GEMS}💎</b>.`}</p>
+    <input id="rnName" maxlength="28" value="${esc(S.name)}" style="width:100%" onkeydown="if(event.key==='Enter')doRename()">
+    <div class="chips" style="margin-top:8px">${IDEAS.map(n=>`<button class="sm" onclick="$('#rnName').value=this.textContent">${n}</button>`).join('')}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button onclick="closeModal()">Hủy</button><button class="primary" onclick="doRename()" ${!free&&S.gems<RENAME_GEMS?'disabled':''}>Đổi tên${free?'':` (${RENAME_GEMS}💎)`}</button></div>`);
+  setTimeout(()=>{ const i=$('#rnName'); if(i){ i.focus(); i.select(); } },50); };
+window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-\u001f]/g,'').replace(/\s+/g,' ').trim().slice(0,28);
+  if(n.length<2) return toast('Tên tiệm cần ít nhất 2 ký tự'); if(n===S.name) return closeModal();
+  if(S.renamed){ if(S.gems<RENAME_GEMS) return toast('Không đủ kim cương'); S.gems-=RENAME_GEMS; }
+  const old=S.name; S.name=n; S.renamed=(S.renamed||0)+1; _sbg=null; autosave(); closeModal(); refreshAll(); toast(`✏️ "${old}" đã đổi tên thành "${n}"`); sfx('reward');
+  try{ lbSubmit(true); shopPub(true); }catch(e){} };
+
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-09-29-kho',date:'29/09/2026',title:'📦 Kho gọn hơn & đổi tên tiệm',items:[
+    ['📦','Tab Kho: mỗi mặt hàng là một thẻ gọn (tồn kho, giá, lãi, nút nhập) — không phải kéo ngang, khó đặt nhầm','new'],
+    ['✏️','Đổi tên cửa hàng trong ☰ Menu: lần đầu miễn phí, sau đó 20💎','new']]},
   {v:'2026-09-29-bal',date:'29/09/2026',title:'⚖️ Cân bằng kim cương',items:[
     ['📋','Nhiệm vụ nhận 💎 đổi theo ngày thật (3 nhiệm vụ, khoảng 30💎/ngày)','bal'],
     ['⚡','Thử thách bất ngờ: tối đa 15💎/ngày, vượt mức thưởng tiền','bal'],
