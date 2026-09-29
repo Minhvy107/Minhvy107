@@ -5,6 +5,7 @@
 
 import { Room, Lobby, handleRooms } from './rooms.js';
 import { handleSocial } from './social.js';
+import { handleAdmin, histAdd, histFlag, histKey } from './admin.js';
 export { Room, Lobby };
 
 const PACKS = {
@@ -83,13 +84,14 @@ async function lbUpsert(env, key, row, ttl) {
   return top.findIndex(r => r.pid === row.pid) + 1;
 }
 async function leaderboard(req, env, path, url) {
-  const now = Date.now(), P = periodInfo(now);
+  let now = Date.now(); const P = periodInfo(now);
   const pidOk = p => /^[A-Z0-9]{6}$/.test(p);
   // Gửi điểm
   if (req.method === 'POST' && path === '/lb') {
     const b = await req.json().catch(() => null);
     const pid = String(b && b.pid || '').toUpperCase();
     if (!pidOk(pid)) return json(env, { error: 'bad_request' }, 400);
+    if (env.DEV_SPEED && b.at) now = Number(b.at);   // chỉ khi chạy thử (wrangler dev): giả lập thời gian gửi
     const day = Math.max(1, Math.min(100000, Math.round(Number(b.day) || 1)));
     if (day < LB_MIN_DAY) return json(env, { ok: true, eligible: false, need: LB_MIN_DAY });
     const clean = (s, n) => String(s || '').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, n);
@@ -107,6 +109,10 @@ async function leaderboard(req, env, path, url) {
     const prev = JSON.parse((await env.ORDERS.get('lb:all')) || '[]').find(r => r.pid === pid);
     if (prev && now - (prev.at || 0) < LB_GAP)
       return json(env, { ok: true, eligible: true, throttled: true, rank: { all: await rankIn('lb:all'), week: await rankIn('lb:' + P.week), month: await rankIn('lb:' + P.month) } });
+    // 🔐 Lịch sử gửi điểm để kiểm tra gian lận (trang /admin); tiệm đã bị gỡ thì không lên bảng nữa
+    const hist = JSON.parse((await env.ORDERS.get(histKey(pid))) || 'null');
+    if (hist && hist.ban) return json(env, { ok: true, eligible: true, rank: { all: 0, week: 0, month: 0 } });
+    await env.ORDERS.put(histKey(pid), JSON.stringify(histAdd(hist, row, now)), { expirationTtl: 400 * 86400 });
     const all = await lbUpsert(env, 'lb:all', row);
     const week = await lbUpsert(env, 'lb:' + P.week, row, 70 * 86400);
     const month = await lbUpsert(env, 'lb:' + P.month, row, 120 * 86400);
@@ -128,6 +134,7 @@ async function leaderboard(req, env, path, url) {
   // Kiểm tra thưởng tuần/tháng trước
   const findRewards = async pid => {
     const out = [];
+    if (histFlag(JSON.parse((await env.ORDERS.get(histKey(pid))) || 'null')) === 'bad') return out;   // 🚩 chờ chủ game duyệt
     for (const [type, key] of [['week', P.prevWeek], ['month', P.prevMonth]]) {
       const list = JSON.parse((await env.ORDERS.get('lb:' + key)) || '[]');
       const rank = list.findIndex(r => r.pid === pid) + 1;
@@ -286,6 +293,7 @@ async function handle(req, env) {
     }
 
     // 🏆 Bảng xếp hạng: chỉ tiệm kinh doanh từ LB_MIN_DAY ngày, xếp theo tổng vốn; có bảng tuần/tháng (giờ VN) và thưởng top 10
+    if (path === '/admin' || path.startsWith('/admin/')) { const r = await handleAdmin(req, env, url, path, { json: (d, s = 200) => json(env, d, s), safeEq, periodInfo }); if (r) return r; }
     if (path === '/lb' || path.startsWith('/lb/')) return leaderboard(req, env, path, url);
     if (path === '/ping' || path === '/stats') return stats(req, env, path);
     // 🎫 Vé số: số trúng mỗi ngày = HMAC bí mật theo ngày, chỉ trả sau 19:00 giờ VN
