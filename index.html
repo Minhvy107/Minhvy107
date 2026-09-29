@@ -233,6 +233,7 @@ input[type=text],textarea{font:inherit;padding:8px 12px;border:2px solid var(--l
 .hday span{font-size:13px;color:var(--muted)}
 .hmid{text-align:center;display:flex;flex-direction:column;line-height:1.1;min-width:0}
 .hmid .nm{color:var(--brand2);font-weight:900;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hname{background:none;border:0;padding:0;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:2px;max-width:100%;margin:0 auto;cursor:pointer}.hname span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hname i{font-style:normal;font-size:11px;flex:none;opacity:.85}
 .hmid b{font:800 23px var(--display);font-variant-numeric:tabular-nums}
 .hmid small{font-size:11.5px;color:var(--muted)}
 .hstars{text-align:right;line-height:1.15;font-size:12.5px;color:var(--muted)}
@@ -508,7 +509,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
   <header id="hdr">
     <button class="pausebtn" id="btnPause" aria-label="Tạm dừng và menu">⏸</button>
     <div class="hday"><b id="sDay">Ngày 1</b><span>🕕 <b id="sClock">06:30</b></span></div>
-    <div class="hmid"><span class="nm" id="hName"></span><b id="sMoney">0</b><small>💚 <span id="sRep">50</span> · 💎 <span id="sGems">0</span></small></div>
+    <div class="hmid"><button class="nm hname" onclick="openRename()" title="Đổi tên tiệm"><span id="hName"></span> <i>✏️</i></button><b id="sMoney">0</b><small>💚 <span id="sRep">50</span> · 💎 <span id="sGems">0</span></small></div>
     <div class="hstars"><span class="stars" id="sStarsIcons">☆☆☆☆☆</span><span><span id="sStars">–</span> · <span id="sRevCount">0</span> đánh giá</span></div>
   </header>
   <div class="awning"></div>
