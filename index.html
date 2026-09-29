@@ -472,6 +472,8 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 .st-bottom .pill{width:min(360px,100%);font-size:24px;padding:8px 20px}
 .st-links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
 .link{background:none;border:none;padding:2px;text-decoration:underline;font:800 16px var(--display);color:#5a3a32}
+.st-music{position:absolute;right:16px;top:calc(12px + env(safe-area-inset-top,0px));z-index:3;border:0;border-radius:20px;padding:7px 12px;font:800 13px var(--display);background:rgba(255,255,255,.85);color:#5a3a2e;box-shadow:0 2px 6px rgba(0,0,0,.2);animation:stPulse 1.6s ease-in-out infinite}
+@keyframes stPulse{50%{transform:scale(1.06)}}
 .st-ver{position:absolute;left:16px;bottom:calc(10px + env(safe-area-inset-bottom,0px));font:800 13px var(--display);color:#7a5a4e}
 .namecard{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fffaf3;border:3px solid var(--ink);border-radius:24px;padding:20px;width:min(400px,calc(100% - 32px));text-align:center;box-shadow:0 6px 0 rgba(90,58,50,.3);z-index:2}
 .namecard[hidden]{display:none}
@@ -491,6 +493,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <button class="pill" id="stMain">Bắt đầu chơi</button>
     <div class="st-links"><button class="link" id="stNew2" hidden>Chơi mới</button><button class="link" id="stLoad">Tải bản lưu</button><button class="link" id="stHelp">Hướng dẫn</button><button class="link" onclick="openLeaderboard()">🏆 Xếp hạng</button><button class="link" id="stInstall" onclick="openInstall()">📱 Cài app</button><button class="link" id="stSupport" hidden onclick="openSupport('')">Báo lỗi</button></div>
   </div>
+  <button class="st-music" id="stMusic" hidden onclick="audioUnlock()">🎵 Chạm để bật nhạc</button>
   <div class="st-ver">v4.0</div>
   <div class="namecard" id="startName" hidden>
     <h2>Đặt tên tiệm</h2>
@@ -1431,7 +1434,18 @@ function abandonCur(){
 const SFX={ctx:null,on:true,last:0,bus:null};
 try{ SFX.on=localStorage.getItem('clx-sound')!=='0'; }catch(e){}
 function sfxCtx(){ if(!SFX.ctx){ const A=window.AudioContext||window.webkitAudioContext; if(!A) return null; SFX.ctx=new A(); SFX.bus=SFX.ctx.createGain(); SFX.bus.gain.value=0.7; SFX.bus.connect(SFX.ctx.destination); } if(SFX.ctx.state==='suspended') SFX.ctx.resume(); return SFX.ctx; }
-['pointerdown','touchstart','keydown'].forEach(ev=>window.addEventListener(ev,()=>{ if(SFX.on) sfxCtx(); },{passive:true}));
+// iPhone: chỉ cho mở âm thanh trong touchend/click; Web Audio bị tắt khi gạt chế độ im lặng → phát kèm 1 file im lặng để giữ phiên "phát nhạc"
+let _silentEl=null;
+function silentLoop(on){ try{
+  if(on&&!_silentEl){ const n=8000, b=new ArrayBuffer(44+n), v=new DataView(b), w=(o,t)=>[...t].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+    w(0,'RIFF'); v.setUint32(4,36+n,true); w(8,'WAVEfmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,8000,true); v.setUint32(28,8000,true); v.setUint16(32,1,true); v.setUint16(34,8,true); w(36,'data'); v.setUint32(40,n,true); for(let i=0;i<n;i++) v.setUint8(44+i,128);
+    _silentEl=new Audio(URL.createObjectURL(new Blob([b],{type:'audio/wav'}))); _silentEl.loop=true; _silentEl.setAttribute('playsinline',''); }
+  if(_silentEl){ if(on) _silentEl.play().catch(()=>{}); else _silentEl.pause(); } }catch(e){} }
+window.audioUnlock=function(){ if(!SFX.on&&!MUSIC.on) return; try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
+  const a=sfxCtx(); if(!a) return; silentLoop(true); if(a.state!=='running') a.resume().then(audioHint,audioHint); if(MUSIC.on&&!MUSIC.timer) musicStart(); audioHint(); };
+function audioHint(){ const b=document.getElementById('stMusic'); if(b) b.hidden=!MUSIC.on||!!(SFX.ctx&&SFX.ctx.state==='running'); }
+['pointerdown','touchstart','touchend','click','keydown'].forEach(ev=>window.addEventListener(ev,()=>audioUnlock(),{passive:true,capture:true}));
+setTimeout(audioHint,600);
 function tone(f,t0,dur,{type='sine',vol=0.2,to=null,att=0.004}={}){ const a=SFX.ctx, o=a.createOscillator(), g=a.createGain(), t=a.currentTime+t0;
   o.type=type; o.frequency.setValueAtTime(f,t); if(to) o.frequency.exponentialRampToValueAtTime(to,t+dur);
   g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+att); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
@@ -1483,9 +1497,8 @@ function musicStart(){ if(!MUSIC.on) return; const a=sfxCtx(); if(!a) return;
   MUSIC.gain.gain.setTargetAtTime(0.55,a.currentTime,0.3);
   if(!MUSIC.timer) MUSIC.timer=setInterval(musicTick,90); }
 function musicStop(){ clearInterval(MUSIC.timer); MUSIC.timer=null; if(MUSIC.gain&&SFX.ctx) MUSIC.gain.gain.setTargetAtTime(0.0001,SFX.ctx.currentTime,0.15); }
-['pointerdown','touchstart','keydown'].forEach(ev=>window.addEventListener(ev,()=>{ if(MUSIC.on&&!MUSIC.timer) musicStart(); },{passive:true}));
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&MUSIC.on&&SFX.ctx) MUSIC.next=0; });
-window.toggleMusic=function(){ MUSIC.on=!MUSIC.on; try{ localStorage.setItem('clx-music',MUSIC.on?'1':'0'); }catch(e){} if(MUSIC.on) musicStart(); else musicStop(); toast(MUSIC.on?'🎵 Đã bật nhạc nền':'🎵 Đã tắt nhạc nền'); };
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ silentLoop(false); return; } if(SFX.ctx&&(SFX.on||MUSIC.on)){ SFX.ctx.resume().catch(()=>{}); silentLoop(true); } if(MUSIC.on&&SFX.ctx) MUSIC.next=0; });
+window.toggleMusic=function(){ MUSIC.on=!MUSIC.on; try{ localStorage.setItem('clx-music',MUSIC.on?'1':'0'); }catch(e){} if(MUSIC.on) audioUnlock(); else { musicStop(); if(!SFX.on) silentLoop(false); } audioHint(); toast(MUSIC.on?'🎵 Đã bật nhạc nền':'🎵 Đã tắt nhạc nền'); };
 
 /* ====== 📲 Loa báo chuyển khoản (ting ting + giọng đọc) ====== */
 const VOICE={on:true,v:null};
