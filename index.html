@@ -1764,7 +1764,8 @@ function renderAutoBox(){
 /* Nền bên trong tiệm tạp hóa (vẽ sẵn một lần) */
 /* ====== 🌙 Giao diện theo mùa (mở khi mua Season Pass; ?theme=moon để xem thử) ====== */
 const THEME_PREVIEW=(/[?&]theme=(\w+)/.exec(location.search)||[])[1]||null;
-const curTheme=()=>THEME_PREVIEW||(S&&S.wear&&S.wear.theme==='theme_moon'&&owns('theme_moon')?'moon':null);
+let homeTheme=null; // giao diện màn hình chờ khi chưa vào game (đọc từ bản lưu tự động)
+const curTheme=()=>THEME_PREVIEW||(S?(S.wear&&S.wear.theme==='theme_moon'&&owns('theme_moon')?'moon':null):homeTheme);
 const MOON={awning:['#3a2d63','#f2c94c'],lantern:['#e5534b','#f2994a','#e5534b','#f2994a']};
 function applyTheme(){ const t=curTheme()||''; if(document.documentElement.dataset.theme!==t){ document.documentElement.dataset.theme=t; _sbg=null; applyAwning.k=null; } }
 function moonSky(g,w,h,t){ const sky=g.createLinearGradient(0,0,0,h*0.7); sky.addColorStop(0,'#231c45'); sky.addColorStop(1,'#6b4fa3'); g.fillStyle=sky; g.fillRect(0,0,w,h);
@@ -3345,7 +3346,7 @@ function unpack(raw){
   PRODUCTS.forEach(p=>{ if(!d.inv[p.id]) d.inv[p.id]=[]; if(!d.market[p.id]) d.market[p.id]={cost:p.cost,ref:p.ref}; if(!d.price[p.id]) d.price[p.id]=d.market[p.id].ref; });
   return d;
 }
-const meta=()=>({name:S.name, day:S.day, money:S.money, ts:Date.now()});
+const meta=()=>({name:S.name, day:S.day, money:S.money, ts:Date.now(), theme:curTheme()||''});
 function autosave(){ if(S) ls(SAVE_AUTO,JSON.stringify({meta:meta(),state:packState()})); }
 function autosaveSoft(){ if(!R) autosave(); }
 function readSlot(key){ try{ const v=ls(key); return v?JSON.parse(v):null; }catch(e){ return null; } }
@@ -4692,6 +4693,7 @@ function toHome(){
   $('#startName').hidden=true; $('#stBottom').hidden=false;
   const a=readSlot(SAVE_AUTO), ok=a&&!(S&&S.over&&S.name===a.meta.name);
   window._stName=ok?a.meta.name:null;
+  if(!S){ homeTheme=null; if(ok){ if(a.meta.theme!=null) homeTheme=a.meta.theme||null; else try{ const d=JSON.parse(a.state); homeTheme=d.wear&&d.wear.theme==='theme_moon'&&d.owned&&d.owned.theme_moon?'moon':null; }catch(e){} } }
   $('#stSave').textContent=ok?`${a.meta.name} · Ngày ${a.meta.day} · ${fmtS(a.meta.money)}`:'';
   $('#stMain').textContent=ok?'Chơi tiếp':'Bắt đầu chơi';
   $('#stMain').dataset.mode=ok?'cont':'new';
