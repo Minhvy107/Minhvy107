@@ -453,6 +453,12 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 .modal .box{background:var(--page);color:var(--ink);border:3px solid var(--ink);border-radius:22px;max-width:460px;width:100%;max-height:88vh;overflow-y:auto;padding:18px;box-shadow:0 6px 0 rgba(90,58,50,.3)}
 .modal h3{margin-bottom:8px;font-size:23px}
 .modal table td{padding:3px 2px;border:none}
+.thiefpop{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(360px,calc(100% - 24px));z-index:55;background:#fff;border:3px solid #e5534b;border-radius:18px;padding:10px 12px;box-shadow:0 6px 0 rgba(0,0,0,.12),0 0 0 6px rgba(229,83,75,.18);text-align:center}
+.thiefpop.tp-in{animation:tpIn .35s ease-out}@keyframes tpIn{from{transform:translate(-50%,30px);opacity:0}}
+.tp-h{font:800 15px var(--display);color:#b8322f}.tp-b{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13.5px;margin:4px 0}
+.tp-f{font-size:34px;filter:drop-shadow(0 0 6px rgba(229,83,75,.7));animation:tpSh .4s ease-in-out infinite alternate}@keyframes tpSh{to{transform:translateX(3px) rotate(4deg)}}
+.tp-bar{height:9px;border-radius:6px;background:#f3d4d1;overflow:hidden;margin:4px 0 8px}.tp-bar i{display:block;height:100%;width:100%;background:#e5534b;transition:width .1s linear}
+.tp-go{display:block;width:100%;border:0;border-radius:14px;padding:11px;font:900 19px var(--display);color:#fff;background:#e5534b;box-shadow:0 4px 0 #9e2b2b;cursor:pointer}
 .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:14px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
 .toast.show{opacity:1}
 .tut{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:#fff;color:var(--ink);border:3px solid var(--brand);border-radius:18px;padding:12px 14px;max-width:440px;width:calc(100% - 32px);box-shadow:0 6px 0 rgba(90,58,50,.2)}
@@ -691,6 +697,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 
 <div class="modal" id="modal"><div class="box" id="modalBox" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast"></div>
+<div class="thiefpop" id="thiefPop" hidden></div>
 <div class="tut" id="tut" hidden></div>
 
 <script>
@@ -802,7 +809,7 @@ const EQUIP=[
   {id:'aircon',    icon:'🌬️', name:'Máy lạnh', max:1, cost:[18e6], gems:20, desc:'Khách kiên nhẫn hơn 25%, chấm sao cao hơn. Điện +150k/ngày.'},
   {id:'wifi',      icon:'📶', name:'Wifi miễn phí', max:1, cost:[3e6], desc:'Khách lướt điện thoại lúc chờ, kiên nhẫn hơn 15%.'},
   {id:'led',       icon:'💡', name:'Bảng hiệu LED', max:1, cost:[12e6], gems:15, desc:'Nổi bật cả phố, thêm 10% khách.'},
-  {id:'camera',    icon:'📹', name:'Camera an ninh', max:1, cost:[10e6], desc:'Kẻ trộm ngại ra tay, dễ bắt hơn. Giảm nguy cơ đột nhập ban đêm.'},
+  {id:'camera',    icon:'📹', name:'Camera an ninh', max:1, cost:[10e6], desc:'Kẻ trộm ngại ra tay. Có trộm thì hiện nút 🚨 BẮT! cho bạn bắt tận tay. Giảm nguy cơ đột nhập ban đêm.'},
   {id:'alarm',     icon:'🔔', name:'Chuông báo trộm', max:1, cost:[5e6], desc:'Giảm mạnh nguy cơ bị đột nhập ban đêm.'},
   {id:'generator', icon:'🔋', name:'Máy phát điện', max:1, cost:[20e6], gems:25, desc:'Cúp điện vẫn bán hàng bình thường.'},
 ];
@@ -1592,10 +1599,29 @@ function thiefEvent(){
   const got=[]; let loss=0;
   for(let i=0;i<rint(1,3);i++){ const pr=wsample(pool,x=>x.ref); const r=take(pr.id,1); if(r.got){ got.push({id:pr.id,parts:r.parts}); loss+=r.cogs; } }
   if(!got.length) return;
-  const guard=staffOf('guard')[0], pc=(guard?0.55:0)+(S.eq.camera?0.25:0)+0.05;
+  const guard=staffOf('guard')[0], pc=(guard?0.55:0)+0.05;
+  // 📹 Có camera: bảo vệ bắt trước; vụ nào lọt thì hiện nút BẮT! cho chủ tiệm bấm trong 4 giây
+  if(S.eq.camera&&!THIEF&&!(guard&&Math.random()<pc)){ thiefShow(who,got,loss); return; }
   if(Math.random()<pc){ got.forEach(x=>giveBack(x.id,x.parts)); R.st.caught++; logMsg(`🚨 ${guard?'Bảo vệ '+guard.name:'Camera'} bắt được ${who.name} giấu ${got.map(x=>PMAP[x.id].icon).join('')} trong túi. Đã thu hồi.`,'ok'); toast(`🚨 Bắt được kẻ trộm ${who.name}!`); }
   else { R.st.theft+=loss; if(S.eq.camera) logMsg(`📹 Camera ghi lại ${who.name} lấy trộm ${got.map(x=>PMAP[x.id].icon).join('')}.`,'warn'); }
 }
+/* ====== 🦹 Bắt trộm bằng tay (khi có camera) ====== */
+const THIEF_MS=4000, THIEF_REP_DAY=3;
+let THIEF=null;
+function thiefShow(who,got,loss){ THIEF={who,got,loss,left:THIEF_MS}; sfx('alert');
+  const el=$('#thiefPop'); el.innerHTML=`<div class="tp-h">📹 Camera phát hiện kẻ khả nghi!</div><div class="tp-b"><span class="tp-f">🦹</span><span><b>${esc(who.name)}</b> đang giấu ${got.map(x=>PMAP[x.id].icon).join('')} vào túi</span></div><div class="tp-bar"><i id="thiefBar"></i></div><button class="tp-go" onclick="thiefCatch()">🚨 BẮT!</button>`;
+  el.hidden=false; el.classList.remove('tp-in'); void el.offsetWidth; el.classList.add('tp-in'); }
+function thiefHide(){ const el=$('#thiefPop'); if(el) el.hidden=true; THIEF=null; }
+window.thiefCatch=function(){ const T=THIEF; if(!T||!R) return thiefHide(); thiefHide();
+  T.got.forEach(x=>giveBack(x.id,x.parts)); R.st.caught++; cnt('thief');
+  const rep=(R.st.thiefRep||0)<THIEF_REP_DAY; if(rep){ R.st.thiefRep=(R.st.thiefRep||0)+1; S.rep=clamp(S.rep+1,0,100); }
+  sfx('reward'); logMsg(`🚨 Bạn bắt được ${T.who.name} giấu ${T.got.map(x=>PMAP[x.id].icon).join('')} trong túi. Đã thu hồi hàng${rep?' · 💚 uy tín +1':''}.`,'ok');
+  toast(`🚨 Bắt được kẻ trộm!${rep?' 💚 +1':''} · 🕵️ ${Math.min(S.cnt.thief,10)}/10`); titleCheck(); };
+function thiefEscape(){ const T=THIEF; thiefHide(); if(!T||!R) return; R.st.theft+=T.loss; sfx('sad');
+  logMsg(`📹 Camera ghi lại ${T.who.name} lấy trộm ${T.got.map(x=>PMAP[x.id].icon).join('')} rồi chạy mất.${staffOf('guard').length?'':' Thuê 🛡️ Bảo vệ để bắt tự động.'}`,'warn'); }
+function thiefTick(dt){ if(!THIEF) return; if(!R){ thiefHide(); return; }
+  if(userPaused||R.paused||$('#modal').classList.contains('show')) return;   // đang tạm dừng / mở bảng thì không đếm giờ
+  THIEF.left-=dt; const b=$('#thiefBar'); if(b) b.style.width=Math.max(0,THIEF.left/THIEF_MS*100)+'%'; if(THIEF.left<=0) thiefEscape(); }
 function deliveryOrder(){
   const shipper=staffOf('shipper').find(s=>!(R.shipBusy[s.id]>R.t)); if(!shipper) return;
   const pool=PRODUCTS.filter(x=>!catLocked(x.cat)); let amt=0,cogs=0,got=0;
@@ -2828,6 +2854,7 @@ window.resolveInc=function(k){ if(k&&INC_ACT[k]) INC_ACT[k](); INC_ACT={}; close
 
 
 function endDay(){
+  if(THIEF) thiefEscape();
   const r=R.st;
   let spoil=0; const spoilList=[], spoilVal=[];
   for(const p of PRODUCTS){
@@ -3790,7 +3817,7 @@ function loop(now){
       else { let m=dt/MS_PER_MIN*speed; while(R&&!R.paused&&m>0){ const s=Math.min(0.25,m); simStep(s); m-=s; } }
     }
     if(activeTab==='store'){ drawStage(now); if(R&&R.cur) renderOrder(); }
-    uiT+=dt;
+    uiT+=dt; thiefTick(dt);
     if(uiT>300){ uiT=0; renderHeader();
       if(R){ if(activeTab==='store') renderLive(); else if(activeTab==='kho') renderKho();
         const ae=document.activeElement;
@@ -3954,6 +3981,7 @@ const TITLES=[
   {id:'king',icon:'👑',name:'Vua khu phố',desc:'Hạ tiệm đối thủ',ok:()=>(S.cnt?.rivalWin||0)>=1,p:()=>[(S.cnt?.rivalWin||0),1]},
   {id:'mart',icon:'🏢',name:'Đại gia siêu thị',desc:'Nâng tiệm lên Siêu thị',ok:()=>(S.tier||0)>=3,p:()=>[(S.tier||0),3]},
   {id:'gift',icon:'🎁',name:'Người hào phóng',desc:'Tặng quà bạn bè 30 lần',ok:()=>(S.cnt?.gift||0)>=30,p:()=>[(S.cnt?.gift||0),30]},
+  {id:'thief',icon:'🕵️',name:'Thám tử',desc:'Tự tay bắt 10 kẻ trộm',ok:()=>(S.cnt?.thief||0)>=10,p:()=>[Math.min(S.cnt?.thief||0,10),10]},
   {id:'mil',icon:'💰',name:'Triệu phú chợ',desc:'Trả lời đúng cả 15 câu Ai là triệu phú',ok:()=>(S.cnt?.milWin||0)>=1,p:()=>[(S.cnt?.milWin||0),1]},
 ];
 const TMAP=Object.fromEntries(TITLES.map(t=>[t.id,t]));
@@ -4634,6 +4662,11 @@ window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-09-30-thief',date:'30/09/2026',title:'🚨 Tự tay bắt trộm',items:[
+    ['📹','Có Camera an ninh: khi có trộm, hiện nút 🚨 BẮT! trong 4 giây. Bấm kịp là thu hồi hàng + 💚 uy tín +1 (tối đa +3/ngày)','new'],
+    ['🕵️','Danh hiệu mới "Thám tử": tự tay bắt 10 kẻ trộm','new'],
+    ['🛡️','Bảo vệ vẫn tự bắt trộm như cũ; vụ nào lọt thì camera báo cho bạn','fix'],
+    ['🎵','Nhạc nền trên iPhone phát được cả khi gạt im lặng; máy tính cuộn được thanh công cụ dưới','fix']]},
   {v:'2026-09-29-kho',date:'29/09/2026',title:'📦 Kho gọn hơn & đổi tên tiệm',items:[
     ['📦','Tab Kho: mỗi mặt hàng là một thẻ gọn (tồn kho, giá, lãi, nút nhập) — không phải kéo ngang, khó đặt nhầm','new'],
     ['✏️','Đổi tên cửa hàng trong ☰ Menu: lần đầu miễn phí, sau đó 20💎','new']]},
