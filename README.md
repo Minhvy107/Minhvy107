@@ -32,6 +32,16 @@ Trò chơi trình duyệt: mở tiệm tạp hóa – thực phẩm tươi sốn
 - **Tính năng cần 💎 để mở**: tốc độ 2x/4x, nhập theo gợi ý, ô lưu 2 và 3, tự động phục vụ; một số thiết bị, quảng cáo, dịch vụ, chi nhánh cần thêm 💎; săn ứng viên 5 sao bằng 💎.
 - 51 mặt hàng, nhân viên, đánh giá sao & phản hồi, nâng cấp tiệm, quảng cáo & PR, dịch vụ mở khóa, trộm & sự cố & kiểm tra & thuế, sao lưu 3 ô + mã sao lưu.
 
+## ⚔️ Game mới: Kiếm & Khiên – Nữ Kỵ Sĩ Idle
+Mở `kiem-khien/index.html`. Game idle RPG: nữ kỵ sĩ tự chiến đấu qua các ải (10 đợt/ải, đợt 10 là Boss có giới hạn 30 giây, thua thì luyện lại rồi bấm *Đánh Boss*).
+- **Nâng cấp** bằng vàng: tấn công, sinh lực, hồi máu, chí mạng, sát thương chí mạng, tốc đánh (x1 / x10 / tối đa).
+- **Trang bị** kiếm, khiên, giáp, nhẫn với 6 độ hiếm (Thường → Thần Thoại), cường hóa bằng đá 🔮, hợp nhất 3 món → 1 món hiếm hơn, phân giải. Màu kiếm/khiên trên nhân vật đổi theo độ hiếm.
+- **4 kỹ năng** tự động: Chém Xoáy, Khiên Thánh, Kiếm Quang, Thiên Kiếm Vũ.
+- **Ngọc** (Hỏa, Băng, Lôi, Huyết, Phong) khảm vào tối đa 3 ô, ghép 3 → 1 để tạo build.
+- **Thăng cấp** 5 bậc (Tân Binh → Nữ Chiến Thần): chỉ số ×1.6 và đổi ngoại hình (giáp, áo choàng, vương miện, hào quang, đôi cánh). **6 bộ trang phục** mua bằng 💎.
+- **Hầm ngục**: Ma Vương (2 vé/ngày, mạnh dần) và Boss Thế Giới Hydra (3 vé/ngày, máu vô hạn, thưởng theo sát thương).
+- Triệu hồi trang bị/ngọc bằng 💎, quà hằng ngày, thưởng offline tối đa 8 giờ, tốc độ x1/x2/x3, tự lưu trên máy.
+
 Mục tiêu: tổng tài sản **500 triệu**. Âm tiền 3 ngày liên tiếp là phá sản.
 
 > Trò chơi hư cấu, lấy cảm hứng từ mô hình chuỗi cửa hàng thực phẩm tươi sống; các con số chỉ mang tính minh họa.
