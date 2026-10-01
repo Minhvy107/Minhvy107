@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <title>Chợ Lá Xanh</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#6fc18a">
@@ -74,6 +74,10 @@ html[data-theme="moon"] .awning::after{height:12px;background:radial-gradient(ci
 html,body{margin:0}
 body{background:var(--bg) radial-gradient(circle,rgba(255,255,255,.35) 2px,transparent 2.5px) 0 0/22px 22px;color:var(--ink);font:700 14.5px/1.45 var(--body)}
 h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;font-weight:800}
+/* Điện thoại: không tự phóng to khi chạm nhanh 2 lần (bán hàng hay bấm liên tục) hoặc khi chạm vào ô nhập */
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,.bin,canvas,[data-tab]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+@media (pointer:coarse){input:not([type=checkbox]):not([type=range]):not([type=radio]),select,textarea{font-size:16px!important}}
 button{font:inherit;cursor:pointer;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:6px 12px;font-weight:800}
 button:hover:not(:disabled){border-color:var(--brand)}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
