@@ -185,6 +185,14 @@ async function stats(req, env, path) {
     }
     const total = Number((await env.ORDERS.get('stat:total')) || 0);
     const lb = JSON.parse((await env.ORDERS.get('lb:all')) || '[]').length;
+    // 🤝 Hội chủ tiệm: chỉ tên, số thành viên, tiến độ tuần (không lộ mã hội, tin nhắn, mã người chơi)
+    const gkeys = []; let cur;
+    do { const r = await env.ORDERS.list({ prefix: 'guild:', cursor: cur }); gkeys.push(...r.keys.map(k => k.name)); cur = r.list_complete ? null : r.cursor; } while (cur && gkeys.length < 1000);
+    const guilds = (await Promise.all(gkeys.slice(0, 50).map(k => env.ORDERS.get(k)))).map(v => { try { return JSON.parse(v); } catch (e) { return null; } }).filter(Boolean)
+      .map(g => ({ name: String(g.name || 'Hội chủ tiệm'), n: (g.members || []).length, sold: g.week && g.week.sold || 0, goal: Math.max(5000, 3000 * (g.members || []).length), created: g.created || 0 }))
+      .sort((a, b) => b.n - a.n || b.sold - a.sold);
+    const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const gMembers = guilds.reduce((a, g) => a + g.n, 0);
     const wk = days.slice(0, 7), sum = (a, k) => a.reduce((x, r) => x + r[k], 0);
     const card = (l, v, s) => `<div class="c"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s || ''}</div></div>`;
     const html = `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Thống kê Chợ Lá Xanh</title>
@@ -192,7 +200,8 @@ async function stats(req, env, path) {
 .g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.c{background:#fff;border:2px solid #cfe6d5;border-radius:14px;padding:10px 12px}.l{font-size:12.5px;color:#7f8a7f}.v{font-size:28px;font-weight:800}.s{font-size:12px;color:#7f8a7f}
 table{width:100%;border-collapse:collapse;background:#fff;border:2px solid #cfe6d5;border-radius:14px;overflow:hidden;margin-top:14px;font-size:14px}th,td{padding:7px 10px;border-bottom:1px solid #e3efe6;text-align:right}th:first-child,td:first-child{text-align:left}th{font-size:12px;color:#7f8a7f;background:#f0f8f2}</style></head><body>
 <h1>📈 Thống kê người chơi</h1><div class="m">Chợ Lá Xanh · cập nhật lúc ${new Date(now + 7 * 3600e3).toISOString().slice(11, 16)} (giờ VN) · đếm từ khi bật thống kê</div>
-<div class="g">${card('👥 Tổng người chơi', total, 'mỗi thiết bị/trình duyệt tính 1 người')}${card('📅 Chơi hôm nay', days[0].dau, `${days[0].nw} người mới`)}${card('🗓️ Lượt chơi 7 ngày', sum(wk, 'dau'), `${sum(wk, 'nw')} người mới`)}${card('🏆 Trên bảng xếp hạng', lb, 'tiệm kinh doanh ≥ 14 ngày')}</div>
+<div class="g">${card('👥 Tổng người chơi', total, 'mỗi thiết bị/trình duyệt tính 1 người')}${card('📅 Chơi hôm nay', days[0].dau, `${days[0].nw} người mới`)}${card('🗓️ Lượt chơi 7 ngày', sum(wk, 'dau'), `${sum(wk, 'nw')} người mới`)}${card('🏆 Trên bảng xếp hạng', lb, 'tiệm kinh doanh ≥ 14 ngày')}${card('🤝 Hội chủ tiệm', gkeys.length, `${gMembers} thành viên${gkeys.length > 50 ? ' (50 hội đầu)' : ''}`)}</div>
+${guilds.length ? `<table><tr><th>Hội</th><th>Thành viên</th><th>Tuần này</th><th>Lập ngày</th></tr>${guilds.map(g => `<tr><td>${esc(g.name)}</td><td>${g.n}/20</td><td>${g.sold.toLocaleString('vi-VN')}/${g.goal.toLocaleString('vi-VN')}</td><td>${g.created ? vnDay(g.created).slice(8, 10) + '/' + vnDay(g.created).slice(5, 7) : '–'}</td></tr>`).join('')}</table>` : '<div class="m" style="margin-top:12px">🤝 Chưa có hội chủ tiệm nào.</div>'}
 <table><tr><th>Ngày</th><th>Người chơi</th><th>Người mới</th></tr>${days.map(r => `<tr><td>${r.d.slice(8, 10)}/${r.d.slice(5, 7)}</td><td>${r.dau}</td><td>${r.nw}</td></tr>`).join('')}</table>
 </body></html>`;
     return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
