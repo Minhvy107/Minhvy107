@@ -162,19 +162,45 @@ async function leaderboard(req, env, path, url) {
 // ===== 📈 Thống kê người chơi (ẩn danh: chỉ mã người chơi ngẫu nhiên, không có thông tin cá nhân) =====
 const vnDay = ms => new Date(ms + 7 * 3600e3).toISOString().slice(0, 10);
 async function bump(env, key, ttl) { const n = Number((await env.ORDERS.get(key)) || 0) + 1; await env.ORDERS.put(key, String(n), ttl ? { expirationTtl: ttl } : undefined); return n; }
+// Mốc ngày game để xem người chơi đi được bao xa
+const REACH = [1, 3, 5, 7, 10, 14, 20, 30, 50, 100];
+// Tính năng được đếm (game gửi tên khi người chơi tự bấm mở, mỗi tính năng tối đa 1 lần/người/ngày)
+const FEATS = {
+  tab_wardrobe: '👗 Tủ đồ', tab_event: '🎪 Sự kiện', tab_pass: '🌙 Season Pass', tab_kho: '📦 Kho', tab_staff: '👥 Nhân viên', tab_reviews: '⭐ Đánh giá',
+  tab_equip: '🛠️ Nâng cấp', tab_ads: '📣 Quảng cáo', tab_svc: '🔓 Dịch vụ', tab_report: '📊 Báo cáo', tab_help: '❓ Hướng dẫn',
+  openFair: '🎡 Hội chợ', bcOpen: '🦀 Bầu cua', lotOpen: '🎫 Vé số', xdOpen: '🃏 Xì dách', milOpen: '💰 Ai là triệu phú', openMPHub: '🎮 Chơi chung',
+  openFriends: '🏘️ Bạn bè', openGuild: '🤝 Hội chủ tiệm', openWheel: '🎡 Vòng quay', openLogin: '📅 Điểm danh', openTitles: '🏅 Danh hiệu',
+  openRegulars: '💞 Khách quen', openBook: '📒 Sổ khách', openStory: '📖 Cốt truyện', openMarket: '📈 Chợ đầu mối', openCat: '🐱 Mèo',
+  openJuice: '🧃 Quầy nước', openRival: '⚔️ Đối thủ', openOrders: '🛵 Đơn online', openTier: '🏢 Nâng cấp tiệm', openRename: '✏️ Đổi tên',
+  payOpen: '💳 Mở nạp', openLeaderboard: '🏆 Bảng xếp hạng', openNews: '📰 Có gì mới', openSaves: '💾 Lưu game', thiefCatch: '🚨 Bắt trộm',
+};
 async function stats(req, env, path) {
-  const now = Date.now(), today = vnDay(now);
+  let now = Date.now(), today = vnDay(now);
   if (req.method === 'POST' && path === '/ping') {
     const b = await req.json().catch(() => null);
     const pid = String(b && b.pid || '').toUpperCase();
     if (!/^[A-Z0-9]{6}$/.test(pid)) return json(env, { error: 'bad_request' }, 400);
-    // user:{pid} = ngày chơi gần nhất → người cũ chỉ tốn 2 lượt ghi/ngày
-    const last = await env.ORDERS.get('user:' + pid);
-    if (last === today) return json(env, { ok: true });   // hôm nay đã đếm
-    const isNew = !last;
-    await env.ORDERS.put('user:' + pid, today);
-    if (isNew) { await bump(env, 'stat:total'); await bump(env, 'stat:new:' + today, 400 * 86400); }
-    await bump(env, 'stat:dau:' + today, 400 * 86400);
+    if (env.DEV_SPEED && b.now) { now = Number(b.now); today = vnDay(now); }   // chỉ khi chạy thử
+    // user:{pid} = {f: ngày đầu, l: ngày gần nhất, r: mốc ngày game đã đạt} (bản cũ chỉ lưu chuỗi ngày gần nhất)
+    const raw = await env.ORDERS.get('user:' + pid);
+    let u = null; try { u = raw && raw[0] === '{' ? JSON.parse(raw) : null; } catch (e) {}
+    const isNew = !raw; if (!u) u = { f: isNew ? today : null, l: isNew ? null : raw, r: -1 };
+    let dirty = false;
+    if (u.l !== today) {
+      if (isNew) { await bump(env, 'stat:total'); await bump(env, 'stat:new:' + today, 400 * 86400); }
+      await bump(env, 'stat:dau:' + today, 400 * 86400);
+      // 🔁 Giữ chân: người vào game lần đầu ngày F, hôm nay (F + k) quay lại
+      if (u.f) { const k = Math.round((Date.parse(today) - Date.parse(u.f)) / 864e5); if (k >= 1 && k <= 30) await bump(env, `stat:act:${u.f}:${k}`, 400 * 86400); }
+      u.l = today; dirty = true;
+    }
+    // 🧭 Đi được bao xa (ngày game)
+    const day = Math.max(0, Math.min(100000, Math.round(Number(b.day) || 0)));
+    let ri = -1; REACH.forEach((d, i) => { if (day >= d) ri = i; });
+    if (ri > (u.r ?? -1)) { for (let i = (u.r ?? -1) + 1; i <= ri; i++) await bump(env, 'stat:reach:' + i); u.r = ri; dirty = true; }
+    // 🧩 Tính năng dùng hôm nay
+    const fs = Array.isArray(b.f) ? [...new Set(b.f.map(String))].filter(x => FEATS[x]).slice(0, 40) : [];
+    for (const f of fs) await bump(env, `stat:feat:${today}:${f}`, 120 * 86400);
+    if (dirty) await env.ORDERS.put('user:' + pid, JSON.stringify(u), { expirationTtl: 400 * 86400 });
     return json(env, { ok: true, isNew });
   }
   if (req.method === 'GET' && path === '/stats') {
@@ -194,14 +220,33 @@ async function stats(req, env, path) {
     const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const gMembers = guilds.reduce((a, g) => a + g.n, 0);
     const wk = days.slice(0, 7), sum = (a, k) => a.reduce((x, r) => x + r[k], 0);
+    const N = k => env.ORDERS.get(k).then(v => Number(v || 0));
+    // 🔁 Giữ chân theo nhóm người chơi mới mỗi ngày (14 ngày gần nhất, bỏ hôm nay)
+    const coh = await Promise.all(days.slice(1, 15).map(async r => ({ ...r, a: await Promise.all([1, 3, 7].map(k => N(`stat:act:${r.d}:${k}`))) })));
+    const ago = d => Math.round((Date.parse(today) - Date.parse(d)) / 864e5);
+    const pct = (a, n) => n ? Math.round(a / n * 100) + '%' : '–';
+    const avgRet = k => { const i = [1, 3, 7].indexOf(k), c = coh.filter(r => ago(r.d) >= k && r.nw); const n = c.reduce((x, r) => x + r.nw, 0); return n ? pct(c.reduce((x, r) => x + r.a[i], 0), n) : '–'; };
+    // 🧭 Đi được bao xa
+    const reach = await Promise.all(REACH.map((_, i) => N('stat:reach:' + i)));
+    // 🧩 Tính năng 7 ngày: số lượt người dùng (mỗi người tính 1 lần/ngày)
+    const fk = Object.keys(FEATS), fv = await Promise.all(fk.map(f => Promise.all(wk.map(r => N(`stat:feat:${r.d}:${f}`))).then(a => a.reduce((x, y) => x + y, 0))));
+    const feats = fk.map((f, i) => ({ f, n: fv[i] })).sort((a, b) => b.n - a.n), fmax = Math.max(1, ...fv), dau7 = sum(wk, 'dau');
+    const bar = (v, mx, col) => `<div style="background:#e9f3ec;border-radius:6px;height:10px;overflow:hidden"><div style="width:${Math.round(v / mx * 100)}%;height:100%;background:${col}"></div></div>`;
     const card = (l, v, s) => `<div class="c"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s || ''}</div></div>`;
     const html = `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Thống kê Chợ Lá Xanh</title>
 <style>body{margin:0;font:600 15px/1.45 system-ui,sans-serif;background:#f5fbf6;color:#3b2e2a;padding:16px}h1{font-size:22px;margin:0 0 4px}.m{color:#7f8a7f;font-size:13px;margin-bottom:14px}
 .g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.c{background:#fff;border:2px solid #cfe6d5;border-radius:14px;padding:10px 12px}.l{font-size:12.5px;color:#7f8a7f}.v{font-size:28px;font-weight:800}.s{font-size:12px;color:#7f8a7f}
-table{width:100%;border-collapse:collapse;background:#fff;border:2px solid #cfe6d5;border-radius:14px;overflow:hidden;margin-top:14px;font-size:14px}th,td{padding:7px 10px;border-bottom:1px solid #e3efe6;text-align:right}th:first-child,td:first-child{text-align:left}th{font-size:12px;color:#7f8a7f;background:#f0f8f2}</style></head><body>
+table{width:100%;border-collapse:collapse;background:#fff;border:2px solid #cfe6d5;border-radius:14px;overflow:hidden;margin-top:14px;font-size:14px}th,td{padding:7px 10px;border-bottom:1px solid #e3efe6;text-align:right}th:first-child,td:first-child{text-align:left}th{font-size:12px;color:#7f8a7f;background:#f0f8f2}h2{font-size:17px;margin:22px 0 2px}</style></head><body>
 <h1>📈 Thống kê người chơi</h1><div class="m">Chợ Lá Xanh · cập nhật lúc ${new Date(now + 7 * 3600e3).toISOString().slice(11, 16)} (giờ VN) · đếm từ khi bật thống kê</div>
 <div class="g">${card('👥 Tổng người chơi', total, 'mỗi thiết bị/trình duyệt tính 1 người')}${card('📅 Chơi hôm nay', days[0].dau, `${days[0].nw} người mới`)}${card('🗓️ Lượt chơi 7 ngày', sum(wk, 'dau'), `${sum(wk, 'nw')} người mới`)}${card('🏆 Trên bảng xếp hạng', lb, 'tiệm kinh doanh ≥ 14 ngày')}${card('🤝 Hội chủ tiệm', gkeys.length, `${gMembers} thành viên${gkeys.length > 50 ? ' (50 hội đầu)' : ''}`)}</div>
 ${guilds.length ? `<table><tr><th>Hội</th><th>Thành viên</th><th>Tuần này</th><th>Lập ngày</th></tr>${guilds.map(g => `<tr><td>${esc(g.name)}</td><td>${g.n}/20</td><td>${g.sold.toLocaleString('vi-VN')}/${g.goal.toLocaleString('vi-VN')}</td><td>${g.created ? vnDay(g.created).slice(8, 10) + '/' + vnDay(g.created).slice(5, 7) : '–'}</td></tr>`).join('')}</table>` : '<div class="m" style="margin-top:12px">🤝 Chưa có hội chủ tiệm nào.</div>'}
+<h2>🔁 Người mới có quay lại không?</h2><div class="m">Trong số người vào game lần đầu ngày đó, bao nhiêu % quay lại sau 1 / 3 / 7 ngày. Trung bình: <b>Sau 1 ngày ${avgRet(1)}</b> · <b>3 ngày ${avgRet(3)}</b> · <b>7 ngày ${avgRet(7)}</b></div>
+<table><tr><th>Ngày vào</th><th>Người mới</th><th>Sau 1 ngày</th><th>Sau 3 ngày</th><th>Sau 7 ngày</th></tr>${coh.map(r => `<tr><td>${r.d.slice(8, 10)}/${r.d.slice(5, 7)}</td><td>${r.nw}</td>${[1, 3, 7].map((k, i) => `<td>${ago(r.d) >= k ? pct(r.a[i], r.nw) : '<span style="color:#aab">chờ</span>'}</td>`).join('')}</tr>`).join('')}</table>
+<h2>🧭 Người chơi đi được bao xa?</h2><div class="m">Số người đã chơi tới ngày game thứ N (tính từ khi bật thống kê này). Chỗ tụt mạnh là chỗ người chơi hay bỏ game.</div>
+<table><tr><th>Tới ngày game</th><th>Người chơi</th><th>% so với ngày 1</th><th style="width:38%"></th></tr>${REACH.map((d, i) => `<tr><td>Ngày ${d}</td><td>${reach[i]}</td><td>${pct(reach[i], reach[0])}</td><td>${bar(reach[i], Math.max(1, reach[0]), '#6fc18a')}</td></tr>`).join('')}</table>
+<h2>🧩 Tính năng nào được dùng (7 ngày)</h2><div class="m">Số lượt người chơi tự bấm mở mỗi tính năng (mỗi người tính 1 lần/ngày). Tổng lượt chơi 7 ngày: ${dau7}.</div>
+<table><tr><th>Tính năng</th><th>Lượt</th><th>% lượt chơi</th><th style="width:38%"></th></tr>${feats.map(x => `<tr><td>${FEATS[x.f]}</td><td>${x.n}</td><td>${pct(x.n, dau7)}</td><td>${bar(x.n, fmax, x.n ? '#e9a23b' : '#ddd')}</td></tr>`).join('')}</table>
+<h2>📅 Người chơi theo ngày</h2>
 <table><tr><th>Ngày</th><th>Người chơi</th><th>Người mới</th></tr>${days.map(r => `<tr><td>${r.d.slice(8, 10)}/${r.d.slice(5, 7)}</td><td>${r.dau}</td><td>${r.nw}</td></tr>`).join('')}</table>
 </body></html>`;
     return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });

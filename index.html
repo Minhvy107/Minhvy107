@@ -2859,6 +2859,7 @@ window.resolveInc=function(k){ if(k&&INC_ACT[k]) INC_ACT[k](); INC_ACT={}; close
 
 function endDay(){
   if(THIEF) thiefEscape();
+  setTimeout(statPing,500);
   const r=R.st;
   let spoil=0; const spoilList=[], spoilVal=[];
   for(const p of PRODUCTS){
@@ -3101,8 +3102,21 @@ window.lbClaim=function(period,btn){ btn.disabled=true; btn.textContent='Đang n
     else { btn.textContent='Đã nhận trước đó'; } }).catch(()=>{ btn.disabled=false; btn.textContent='Thử lại'; }); };
 
 /* ====== 📈 Đếm người chơi ẩn danh (mỗi thiết bị 1 lần/ngày) ====== */
-function statPing(){ if(!S||!PAY_CFG.api) return; const k=vnDay(); try{ if(localStorage.getItem('clx-ping')===k) return; }catch(e){}
-  fetch(lbApi('/ping'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:devId()})}).then(r=>{ if(r.ok){ try{ localStorage.setItem('clx-ping',k); }catch(e){} } }).catch(()=>{}); }
+/* 📈 Thống kê ẩn danh: ngày chơi, ngày game đã tới, tính năng tự bấm mở (mỗi tính năng tối đa 1 lần/ngày). Không gửi tên, tiền hay dữ liệu cá nhân. */
+const FT_KEY='clx-ft';
+function ftLoad(){ let o=null; try{ o=JSON.parse(localStorage.getItem(FT_KEY)||'null'); }catch(e){} const k=vnDay(); if(!o||o.d!==k) o={d:k,q:[],sent:[]}; return o; }
+function ftSave(o){ try{ localStorage.setItem(FT_KEY,JSON.stringify(o)); }catch(e){} }
+function track(f){ const e=window.event; if(!e||!e.isTrusted||!/^(click|pointerup|touchend|keydown)$/.test(e.type)) return;   // chỉ đếm khi mở trực tiếp từ cú bấm của người chơi, không đếm bảng tự bật
+  const o=ftLoad(); if(o.q.includes(f)||o.sent.includes(f)) return; o.q.push(f); ftSave(o); }
+let _pingDay=-1;
+function statPing(){ if(!S||!PAY_CFG.api) return; const o=ftLoad(), k=o.d; let pinged=null; try{ pinged=localStorage.getItem('clx-ping'); }catch(e){}
+  if(pinged===k&&!o.q.length&&_pingDay>=0&&(S.day===_pingDay||![1,3,5,7,10,14,20,30,50,100].includes(S.day))) return;   // chỉ gửi khi có tính năng mới, sang ngày mới, hoặc chạm mốc ngày game
+  const q=o.q.slice(); _pingDay=S.day;
+  fetch(lbApi('/ping'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:devId(),day:S.day,f:q})}).then(r=>{ if(!r.ok) return;
+    try{ localStorage.setItem('clx-ping',k); }catch(e){} const n=ftLoad(); if(n.d===k){ n.q=n.q.filter(x=>!q.includes(x)); n.sent=[...new Set([...n.sent,...q])]; ftSave(n); } }).catch(()=>{}); }
+// Gắn bộ đếm vào các nút mở tính năng (chạy sau khi mọi hàm đã khai báo)
+setTimeout(()=>{ ['openFair','bcOpen','lotOpen','xdOpen','milOpen','openMPHub','openFriends','openGuild','openWheel','openLogin','openTitles','openRegulars','openBook','openStory','openMarket','openCat','openJuice','openRival','openOrders','openTier','openRename','payOpen','openLeaderboard','openNews','openSaves','thiefCatch']
+  .forEach(n=>{ const fn=window[n]; if(typeof fn!=='function'||fn._ft) return; const w=function(...a){ try{ track(n); }catch(e){} return fn.apply(this,a); }; w._ft=1; window[n]=w; }); },0);
 function devId(){ let d=null; try{ d=localStorage.getItem('clx-dev'); }catch(e){} if(!d){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; d=Array.from({length:6},()=>A[Math.random()*32|0]).join(''); try{ localStorage.setItem('clx-dev',d); }catch(e){} } return d; }
 
 /* ====== 📱 Cài game như ứng dụng (PWA) ====== */
@@ -3555,6 +3569,7 @@ let activeTab='store';
 function renderActive(){ ({pass:renderPass,event:renderEventTab,wardrobe:renderWardrobe,kho:renderKho,staff:renderStaff,reviews:renderReviews,equip:renderEquip,ads:renderAds,svc:renderSvc,report:renderReport})[activeTab]?.(); }
 function refreshAll(){ renderHeader(); renderLive(); renderActive(); }
 function gotoTab(t){
+  if(t!=='store') track('tab_'+t);
   activeTab=t;
   $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   $$('.tab').forEach(s=>s.classList.toggle('show',s.id==='tab-'+t));
