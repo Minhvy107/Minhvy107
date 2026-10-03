@@ -960,7 +960,7 @@ function newGame(name){
   const c=makeStaff('cashier'); c.skill=3; c.speed=1.15; c.wage=280e3; S.staff.push(c);
   rollMorning(true);
   PRODUCTS.forEach(p=>S.price[p.id]=S.market[p.id].ref);
-  if(TESTMODE){ S.tier=3; S.money=3e9; S.rep=90; S.gems=2000; S.day=30; S.test=true; }
+  if(TESTMODE){ S.tier=3; S.money=50e9; S.rep=90; S.gems=2000; S.day=30; S.test=true; S.testTop=1; }
 }
 function rollMorning(first){
   settleQuests(); rollQuests(); festMorning(); storyMorning(); wxMorning(); catMorning(); rivalMorning(); chCheck();
@@ -5103,6 +5103,7 @@ function newsOnStart(){
   const b=$('#btnPause'); if(b) b.classList.add('news');
 }
 function startPlaying(){
+  if(TESTMODE&&S&&!S.testTop){ S.testTop=1; S.money=Math.max(S.money,50e9); S.tier=Math.max(S.tier||0,3); }   // bản thử cũ: nâng lên 50 tỷ
   closeModal(); R=null; userPaused=false;
   $('#start').hidden=true;
   selCat=CAT_KEYS[0];
