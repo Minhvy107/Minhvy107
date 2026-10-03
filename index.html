@@ -490,6 +490,24 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 .bin.hmb{border-color:#b77cff}.bin.hmb{justify-content:flex-end}.bin.hmb .nm{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.bin .bimg{position:absolute;left:50%;top:3px;transform:translateX(-50%);width:36px;height:36px;background:#fff;object-fit:cover;object-position:center 38%;border-radius:50%;box-shadow:0 0 0 1.5px #fff,0 0 0 3px #b77cff}
 .bin .hmtag{position:absolute;left:-6px;top:-8px;background:#8a4fff;color:#fff;font:800 8px var(--body);border-radius:8px;padding:1px 5px;z-index:2}
 .kho-ic .pim{width:30px;height:30px}.wd-item .hmth{object-fit:contain;background:#f6efff}
+.cp-tabs{display:flex;gap:6px;margin:6px 0 8px}.cp-tabs button{flex:1;padding:7px 4px;font-size:13px}.cp-tabs button.on{background:#2f6f8f;color:#fff;border-color:#1d4a60}
+.cp-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}.cp-kpi div{background:#eef6fa;border-radius:10px;padding:6px;text-align:center;font-size:11px;color:#5a6a72}.cp-kpi b{display:block;font-size:15px;color:#1d3a48}
+.cp-map{display:grid;grid-template-columns:1fr;gap:8px}.cp-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.cp-d{border:2px solid #cfe1ea;border-radius:14px;padding:7px;background:#f7fbfd}.cp-d.dom{border-color:#f2b544;background:#fff9e8}
+.cp-d h5{margin:0 0 4px;font-size:12.5px;display:flex;justify-content:space-between}.cp-d h5 i{font-style:normal;font-size:10.5px;color:#8a6a00}
+.cp-share{height:6px;border-radius:4px;background:#f4d4d1;overflow:hidden;margin-bottom:5px}.cp-share i{display:block;height:100%;background:#3f9e6b}
+.cp-s{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;border-radius:10px;padding:5px 4px;font-size:11.5px;line-height:1.2;font-weight:800}
+.cp-s.own{background:#e2f4e9}.cp-s.riv{background:#fde9e6}.cp-s.emp{background:#eef0f2}.cp-s span{font-size:17px}.cp-s div{flex:1;min-width:0}.cp-s small{display:block;color:#6a6a6a;font-size:10.5px}
+.cp-s button{padding:3px 6px;font-size:11px;white-space:nowrap;margin-top:2px;width:100%}.cp-s small{font-weight:600}
+.cp-biz{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;border:2px solid #cfe1ea;border-radius:14px;padding:8px;margin-bottom:8px;background:#f7fbfd}.cp-biz>span{font-size:30px}.cp-biz div{flex:1 1 200px;font-size:12.5px}.cp-biz>button{margin-left:auto}.cp-biz b{font-size:14px}
+.cp-lv{display:inline-flex;gap:2px;margin-left:4px}.cp-lv i{width:8px;height:8px;border-radius:2px;background:#d5dde2}.cp-lv i.on{background:#2f9e5b}
+.np{background:#f4efe2;border:2px solid #3b2e2a;border-radius:6px;padding:10px 12px;font-family:Georgia,"Times New Roman",serif;color:#2a221e;box-shadow:3px 3px 0 #3b2e2a}
+.np-mast{text-align:center;border-bottom:3px double #3b2e2a;padding-bottom:4px;margin-bottom:6px}.np-mast b{display:block;font:900 24px Georgia,serif;letter-spacing:.02em}.np-mast small{font:600 10.5px system-ui;color:#6a5a4a}
+.np-hl{font:900 19px/1.15 Georgia,serif;margin:6px 0;text-transform:uppercase}.np-hl em{color:#c0283e;font-style:normal}
+.np-pic{display:flex;align-items:center;justify-content:center;gap:8px;background:#e4dcc8;border:1.5px solid #3b2e2a;border-radius:4px;padding:6px;filter:sepia(.25)}.np-pic img{width:62px;height:62px;border-radius:50%;border:2px solid #3b2e2a;background:#fff}.np-pic span{font-size:34px}
+.np-cap{font:italic 11px Georgia,serif;color:#5a4a3a;text-align:center;margin:3px 0 6px}
+.np p{font-size:13px;line-height:1.45;margin:4px 0}.np-quote{border-left:3px solid #c0283e;padding-left:8px;font-style:italic}
+.np-list{max-height:46vh;overflow:auto}.np-it{border-bottom:1px dashed #9a8a7a;padding:6px 0;font-size:12.5px;cursor:pointer}.np-it b{font-family:Georgia,serif}.np-it.new b::after{content:" MỚI";color:#c0283e;font:800 9px system-ui}
 .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:14px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
 .toast.show{opacity:1}
 .tut{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:#fff;color:var(--ink);border:3px solid var(--brand);border-radius:18px;padding:12px 14px;max-width:440px;width:calc(100% - 32px);box-shadow:0 6px 0 rgba(90,58,50,.2)}
@@ -959,7 +977,7 @@ function rollMorning(first){
 
 const stockOf=id=>S.inv[id].reduce((a,b)=>a+b.q,0);
 const invValue=()=>PRODUCTS.reduce((a,p)=>a+S.inv[p.id].reduce((x,b)=>x+b.q*b.c,0),0);
-const netWorth=()=>S.money+invValue();
+const netWorth=()=>S.money+invValue()+(typeof cpAssets==='function'?cpAssets():0);
 const isFresh=p=>p.life<=4;
 const lifeOf=p=>p.life+(isFresh(p)?S.eq.fridge:0);
 const catLocked=cat=>{ const l=CATS[cat].lock; if(l==='hm') return !PRODUCTS.some(p=>p.cat==='hm'&&hmHasP(p)); return !!l&&!S.eq[l]; };
@@ -3017,9 +3035,10 @@ function endDay(){
   let night=0;
   if(Math.random()<0.05*(S.eq.camera?0.4:1)*(S.eq.alarm?0.2:1)){ night=round(rand(1.5e6,5e6),100e3); S.money-=night; }
   let branch=0; if(S.branches){ branch=Math.round(S.branches*(1.2e6+S.rep*45e3)*rand(0.8,1.2)); S.money+=branch; }
+  const corp=corpDaily(spoil); S.money+=corp.total;
   S.weekRev+=r.rev+r.svc;
   let tax=0; if(dowOf(S.day)===6){ tax=Math.round(S.weekRev*0.015); S.money-=tax; S.weekRev=0; }
-  const profit=r.rev+r.svc+branch-r.cogs-r.svcCogs-spoil-r.theft-costs.total-r.incident-night-tax-loanInt;
+  const profit=r.rev+r.svc+branch+corp.total-r.cogs-r.svcCogs-spoil-r.theft-costs.total-r.incident-night-tax-loanInt;
 
   // Uy tín
   const todays=R.reviews, avg=todays.length?todays.reduce((a,x)=>a+x.stars,0)/todays.length:0;
@@ -3040,7 +3059,7 @@ function endDay(){
 
   const top=Object.entries(R.sold).sort((a,b)=>b[1]*S.price[b[0]]-a[1]*S.price[a[0]]).slice(0,3).map(([id,q])=>`${PMAP[id].icon} ${PMAP[id].name} ×${q}`);
   const missed=Object.entries(R.missed).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([id,q])=>`${PMAP[id].icon} ${PMAP[id].name} (${q})`);
-  const x={costs,top,missed,spoilList,spoilVal,spoil,night,branch,tax,loanInt,loanPay:loanR.pay,repDelta:S.rep-repBefore,r,avg,nrev:todays.length,missedRaw:{...R.missed},sold:{...R.sold}};
+  const x={costs,top,missed,spoilList,spoilVal,spoil,night,branch,corp,tax,loanInt,loanPay:loanR.pay,repDelta:S.rep-repBefore,r,avg,nrev:todays.length,missedRaw:{...R.missed},sold:{...R.sold}};
   S.lastAdv={day:S.day+1,profit,items:adviseDay(rec,x)};
   R=null; if(speed===0) setSpeedBtn(1);
   S.day++;
@@ -3251,12 +3270,99 @@ function statPing(){ if(!S||!PAY_CFG.api) return; const k=vnDay(); try{ if(local
 function devId(){ let d=null; try{ d=localStorage.getItem('clx-dev'); }catch(e){} if(!d){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; d=Array.from({length:6},()=>A[Math.random()*32|0]).join(''); try{ localStorage.setItem('clx-dev',d); }catch(e){} } return d; }
 
 
+/* ====== 🏢 TẬP ĐOÀN (mở khi tiệm lên Siêu thị) ======
+   Bản đồ 6 quận × 3 mặt bằng: mua lại tiệm đối thủ, mở cửa hàng mới. Chiếm đa số mặt bằng một quận = thống lĩnh (+15% lãi ở quận đó).
+   3 lĩnh vực: 🍜 Nhà hàng (cứu hàng sắp hư + lãi), 💆 Spa (lãi + uy tín), 📺 Điện máy (lãi cao, có rủi ro nợ xấu). Tối đa cấp 5.
+   📰 Báo Chợ Lá Cải đăng tin mỗi khi thâu tóm/khai trương/đầu tư, kèm tin đồn ngẫu nhiên. */
+const CP_DIST=[['q1','Quận Chợ Cũ','🏮'],['q2','Quận Bến Sông','⛵'],['q3','Quận Đại Học','🎓'],['q4','Quận Phố Đèn','🌃'],['q5','Quận Vườn Rau','🌾'],['q6','Quận Cảng Mới','🏗️']];
+const CP_RIV=['Phát Đạt Mart','Bách Hóa Hai Lúa','Tạp Hóa Cô Ba','Mini Mart Sao Mai','Siêu Thị Hòa Bình','Cửa Hàng Tư Mập','Tiệm Chú Sáu','Mart Ánh Dương','Chợ Mini Kim Ngân','Tạp Hóa Bà Tám','Shop 24h Thần Tốc','Bách Hóa Phúc Lộc'];
+const CP_BIZ={
+  rest:{ic:'🍜',n:'Chuỗi nhà hàng',d:'Nấu món từ hàng sắp hết hạn của tiệm (giảm hàng hủy) và bán cơm trưa văn phòng.',open:300e6},
+  spa:{ic:'💆',n:'Spa & làm đẹp',d:'Thu nhập đều mỗi ngày. Khách VIP của spa giới thiệu bạn bè: uy tín tiệm tăng nhẹ.',open:350e6},
+  elec:{ic:'📺',n:'Điện máy & trả góp',d:'Lãi cao nhất nhưng có rủi ro khách trả góp bùng nợ.',open:500e6}};
+const cpOpen=()=>!!S&&(S.tier||0)>=3;
+function cpState(){ if(!S.corp){ const sl=[]; let k=0;
+    for(const [id] of CP_DIST) for(let i=0;i<3;i++){ const riv=Math.random()<0.62; sl.push(riv?{d:id,t:'riv',name:CP_RIV[k++%CP_RIV.length],str:rint(1,3)}:{d:id,t:'emp'}); }
+    S.corp={sl,biz:{rest:0,spa:0,elec:0},news:[],tab:'map',inc:0,since:S.day}; }
+  return S.corp; }
+const cpRivPrice=x=>Math.round((120e6+x.str*70e6)*(1+0.04*cpOwned())/1e6)*1e6;
+const cpEmpPrice=()=>Math.round((90e6+cpOwned()*12e6)/1e6)*1e6;
+const cpName=d=>'Lá Xanh '+CP_DIST.find(x=>x[0]===d)[1].replace('Quận ','')+' '+(S.corp.sl.filter(x=>x.d===d&&x.t==='own').length+1);
+const cpOwned=()=>S.corp?S.corp.sl.filter(x=>x.t==='own').length:0;
+const cpDom=d=>{ const L=S.corp.sl.filter(x=>x.d===d), o=L.filter(x=>x.t==='own').length; return o>=2; };
+const cpBizUp=(k,lv)=>Math.round(CP_BIZ[k].open*(0.6+0.4*lv)/1e6)*1e6;
+function cpStoreDay(x){ return (3.2e6+(x.size||1)*1.2e6)*(0.7+S.rep/300)*(cpDom(x.d)?1.15:1); }
+function cpEstimate(){ if(!S.corp) return 0; const C=S.corp; let t=C.sl.filter(x=>x.t==='own').reduce((a,x)=>a+cpStoreDay(x),0);
+  t+=C.biz.rest*2.6e6+C.biz.spa*3.2e6+C.biz.elec*6e6; return Math.round(t); }
+// Gọi cuối ngày: trả về {total, lines:[]} và hàng hủy được nhà hàng cứu
+function corpDaily(spoil){ if(!S.corp) return {total:0,lines:[],rescue:0}; const C=S.corp, L=[]; let tot=0;
+  const own=C.sl.filter(x=>x.t==='own'); if(own.length){ const v=Math.round(own.reduce((a,x)=>a+cpStoreDay(x)*rand(0.8,1.2),0)); tot+=v; L.push(['🏪',`${own.length} cửa hàng tập đoàn`,v]); }
+  let rescue=0; if(C.biz.rest){ rescue=Math.round(spoil*Math.min(0.9,0.3+0.12*C.biz.rest)); const v=Math.round(C.biz.rest*2.6e6*rand(0.85,1.15)); tot+=v+rescue; L.push(['🍜','Nhà hàng'+(rescue?` (nấu hàng sắp hư ${fmtS(rescue)})`:''),v+rescue]); }
+  if(C.biz.spa){ const v=Math.round(C.biz.spa*3.2e6*rand(0.9,1.1)); tot+=v; S.rep=clamp(S.rep+0.15*C.biz.spa,0,100); L.push(['💆','Spa & làm đẹp',v]); }
+  if(C.biz.elec){ let v=Math.round(C.biz.elec*6e6*rand(0.6,1.4)); if(Math.random()<0.1){ const bad=Math.round(C.biz.elec*9e6); v-=bad; cpNews('elecbad',{bad}); } tot+=v; L.push(['📺','Điện máy & trả góp',v]); }
+  if(Math.random()<0.3&&(own.length||C.biz.rest+C.biz.spa+C.biz.elec)) cpNews('gossip');
+  C.inc=tot; return {total:tot,lines:L,rescue}; }
+// ---------- 📰 Báo Chợ Lá Cải ----------
+const CP_NEWS={
+  buy:({x,p})=>({ic:'🤝',h:pick([`CHẤN ĐỘNG: ${esc(S.name)} <em>“NUỐT CHỬNG”</em> ${esc(x.name)} với giá ${fmtS(p)}!`,`${esc(x.name)} ĐỔI CHỦ! Bà chủ ${esc(S.name)} <em>vung tiền</em> thâu tóm trong một nốt nhạc`,`BIẾN CĂNG ${CP_DIST.find(d=>d[0]===x.d)[1].toUpperCase()}: ${esc(x.name)} <em>bán mình</em> cho ${esc(S.name)}`]),
+    b:pick([`Theo nguồn tin thân cận, chủ cũ của ${esc(x.name)} rời đi trong nước mắt, tay ôm hộp bánh quy còn hạn. Giới tiểu thương xôn xao: “Không biết tiệm nào là tiếp theo?”`,`Hàng xóm cho biết bảng hiệu mới được treo lên ngay trong đêm. Nhân viên cũ được giữ lại và… được tăng lương 5%.`,`Dân mạng chia phe: phe khen “nhanh như điện”, phe chê “ăn hết phần người ta rồi”. Bà chủ chỉ cười: “Khách vui là được.”`]),
+    q:pick(['“Tôi chỉ muốn khách có chỗ mua hàng tốt hơn.”','“Thương trường là chiến trường, nhưng bánh quy thì vẫn ngon.”','“Chưa phải lần cuối đâu.”'])}),
+  open:({x})=>({ic:'🎉',h:pick([`${esc(S.name)} KHAI TRƯƠNG CHI NHÁNH MỚI TẠI ${CP_DIST.find(d=>d[0]===x.d)[1].toUpperCase()}: <em>khách xếp hàng</em> từ sáng sớm`,`MẶT BẰNG BỎ TRỐNG NAY THÀNH <em>CỬA HÀNG ĐÔNG NHẤT PHỐ</em>`]),
+    b:'Múa lân, bong bóng và một rổ bánh tặng kèm. Một cụ bà chia sẻ: “Tui đi chợ 40 năm chưa thấy tiệm nào sáng đèn đẹp vậy.”',q:'“Mở tiệm ở đâu cũng được, miễn bà con cần.”'}),
+  dom:({d})=>({ic:'👑',h:`${esc(S.name)} <em>THỐNG LĨNH</em> ${CP_DIST.find(x=>x[0]===d)[1].toUpperCase()}!`,b:'Chiếm phần lớn mặt bằng trong quận, tập đoàn được ưu đãi nhập hàng và lượng khách tăng rõ rệt. Các tiệm còn lại đang họp khẩn.',q:'“Khu này giờ là nhà rồi.”'}),
+  biz:({k,lv})=>({ic:CP_BIZ[k].ic,h:lv===1?`TẠP HÓA LẤN SÂN ${CP_BIZ[k].n.toUpperCase()}: ${esc(S.name)} <em>tham vọng tới đâu?</em>`:`${CP_BIZ[k].n.toUpperCase()} CỦA ${esc(S.name)} LÊN CẤP ${lv}: <em>đối thủ toát mồ hôi</em>`,
+    b:pick(['Giới đầu tư nhận định đây là nước đi táo bạo. Một chuyên gia giấu tên: “Bán rau giỏi chưa chắc làm được cái này… nhưng cũng chưa chắc không.”','Lễ cắt băng diễn ra chóng vánh vì bà chủ còn phải về trông tiệm.']),q:'“Đa dạng hóa, nhưng gốc vẫn là cái tiệm tạp hóa.”'}),
+  elecbad:({bad})=>({ic:'😱',h:`KHÁCH TRẢ GÓP <em>“BÙNG”</em> NỢ, ĐIỆN MÁY ${esc(S.name)} THIỆT HẠI ${fmtS(bad)}`,b:'Chiếc tivi 85 inch được cho là đã “bay” cùng chủ nhân về quê. Công ty cho biết sẽ siết thủ tục duyệt hồ sơ.',q:'“Bài học đắt giá, nhưng mình vẫn tin người.”'}),
+  gossip:()=>({ic:'👀',h:pick([`TIN ĐỒN: ${esc(S.name)} đang <em>nhắm</em> thêm một mặt bằng góc chợ?`,`Paparazzi bắt gặp bà chủ ${esc(S.name)} <em>tự tay xếp</em> rau lúc 5 giờ sáng`,`Mèo của ${esc(S.name)} được trả giá <em>1 tỷ</em>, chủ tiệm từ chối không suy nghĩ`,`Đối thủ tung tin “giảm giá sập sàn”, ${esc(S.name)} <em>đáp trả</em> bằng… nụ cười`]),
+    b:pick(['Chưa có xác nhận chính thức. Phóng viên Lá Cải sẽ tiếp tục theo dõi.','Nhân viên trong tiệm chỉ trả lời ngắn gọn: “Chị chủ dặn không nói.”']),q:''})};
+function cpNews(type,arg={}){ const C=cpState(), n=CP_NEWS[type](arg); C.news.unshift({...n,day:S.day,read:false,type}); C.news=C.news.slice(0,30); return C.news[0]; }
+function cpPaper(n){ const ava=avatar(ownerView()); n.read=true;
+  return `<div class="np"><div class="np-mast"><b>📰 BÁO CHỢ LÁ CẢI</b><small>Số ra ngày ${n.day} · Giá 2.000đ · “Tin nóng hơn nồi lẩu”</small></div>
+    <div class="np-hl">${n.h}</div>
+    <div class="np-pic"><img src="${ava}" alt=""><span>${n.ic}</span>${n.type==='buy'||n.type==='open'?'<span>🏪</span>':''}</div><div class="np-cap">Ảnh: phóng viên Lá Cải chụp lén</div>
+    <p>${n.b}</p>${n.q?`<p class="np-quote">${n.q} – ${esc(S.name)}</p>`:''}</div>`; }
+window.cpShowNews=function(i){ const C=cpState(), n=C.news[i]; if(!n) return; sfx('tick'); modal(cpPaper(n)+`<div class="row" style="margin-top:10px"><button onclick="openCorp('news')">📰 Các số khác</button><button class="primary" onclick="openCorp()">Đóng</button></div>`); autosaveSoft(); };
+// ---------- giao diện ----------
+window.openCorp=function(tab){ if(!S) return; closeModal();
+  if(!cpOpen()) return modal(`<h3>🏢 Tập đoàn</h3><p>Nâng tiệm lên <b>Siêu thị</b> để lập tập đoàn: thâu tóm đối thủ, mở chuỗi cửa hàng, đầu tư nhà hàng, spa, điện máy.</p><div class="row"><button onclick="openTier()">🏪 Nâng cấp tiệm</button><button class="primary" onclick="closeModal()">Đóng</button></div>`);
+  const C=cpState(); if(tab) C.tab=tab; const unread=C.news.filter(n=>!n.read).length;
+  let body='';
+  if(C.tab==='map') body=`<div class="cp-map">${CP_DIST.map(([id,n,ic])=>{ const L=C.sl.filter(x=>x.d===id), o=L.filter(x=>x.t==='own').length, dom=cpDom(id);
+      return `<div class="cp-d ${dom?'dom':''}"><h5><span>${ic} ${n}</span>${dom?'<i>👑 Thống lĩnh</i>':''}</h5><div class="cp-share"><i style="width:${o/3*100}%"></i></div><div class="cp-row">
+      ${L.map(x=>{ const i=C.sl.indexOf(x); return x.t==='own'?`<div class="cp-s own"><span>🏪</span><div>${esc(x.name)}<small>~${fmtS(cpStoreDay(x))}/ngày</small></div></div>`
+        :x.t==='riv'?`<div class="cp-s riv"><span>🏬</span><div>${esc(x.name)}<small>Đối thủ ${'★'.repeat(x.str)}</small></div><button class="sm" onclick="cpBuy(${i})">${fmtS(cpRivPrice(x))}</button></div>`
+        :`<div class="cp-s emp"><span>🪧</span><div>Mặt bằng trống<small>Mở cửa hàng mới</small></div><button class="sm" onclick="cpBuild(${i})">${fmtS(cpEmpPrice())}</button></div>`; }).join('')}</div></div>`; }).join('')}</div>
+    <p class="muted" style="font-size:12px">Sở hữu 2/3 mặt bằng một quận = 👑 thống lĩnh: lãi cửa hàng trong quận +15%.</p>`;
+  else if(C.tab==='biz') body=Object.entries(CP_BIZ).map(([k,b])=>{ const lv=C.biz[k], cost=lv?cpBizUp(k,lv):b.open, inc={rest:2.6e6,spa:3.2e6,elec:6e6}[k];
+      return `<div class="cp-biz"><span>${b.ic}</span><div><b>${b.n}</b>${lv?`<span class="cp-lv">${[1,2,3,4,5].map(i=>`<i class="${i<=lv?'on':''}"></i>`).join('')}</span>`:''}<br>${b.d}<br><small class="muted">${lv?`Đang lãi ~${fmtS(inc*lv)}/ngày`:`Lãi ~${fmtS(inc)}/ngày ở cấp 1`}</small></div>
+        ${lv>=5?'<button class="sm" disabled>Tối đa</button>':`<button class="sm ${S.money>=cost?'primary':''}" onclick="cpBiz('${k}')">${lv?'⬆️ ':'Mở '}${fmtS(cost)}</button>`}</div>`; }).join('');
+  else body=C.news.length?`<div class="np-list">${C.news.map((n,i)=>`<div class="np-it ${n.read?'':'new'}" onclick="cpShowNews(${i})">${n.ic} <b>${n.h.replace(/<[^>]+>/g,'')}</b><br><small class="muted">Ngày ${n.day}</small></div>`).join('')}</div>`:'<p class="muted">Chưa có tin nào. Hãy làm gì đó gây chấn động!</p>';
+  modal(`<h3>🏢 Tập đoàn ${esc(S.name)}</h3>
+    <div class="cp-kpi"><div><b>${cpOwned()}/18</b>cửa hàng</div><div><b>${Object.values(C.biz).filter(Boolean).length}/3</b>lĩnh vực</div><div><b>~${fmtS(cpEstimate())}</b>lãi/ngày</div></div>
+    <div class="cp-tabs">${[['map','🗺️ Bản đồ'],['biz','💼 Đầu tư'],['news',`📰 Báo${unread?` (${unread})`:''}`]].map(([k,n])=>`<button class="${C.tab===k?'on':''}" onclick="openCorp('${k}')">${n}</button>`).join('')}</div>
+    ${body}<p class="muted" style="font-size:12px;margin:6px 0 0">💵 Tiền mặt: ${fmtS(S.money)} · lãi tập đoàn cộng vào cuối mỗi ngày.</p>
+    <div class="row" style="margin-top:6px"><button class="primary" onclick="closeModal()">Đóng</button></div>`); };
+function cpAfter(n){ autosaveSoft(); refreshAll(); sfx('reward'); modal(cpPaper(n)+`<div class="row" style="margin-top:10px"><button class="primary" onclick="openCorp()">🏢 Về tập đoàn</button></div>`); }
+function cpDomCheck(d,before){ if(!before&&cpDom(d)) cpNews('dom',{d}); }
+window.cpBuy=function(i){ const C=cpState(), x=C.sl[i]; if(!x||x.t!=='riv') return; const p=cpRivPrice(x);
+  if(S.money<p) return toast(`💵 Cần ${fmtS(p)} để mua lại ${x.name}`);
+  modal(`<h3>🤝 Mua lại ${esc(x.name)}?</h3><p>Giá thâu tóm <b>${fmtS(p)}</b>. Tiệm thành cửa hàng tập đoàn, lãi ~${fmtS(cpStoreDay({...x,size:x.str}))}/ngày.</p><p class="muted" style="font-size:12.5px">📰 Báo Chợ Lá Cải chắc chắn sẽ đưa tin!</p><div class="row"><button onclick="openCorp()">Thôi</button><button class="primary" onclick="cpBuyOk(${i})">Chốt đơn</button></div>`); };
+window.cpBuyOk=function(i){ const C=cpState(), x=C.sl[i]; if(!x||x.t!=='riv') return; const p=cpRivPrice(x); if(S.money<p) return toast('Không đủ tiền');
+  const before=cpDom(x.d); S.money-=p; const old={...x}; Object.assign(x,{t:'own',name:cpName(x.d),size:x.str,paid:p}); cnt('cpBuy');
+  const n=cpNews('buy',{x:old,p}); cpDomCheck(x.d,before); titleCheck(); cpAfter(n); };
+window.cpBuild=function(i){ const C=cpState(), x=C.sl[i]; if(!x||x.t!=='emp') return; const p=cpEmpPrice(); if(S.money<p) return toast(`💵 Cần ${fmtS(p)} để mở cửa hàng`);
+  const before=cpDom(x.d); S.money-=p; Object.assign(x,{t:'own',name:cpName(x.d),size:1,paid:p});
+  const n=cpNews('open',{x}); cpDomCheck(x.d,before); titleCheck(); cpAfter(n); };
+window.cpBiz=function(k){ const C=cpState(), lv=C.biz[k]; if(lv>=5) return; const cost=lv?cpBizUp(k,lv):CP_BIZ[k].open; if(S.money<cost) return toast(`💵 Cần ${fmtS(cost)}`);
+  S.money-=cost; C.biz[k]=lv+1; C.bizPaid=(C.bizPaid||0)+cost; const n=cpNews('biz',{k,lv:lv+1}); titleCheck(); cpAfter(n); };
+const cpAssets=()=>S&&S.corp?Math.round((S.corp.sl.reduce((a,x)=>a+(x.paid||0),0)+(S.corp.bizPaid||0))*0.7):0;
+
 /* ====== 🎃 HỘP MÙ BÍ NGÔ ======
-   03/10 → 08/11 (giờ VN). 1 hộp 20💎, 10 hộp 180💎, 1 hộp miễn phí mỗi ngày. Không giới hạn số hộp mỗi ngày.
+   03/10 → 17/10 (giờ VN). 1 hộp 20💎, 10 hộp 180💎, 1 hộp miễn phí mỗi ngày. Không giới hạn số hộp mỗi ngày.
    Bảo hiểm: mỗi 10 hộp chắc chắn ≥ 1 món Hiếm; 150 hộp chắc chắn có món Bí ẩn. Món trùng → mảnh: Thường 5, Hiếm 15, Cực hiếm 40.
    Đổi mảnh: Hiếm 60, Cực hiếm 700, Bí ẩn 1.500. Đủ 24 món: danh hiệu Vua Bí Ngô + mở khóa 24 rau củ quả độc quyền.
    Tất cả là đồ ngoại hình; không bán lại, không chuyển, không đổi ra tiền. */
-const HM_START=Date.UTC(2026,9,3)-7*3600e3, HM_END=Date.UTC(2026,10,9)-7*3600e3;
+const HM_START=Date.UTC(2026,9,3)-7*3600e3, HM_END=Date.UTC(2026,9,18)-7*3600e3;
 const HM_TEST=/hmtest/.test(location.search+location.hash);
 const HM_RATE={c:0.70,r:0.25,e:0.045,s:0.005}, HM_SHARD={c:5,r:15,e:40,s:40}, HM_EX={c:20,r:60,e:700,s:1500}, HM_RN={c:'Thường',r:'Hiếm',e:'Cực hiếm',s:'✨ Bí ẩn'};
 const HM_POOL=[ // [mã ảnh, độ hiếm, món tủ đồ (hoặc 'p:' sản phẩm)]
@@ -3279,10 +3385,10 @@ function hmRoll(){ const H=hmState(); H.n++; H.sinceR++; H.sinceS++;
 function hmCheckDone(){ const H=hmState(); if(H.done||hmOwnCount()<HM_POOL.length) return false; H.done=true; titleCheck(); return true; }
 const hmCell=(e,own)=>`<div class="hm-it hr-${e[1]} ${own?'':'lk'}" title="${esc(own||e[1]!=='s'?hmName(e):'???')}"><img src="${hmImg(e[0])}" alt="">${own>1?`<i>x${own}</i>`:''}</div>`;
 window.openHM=function(){ if(!S) return; closeModal(); const H=hmState(); H.seen=vnDay();
-  if(!hmActive()&&!H.n) return modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sự kiện Halloween mở từ 03/10 đến 08/11. Hẹn bạn nhé!</p><img src="${hmImg('st11')}" alt=""></div><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`);
+  if(!hmActive()&&!H.n) return modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sự kiện Halloween mở từ 03/10 đến 17/10. Hẹn bạn nhé!</p><img src="${hmImg('st11')}" alt=""></div><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`);
   const own=hmOwnCount(), free=H.free!==vnDay()&&hmActive(), left=Math.max(0,Math.ceil((HM_END-Date.now())/864e5));
   const order=[...HM_POOL.filter(e=>e[1]==='c'),...HM_POOL.filter(e=>e[1]==='r'),...HM_POOL.filter(e=>e[1]==='e'),...HM_POOL.filter(e=>e[1]==='s')];
-  modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sưu tầm 24 món. Đủ bộ mở khóa rau củ quả độc quyền!</p><span class="t">${hmActive()?(HM_TEST&&Date.now()<HM_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 03/10 → 08/11</span><img src="${hmImg('st11')}" alt=""></div>
+  modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sưu tầm 24 món. Đủ bộ mở khóa rau củ quả độc quyền!</p><span class="t">${hmActive()?(HM_TEST&&Date.now()<HM_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 03/10 → 17/10</span><img src="${hmImg('st11')}" alt=""></div>
     <div class="row" style="justify-content:space-between;margin:0 0 4px"><b>Bộ sưu tập</b><b style="color:#8a4fd8">${own}/${HM_POOL.length}${H.done?' ✓':''}</b></div>
     <div class="hm-grid">${order.map(e=>hmCell(e,H.own[e[0]])).join('')}</div>
     <div class="hm-leg"><span class="hr-c">Thường 70%</span><span class="hr-r">Hiếm 25%</span><span class="hr-e">Cực hiếm 4,5%</span><span class="hr-s">✨ Bí ẩn 0,5%</span></div>
@@ -3328,7 +3434,7 @@ window.hmDone=function(){ const V=PRODUCTS.filter(p=>p.need==='done');
     <div class="row"><button onclick="openHM()">Quay lại</button><button class="primary" onclick="closeModal();gotoTab('kho');catFilter='hm';renderKho()">📦 Nhập hàng</button></div></div>`); };
 // bảng giới thiệu khi sự kiện mở (mỗi ngày 1 lần nếu chưa mở hộp miễn phí)
 function hmPopup(){ if(!S||!hmActive()) return false; const H=hmState(); if(H.seen===vnDay()) return false; H.seen=vnDay();
-  modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sự kiện Halloween đã mở! Sưu tầm 24 món đồ dễ thương.</p><span class="t">03/10 → 08/11</span><img src="${hmImg('st11')}" alt=""></div>
+  modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sự kiện Halloween đã mở! Sưu tầm 24 món đồ dễ thương.</p><span class="t">03/10 → 17/10</span><img src="${hmImg('st11')}" alt=""></div>
     <div style="display:flex;justify-content:center;gap:8px">${['cl16','st1','fa14'].map(k=>`<img src="${hmImg(k)}" style="width:70px;height:70px;object-fit:contain;background:#f6efff;border-radius:12px;border:2px solid #e3d6f0">`).join('')}</div>
     ${H.free!==vnDay()?'<p style="text-align:center;color:#2f9e5b;font-size:13px;margin:8px 0">🎟️ Hôm nay bạn có 1 hộp miễn phí</p>':''}
     <div class="row"><button onclick="closeModal()">Để sau</button><button class="primary" onclick="openHM()">🎃 Mở hộp ngay</button></div>`); return true; }
@@ -3565,6 +3671,7 @@ function showReport(rec,x){
     ${row('💵 Doanh thu bán hàng',fmt(r.rev),'good')}
     ${r.svc?row('✨ Doanh thu dịch vụ',fmt(r.svc),'good'):''}
     ${x.branch?row('🏪 Lợi nhuận chi nhánh',fmt(x.branch),'good'):''}
+    ${x.corp&&x.corp.lines.length?x.corp.lines.map(([ic,n,v])=>row(ic+' '+n,(v<0?'-':'')+fmt(Math.abs(v)),v<0?'bad':'good')).join(''):''}
     ${row('📦 Giá vốn hàng bán','-'+fmt(r.cogs+r.svcCogs))}
     ${row('🗑️ Hàng hủy (hết hạn)','-'+fmt(x.spoil),x.spoil?'bad':'')}
     ${r.thieves?row(`🦹 Mất trộm (bắt được ${r.caught}/${r.thieves})`,'-'+fmt(r.theft),r.theft?'bad':''):''}
@@ -3806,7 +3913,7 @@ function openMenu(){
       ${R&&R.t<R.close?'<button data-m="early">🔒 Đóng cửa sớm</button>':''}
       <div class="mgrid">${[['login','🎁','Quà ngày',loginReady()?'!':''],['wheel','🎡','Vòng quay',wheelFree()?'1':''],['titles','🏅','Danh hiệu',''],['story','📜','Cốt truyện',''],
         ['regs','👵','Khách quen',''],['book','📒','Sổ khách',''],['cat','🐱','Mèo',''],['rival','🏬','Đối thủ',''],
-        ['tier','🏪','Nâng cấp',''],['friends','🏘️','Bạn bè',''],['guild','🤝','Hội',''],['fair','🎪','Hội chợ',''],...(hmActive()||(S&&S.hm&&S.hm.n)?[['hm','🎃','Hộp mù',S&&hmActive()&&hmState().free!==vnDay()?'1':'']]:[]),['mp','🎮','Chơi chung',MP&&MP.ws?'●':''],
+        ['tier','🏪','Nâng cấp',''],...((S.tier||0)>=3?[['corp','🏢','Tập đoàn',S.corp&&S.corp.news.some(n=>!n.read)?'📰':'']]:[]),['friends','🏘️','Bạn bè',''],['guild','🤝','Hội',''],['fair','🎪','Hội chợ',''],...(hmActive()||(S&&S.hm&&S.hm.n)?[['hm','🎃','Hộp mù',S&&hmActive()&&hmState().free!==vnDay()?'1':'']]:[]),['mp','🎮','Chơi chung',MP&&MP.ws?'●':''],
         ['news','📢','Có gì mới',newsUnseen()?'MỚI':''],['lb','🏆','Xếp hạng',''],['finance','🏦','Vay & đổi',''],['rename','✏️','Đổi tên tiệm','']]
         .map(([k,ic,t,b])=>`<button data-m="${k}"><span>${ic}</span>${t}${b?`<i>${b}</i>`:''}</button>`).join('')}</div>
       <div class="mgrid mg2">${[owns('theme_moon')?['theme',S.wear.theme==='theme_moon'?'🌙':'🍃','Giao diện mùa',S.wear.theme==='theme_moon'?'Bật':'Tắt']:null,
@@ -3839,6 +3946,7 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='titles'){ closeMenu(); openTitles(); }
   else if(m==='fair'){ closeMenu(); openFair(); }
   else if(m==='hm'){ closeMenu(); openHM(); }
+  else if(m==='corp'){ closeMenu(); openCorp(); }
   else if(m==='rename'){ closeMenu(); openRename(); }
   else if(m==='friends'){ closeMenu(); openFriends(); } else if(m==='guild'){ closeMenu(); openGuild(); }
   else if(m==='story'){ closeMenu(); openStory(); } else if(m==='regs'){ closeMenu(); openRegulars(); } else if(m==='book'){ closeMenu(); openBook(); }
@@ -4215,6 +4323,7 @@ const TITLES=[
   {id:'mart',icon:'🏢',name:'Đại gia siêu thị',desc:'Nâng tiệm lên Siêu thị',ok:()=>(S.tier||0)>=3,p:()=>[(S.tier||0),3]},
   {id:'gift',icon:'🎁',name:'Người hào phóng',desc:'Tặng quà bạn bè 30 lần',ok:()=>(S.cnt?.gift||0)>=30,p:()=>[(S.cnt?.gift||0),30]},
   {id:'thief',icon:'🕵️',name:'Thám tử',desc:'Tự tay bắt 10 kẻ trộm',ok:()=>(S.cnt?.thief||0)>=10,p:()=>[Math.min(S.cnt?.thief||0,10),10]},
+  {id:'tycoon',icon:'🏢',name:'Ông trùm',desc:'Sở hữu 10 cửa hàng tập đoàn',ok:()=>cpOwned()>=10,p:()=>[cpOwned(),10]},
   {id:'hmking',icon:'🎃',name:'Vua Bí Ngô',desc:'Hoàn thành bộ Hộp mù Bí Ngô',ok:()=>!!(S.hm&&S.hm.done),p:()=>[S.hm?HM_POOL.filter(e=>S.hm.own[e[0]]).length:0,24]},
   {id:'mil',icon:'💰',name:'Triệu phú chợ',desc:'Trả lời đúng cả 15 câu Ai là triệu phú',ok:()=>(S.cnt?.milWin||0)>=1,p:()=>[(S.cnt?.milWin||0),1]},
 ];
@@ -4828,7 +4937,7 @@ window.openTier=function(){ const t=S.tier||0, nx=TIERS[t+1];
   modal(`<h3>🏪 Nâng cấp tiệm</h3><div class="tiers2">${TIERS.map((x,i)=>`<div class="${i<=t?'on':''}${i===t?' cur':''}"><span>${['🏪','🏬','🛒','🏢'][i]}</span><b>${x.n}</b>${i?`<small>${fmtS(x.need[0])} · uy tín ${x.need[1]}</small>`:'<small>Khởi đầu</small>'}</div>`).join('')}</div>
     <p style="font-size:13px">Mỗi cấp: <b>+15% khách</b>, biển hiệu mới, khung cấp tiệm trên bảng xếp hạng.</p>
     ${nx?`<p>Cấp tiếp theo: <b>${nx.n}</b> · cần tài sản ${fmtS(nx.need[0])} (đang ${fmtS(netWorth())}) và uy tín ${nx.need[1]} (đang ${Math.round(S.rep)}) · chi phí sửa sang <b>${fmtS(nx.cost)}</b></p>
-      <div class="row"><button class="primary" onclick="tierUp()" ${R||netWorth()<nx.need[0]||S.rep<nx.need[1]||S.money<nx.cost?'disabled':''}>⬆️ Nâng cấp</button><button onclick="closeModal()">Đóng</button></div>`:'<p>🏆 Tiệm đã là siêu thị lớn nhất khu phố!</p><div class="row"><button class="primary" onclick="closeModal()">Đóng</button></div>'}`); };
+      <div class="row"><button class="primary" onclick="tierUp()" ${R||netWorth()<nx.need[0]||S.rep<nx.need[1]||S.money<nx.cost?'disabled':''}>⬆️ Nâng cấp</button><button onclick="closeModal()">Đóng</button></div>`:'<p>🏆 Tiệm đã là siêu thị lớn nhất khu phố! Giờ là lúc lập <b>Tập đoàn</b>: thâu tóm đối thủ, mở chuỗi, đầu tư nhà hàng, spa, điện máy.</p><div class="row"><button onclick="closeModal()">Đóng</button><button class="primary" onclick="openCorp()">🏢 Mở Tập đoàn</button></div>'}`); };
 window.tierUp=function(){ const t=S.tier||0, nx=TIERS[t+1]; if(!nx||R||netWorth()<nx.need[0]||S.rep<nx.need[1]||S.money<nx.cost) return; S.money-=nx.cost; S.tier=t+1; _sbg=null; sfx('reward'); toast(`🎉 Tiệm đã lên cấp ${nx.n}!`); chCheck(); titleCheck(); autosaveSoft(); refreshAll(); openTier(); };
 
 /* ====== 🏘️ Ghé tiệm bạn bè & 🤝 Hội chủ tiệm (qua máy chủ) ====== */
@@ -4897,8 +5006,13 @@ window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-10-03-corp',date:'03/10/2026',title:'🏢 Tập đoàn & Báo Chợ Lá Cải',items:[
+    ['🏢','Tiệm lên Siêu thị mở khóa Tập đoàn (☰ Menu → 🏢): bản đồ 6 quận, mua lại tiệm đối thủ, mở cửa hàng ở mặt bằng trống, thống lĩnh quận','new'],
+    ['💼','Đầu tư Chuỗi nhà hàng (nấu hàng sắp hư), Spa & làm đẹp, Điện máy & trả góp. Lãi cộng cuối mỗi ngày','new'],
+    ['📰','Báo Chợ Lá Cải đưa tin mỗi khi bạn thâu tóm, khai trương, đầu tư… và cả tin đồn!','new'],
+    ['🏢','Danh hiệu mới “Ông trùm”: sở hữu 10 cửa hàng tập đoàn','new']]},
   {v:'2026-10-03-hm',date:'03/10/2026',title:'🎃 Hộp mù Bí Ngô',items:[
-    ['🎃','Sự kiện Hộp mù Bí Ngô (03/10 → 08/11): sưu tầm 24 món quần áo, mũ, mắt, miệng, linh vật, nền tiệm. Mở ở ☰ Menu → 🎃 Hộp mù','new'],
+    ['🎃','Sự kiện Hộp mù Bí Ngô (03/10 → 17/10): sưu tầm 24 món quần áo, mũ, mắt, miệng, linh vật, nền tiệm. Mở ở ☰ Menu → 🎃 Hộp mù','new'],
     ['🎟️','Mỗi ngày 1 hộp miễn phí. Mỗi 10 hộp chắc chắn có món Hiếm, 150 hộp chắc chắn có món Bí ẩn','new'],
     ['🥕','Đủ bộ 24 món: danh hiệu Vua Bí Ngô + mở khóa 24 rau củ quả độc quyền để bán','new'],
     ['👀','Tủ đồ có thêm ô Mắt và Miệng','new']]},
