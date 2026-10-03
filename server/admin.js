@@ -3,8 +3,13 @@
 // (đặt bằng: npx wrangler secret put ADMIN_KEY, hoặc Cloudflare → Worker → Settings → Variables and Secrets).
 
 const HIST_MAX = 60;                 // giữ 60 lần gửi gần nhất mỗi tiệm
-const MAX_PER_DAY = 25e6;            // vốn tăng tối đa hợp lệ mỗi ngày game (khớp trần của bảng xếp hạng)
-const WARN_PER_DAY = 20e6;           // tăng nhanh hơn mức này thì "nên xem"
+// Lãi mỗi ngày tăng dần theo tuổi tiệm (siêu thị, chi nhánh, tập đoàn): ngày 1 ~25tr, ngày 200 ~625tr
+const MAX_PER_DAY = d => 25e6 + 3e6 * Math.max(0, d);    // vốn tăng tối đa hợp lệ mỗi ngày game (khớp trần của bảng xếp hạng)
+const WARN_PER_DAY = d => 20e6 + 1.5e6 * Math.max(0, d); // tăng nhanh hơn mức này thì "nên xem"
+// Trần vốn trên bảng xếp hạng ở ngày d = tổng MAX_PER_DAY từ đầu (ngày 209 ~70 tỷ)
+export const lbCap = d => 40e6 + 25e6 * d + 1.5e6 * d * d;
+const OLD_CAP_UNTIL = Date.UTC(2026, 9, 3, 12);           // điểm gửi trước lúc nới trần
+const warnCap = d => 40e6 + 20e6 * d + 0.75e6 * d * d;
 const MIN_DAY_MIN = 1.35;            // một ngày bán đủ giờ ở tốc độ 4x mất ~1,5 phút thật (chừa 10%)
 const SLACK = 20e6;                  // chừa sai số (thưởng sự kiện, bán chi nhánh…)
 const LV = { '': 0, ok: 0, warn: 1, bad: 2 };
@@ -24,21 +29,23 @@ export function histFlag(h) {
 // Ghi một lần gửi điểm vào lịch sử, trả về lịch sử mới (chưa lưu)
 export function histAdd(h, row, now) {
   h = h || { pid: row.pid, first: now, pts: [], why: [] };
-  const last = h.pts[h.pts.length - 1], why = [];
+  let last = h.pts[h.pts.length - 1]; const why = [];
+  // Điểm cũ bị trần cũ (40tr + 25tr/ngày) cắt bớt thì không dùng làm mốc, tránh gắn cờ oan khi trần được nới
+  if (last && last.t < OLD_CAP_UNTIL && last.worth >= 40e6 + 25e6 * last.day - 1e6 && row.worth > last.worth) last = null;
   if (!last) {
-    if (row.worth > WARN_PER_DAY * row.day + 40e6) why.push(['warn', `Lần đầu thấy đã có vốn ${fm(row.worth)} ở ngày ${row.day} (cao hơn mức thường gặp).`]);
+    if (row.worth > warnCap(row.day)) why.push(['warn', `Lần đầu thấy đã có vốn ${fm(row.worth)} ở ngày ${row.day} (cao hơn mức thường gặp).`]);
   } else {
-    const dd = row.day - last.day, dw = row.worth - last.worth, mins = Math.max(0.5, (now - last.t) / 60000);
+    const dd = row.day - last.day, dw = row.worth - last.worth, mx = MAX_PER_DAY(row.day), wn = WARN_PER_DAY(row.day), mins = Math.max(0.5, (now - last.t) / 60000);
     if (dd < 0) why.push(['warn', `Ngày game lùi từ ${last.day} về ${row.day} (có thể tải bản lưu cũ hoặc đổi thiết bị).`]);
     // Số ngày có thể bán đủ giờ trong khoảng thời gian thật này (ngày nghỉ bán/đóng sớm thì qua nhanh nhưng không có lãi)
     const open = Math.min(Math.max(dd, 0), mins / MIN_DAY_MIN), fast = dd > 3 && mins < dd * MIN_DAY_MIN;
     if (dw > SLACK && dd <= 0) why.push(['bad', `Vốn tăng ${fm(dw)} nhưng ngày game không tăng (ngày ${last.day} → ${row.day}).`]);
-    else if (dw > MAX_PER_DAY * open + SLACK) why.push(['bad', fast
+    else if (dw > mx * open + SLACK) why.push(['bad', fast
       ? `${dd} ngày game trôi qua chỉ trong ${Math.round(mins)} phút thật (chơi liên tục ở 4x cần ≥ ${Math.round(dd * MIN_DAY_MIN)} phút) mà vốn vẫn tăng ${fm(dw)}.`
-      : `Vốn tăng ${fm(dw)} trong ${dd} ngày game (tối đa hợp lệ ~${fm(MAX_PER_DAY * dd + SLACK)}).`]);
-    else if (fast && dw > 0.4 * MAX_PER_DAY * open + SLACK) why.push(['bad', `${dd} ngày game trôi qua chỉ trong ${Math.round(mins)} phút thật (chơi liên tục ở 4x cần ≥ ${Math.round(dd * MIN_DAY_MIN)} phút) mà vốn vẫn tăng ${fm(dw)}.`]);
+      : `Vốn tăng ${fm(dw)} trong ${dd} ngày game (tối đa hợp lệ ~${fm(mx * dd + SLACK)}).`]);
+    else if (fast && dw > 0.4 * mx * open + SLACK) why.push(['bad', `${dd} ngày game trôi qua chỉ trong ${Math.round(mins)} phút thật (chơi liên tục ở 4x cần ≥ ${Math.round(dd * MIN_DAY_MIN)} phút) mà vốn vẫn tăng ${fm(dw)}.`]);
     else if (fast) why.push(['warn', `${dd} ngày game trôi qua trong ${Math.round(mins)} phút thật: nhanh hơn chơi liên tục ở 4x, chỉ có thể nếu nghỉ bán/đóng cửa sớm nhiều ngày.`]);
-    else if (dd > 0 && dw > WARN_PER_DAY * dd + SLACK) why.push(['warn', `Vốn tăng nhanh: ${fm(dw)} trong ${dd} ngày game (~${fm(dw / dd)}/ngày).`]);
+    else if (dd > 0 && dw > wn * dd + SLACK) why.push(['warn', `Vốn tăng nhanh: ${fm(dw)} trong ${dd} ngày game (~${fm(dw / dd)}/ngày).`]);
   }
   h.shop = row.shop;
   h.pts = [...h.pts, { t: now, day: row.day, worth: row.worth, rep: row.rep, stars: row.stars, f: why.length ? why.reduce((a, w) => Math.max(a, LV[w[0]]), 0) : 0 }].slice(-HIST_MAX);
