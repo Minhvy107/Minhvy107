@@ -3293,9 +3293,11 @@ window.openHM=function(){ if(!S) return; closeModal(); const H=hmState(); H.seen
     <div class="row" style="margin-top:6px">${H.done?'<button onclick="hmDone()">🥕 Xem rau củ đã mở</button>':''}<button class="primary" onclick="closeModal()">Đóng</button></div>`); };
 window.hmOpen=function(n,free){ const H=hmState(); if(!hmActive()) return toast('Sự kiện chưa mở');
   if(free){ if(H.free===vnDay()) return toast('Hôm nay đã mở hộp miễn phí'); H.free=vnDay(); return hmPull(1,0); }
-  const cost=n===10?180:20; if(S.gems<cost) return modal(`<h3>💎 Chưa đủ kim cương</h3><p>Cần ${cost}💎, bạn đang có ${S.gems}💎.</p><div class="row"><button onclick="openHM()">Quay lại</button><button class="primary" onclick="closeModal();payOpen()">Nạp 💎</button></div>`);
+  const cost=n===10?180:20; if(S.gems<cost) return modal(`<h3>💎 Chưa đủ kim cương</h3><p>Cần ${cost}💎, bạn đang có ${S.gems}💎.</p><div class="row"><button onclick="openHM()">Quay lại</button><button class="primary" onclick="hmGoTopup()">Nạp 💎</button></div>`);
   if(n===10) return modal(`<h3>🎃 Mở 10 hộp?</h3><p>Dùng <b>180💎</b> để mở 10 hộp mù. Chắc chắn có ít nhất 1 món Hiếm.</p><p class="muted" style="font-size:12.5px">Hôm nay bạn đã dùng ${H.spent}💎 cho hộp mù.</p><div class="row"><button onclick="openHM()">Thôi</button><button class="primary" onclick="hmPull(10,180)">Mở 10 hộp</button></div>`);
   hmPull(1,cost); };
+// mở tab Tủ đồ và cuộn tới khu nạp kim cương
+window.hmGoTopup=function(){ closeModal(); gotoTab('wardrobe'); setTimeout(()=>{ const el=$('#wdPacks'); if(el){ el.scrollIntoView({block:'center',behavior:'smooth'}); el.classList.add('hl'); setTimeout(()=>el.classList.remove('hl'),2500); } },150); };
 window.hmPull=function(n,cost){ const H=hmState(); if(cost){ if(S.gems<cost) return toast('Không đủ 💎'); S.gems-=cost; H.spent+=cost; }
   const res=[]; for(let i=0;i<n;i++) res.push(hmRoll()); cnt('hmBox',n); const done=hmCheckDone(); autosaveSoft(); refreshAll();
   const best=res.reduce((a,b)=>'cres'.indexOf(b.e[1])>'cres'.indexOf(a.e[1])?b:a); sfx(best.e[1]==='c'?'coin':'reward');
