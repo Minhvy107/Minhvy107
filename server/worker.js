@@ -5,7 +5,7 @@
 
 import { Room, Lobby, handleRooms } from './rooms.js';
 import { handleSocial } from './social.js';
-import { handleAdmin, histAdd, histFlag, histKey } from './admin.js';
+import { handleAdmin, histAdd, histFlag, histKey, lbCap } from './admin.js';
 export { Room, Lobby };
 
 const PACKS = {
@@ -95,7 +95,7 @@ async function leaderboard(req, env, path, url) {
     const day = Math.max(1, Math.min(100000, Math.round(Number(b.day) || 1)));
     if (day < LB_MIN_DAY) return json(env, { ok: true, eligible: false, need: LB_MIN_DAY });
     const clean = (s, n) => String(s || '').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, n);
-    const cap = 40e6 + day * 25e6;                                                    // chặn số liệu phi lý
+    const cap = lbCap(day);                                                           // chặn số liệu phi lý (tăng theo tuổi tiệm)
     const row = {
       pid, shop: clean(b.shop, 28) || 'Tiệm tạp hóa', day,
       worth: Math.max(0, Math.min(cap, Math.round(Number(b.worth) || 0))),
