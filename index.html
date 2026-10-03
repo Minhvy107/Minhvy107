@@ -3003,7 +3003,6 @@ window.resolveInc=function(k){ if(k&&INC_ACT[k]) INC_ACT[k](); INC_ACT={}; close
 
 function endDay(){
   if(THIEF) thiefEscape();
-  setTimeout(statPing,500);
   const r=R.st;
   let spoil=0; const spoilList=[], spoilVal=[];
   for(const p of PRODUCTS){
@@ -3247,30 +3246,17 @@ window.lbClaim=function(period,btn){ btn.disabled=true; btn.textContent='Đang n
     else { btn.textContent='Đã nhận trước đó'; } }).catch(()=>{ btn.disabled=false; btn.textContent='Thử lại'; }); };
 
 /* ====== 📈 Đếm người chơi ẩn danh (mỗi thiết bị 1 lần/ngày) ====== */
-/* 📈 Thống kê ẩn danh: ngày chơi, ngày game đã tới, tính năng tự bấm mở (mỗi tính năng tối đa 1 lần/ngày). Không gửi tên, tiền hay dữ liệu cá nhân. */
-const FT_KEY='clx-ft';
-function ftLoad(){ let o=null; try{ o=JSON.parse(localStorage.getItem(FT_KEY)||'null'); }catch(e){} const k=vnDay(); if(!o||o.d!==k) o={d:k,q:[],sent:[]}; return o; }
-function ftSave(o){ try{ localStorage.setItem(FT_KEY,JSON.stringify(o)); }catch(e){} }
-function track(f){ const e=window.event; if(!e||!e.isTrusted||!/^(click|pointerup|touchend|keydown)$/.test(e.type)) return;   // chỉ đếm khi mở trực tiếp từ cú bấm của người chơi, không đếm bảng tự bật
-  const o=ftLoad(); if(o.q.includes(f)||o.sent.includes(f)) return; o.q.push(f); ftSave(o); }
-let _pingDay=-1;
-function statPing(){ if(!S||!PAY_CFG.api) return; const o=ftLoad(), k=o.d; let pinged=null; try{ pinged=localStorage.getItem('clx-ping'); }catch(e){}
-  if(pinged===k&&!o.q.length&&_pingDay>=0&&(S.day===_pingDay||![1,3,5,7,10,14,20,30,50,100].includes(S.day))) return;   // chỉ gửi khi có tính năng mới, sang ngày mới, hoặc chạm mốc ngày game
-  const q=o.q.slice(); _pingDay=S.day;
-  fetch(lbApi('/ping'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:devId(),day:S.day,f:q})}).then(r=>{ if(!r.ok) return;
-    try{ localStorage.setItem('clx-ping',k); }catch(e){} const n=ftLoad(); if(n.d===k){ n.q=n.q.filter(x=>!q.includes(x)); n.sent=[...new Set([...n.sent,...q])]; ftSave(n); } }).catch(()=>{}); }
-// Gắn bộ đếm vào các nút mở tính năng (chạy sau khi mọi hàm đã khai báo)
-setTimeout(()=>{ ['openFair','bcOpen','lotOpen','xdOpen','milOpen','openMPHub','openFriends','openGuild','openWheel','openLogin','openTitles','openRegulars','openBook','openStory','openMarket','openCat','openJuice','openRival','openOrders','openTier','openRename','payOpen','openLeaderboard','openNews','openSaves','thiefCatch','openHM']
-  .forEach(n=>{ const fn=window[n]; if(typeof fn!=='function'||fn._ft) return; const w=function(...a){ try{ track(n); }catch(e){} return fn.apply(this,a); }; w._ft=1; window[n]=w; }); },0);
+function statPing(){ if(!S||!PAY_CFG.api) return; const k=vnDay(); try{ if(localStorage.getItem('clx-ping')===k) return; }catch(e){}
+  fetch(lbApi('/ping'),{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({pid:devId()})}).then(r=>{ if(r.ok){ try{ localStorage.setItem('clx-ping',k); }catch(e){} } }).catch(()=>{}); }
 function devId(){ let d=null; try{ d=localStorage.getItem('clx-dev'); }catch(e){} if(!d){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; d=Array.from({length:6},()=>A[Math.random()*32|0]).join(''); try{ localStorage.setItem('clx-dev',d); }catch(e){} } return d; }
 
 
 /* ====== 🎃 HỘP MÙ BÍ NGÔ ======
-   25/10 → 08/11 (giờ VN). 1 hộp 20💎, 10 hộp 180💎, 1 hộp miễn phí mỗi ngày. Không giới hạn số hộp mỗi ngày.
+   03/10 → 08/11 (giờ VN). 1 hộp 20💎, 10 hộp 180💎, 1 hộp miễn phí mỗi ngày. Không giới hạn số hộp mỗi ngày.
    Bảo hiểm: mỗi 10 hộp chắc chắn ≥ 1 món Hiếm; 150 hộp chắc chắn có món Bí ẩn. Món trùng → mảnh: Thường 5, Hiếm 15, Cực hiếm 40.
    Đổi mảnh: Hiếm 60, Cực hiếm 700, Bí ẩn 1.500. Đủ 24 món: danh hiệu Vua Bí Ngô + mở khóa 24 rau củ quả độc quyền.
    Tất cả là đồ ngoại hình; không bán lại, không chuyển, không đổi ra tiền. */
-const HM_START=Date.UTC(2026,9,25)-7*3600e3, HM_END=Date.UTC(2026,10,9)-7*3600e3;
+const HM_START=Date.UTC(2026,9,3)-7*3600e3, HM_END=Date.UTC(2026,10,9)-7*3600e3;
 const HM_TEST=/hmtest/.test(location.search+location.hash);
 const HM_RATE={c:0.70,r:0.25,e:0.045,s:0.005}, HM_SHARD={c:5,r:15,e:40,s:40}, HM_EX={c:20,r:60,e:700,s:1500}, HM_RN={c:'Thường',r:'Hiếm',e:'Cực hiếm',s:'✨ Bí ẩn'};
 const HM_POOL=[ // [mã ảnh, độ hiếm, món tủ đồ (hoặc 'p:' sản phẩm)]
@@ -3292,11 +3278,11 @@ function hmRoll(){ const H=hmState(); H.n++; H.sinceR++; H.sinceS++;
   return {e,isNew,shard}; }
 function hmCheckDone(){ const H=hmState(); if(H.done||hmOwnCount()<HM_POOL.length) return false; H.done=true; titleCheck(); return true; }
 const hmCell=(e,own)=>`<div class="hm-it hr-${e[1]} ${own?'':'lk'}" title="${esc(own||e[1]!=='s'?hmName(e):'???')}"><img src="${hmImg(e[0])}" alt="">${own>1?`<i>x${own}</i>`:''}</div>`;
-window.openHM=function(){ if(!S) return; closeModal(); track('openHM'); const H=hmState(); H.seen=vnDay();
-  if(!hmActive()&&!H.n) return modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sự kiện Halloween mở từ 25/10 đến 08/11. Hẹn bạn nhé!</p><img src="${hmImg('st11')}" alt=""></div><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`);
+window.openHM=function(){ if(!S) return; closeModal(); const H=hmState(); H.seen=vnDay();
+  if(!hmActive()&&!H.n) return modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sự kiện Halloween mở từ 03/10 đến 08/11. Hẹn bạn nhé!</p><img src="${hmImg('st11')}" alt=""></div><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`);
   const own=hmOwnCount(), free=H.free!==vnDay()&&hmActive(), left=Math.max(0,Math.ceil((HM_END-Date.now())/864e5));
   const order=[...HM_POOL.filter(e=>e[1]==='c'),...HM_POOL.filter(e=>e[1]==='r'),...HM_POOL.filter(e=>e[1]==='e'),...HM_POOL.filter(e=>e[1]==='s')];
-  modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sưu tầm 24 món. Đủ bộ mở khóa rau củ quả độc quyền!</p><span class="t">${hmActive()?(HM_TEST&&Date.now()<HM_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 25/10 → 08/11</span><img src="${hmImg('st11')}" alt=""></div>
+  modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sưu tầm 24 món. Đủ bộ mở khóa rau củ quả độc quyền!</p><span class="t">${hmActive()?(HM_TEST&&Date.now()<HM_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 03/10 → 08/11</span><img src="${hmImg('st11')}" alt=""></div>
     <div class="row" style="justify-content:space-between;margin:0 0 4px"><b>Bộ sưu tập</b><b style="color:#8a4fd8">${own}/${HM_POOL.length}${H.done?' ✓':''}</b></div>
     <div class="hm-grid">${order.map(e=>hmCell(e,H.own[e[0]])).join('')}</div>
     <div class="hm-leg"><span class="hr-c">Thường 70%</span><span class="hr-r">Hiếm 25%</span><span class="hr-e">Cực hiếm 4,5%</span><span class="hr-s">✨ Bí ẩn 0,5%</span></div>
@@ -3340,7 +3326,7 @@ window.hmDone=function(){ const V=PRODUCTS.filter(p=>p.need==='done');
     <div class="row"><button onclick="openHM()">Quay lại</button><button class="primary" onclick="closeModal();gotoTab('kho');catFilter='hm';renderKho()">📦 Nhập hàng</button></div></div>`); };
 // bảng giới thiệu khi sự kiện mở (mỗi ngày 1 lần nếu chưa mở hộp miễn phí)
 function hmPopup(){ if(!S||!hmActive()) return false; const H=hmState(); if(H.seen===vnDay()) return false; H.seen=vnDay();
-  modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sự kiện Halloween đã mở! Sưu tầm 24 món đồ dễ thương.</p><span class="t">25/10 → 08/11</span><img src="${hmImg('st11')}" alt=""></div>
+  modal(`<div class="hm-ban"><h3>🎃 Hộp mù Bí Ngô</h3><p>Sự kiện Halloween đã mở! Sưu tầm 24 món đồ dễ thương.</p><span class="t">03/10 → 08/11</span><img src="${hmImg('st11')}" alt=""></div>
     <div style="display:flex;justify-content:center;gap:8px">${['cl16','st1','fa14'].map(k=>`<img src="${hmImg(k)}" style="width:70px;height:70px;object-fit:contain;background:#f6efff;border-radius:12px;border:2px solid #e3d6f0">`).join('')}</div>
     ${H.free!==vnDay()?'<p style="text-align:center;color:#2f9e5b;font-size:13px;margin:8px 0">🎟️ Hôm nay bạn có 1 hộp miễn phí</p>':''}
     <div class="row"><button onclick="closeModal()">Để sau</button><button class="primary" onclick="openHM()">🎃 Mở hộp ngay</button></div>`); return true; }
@@ -3795,7 +3781,6 @@ let activeTab='store';
 function renderActive(){ ({pass:renderPass,event:renderEventTab,wardrobe:renderWardrobe,kho:renderKho,staff:renderStaff,reviews:renderReviews,equip:renderEquip,ads:renderAds,svc:renderSvc,report:renderReport})[activeTab]?.(); }
 function refreshAll(){ renderHeader(); renderLive(); renderActive(); }
 function gotoTab(t){
-  if(t!=='store') track('tab_'+t);
   activeTab=t;
   $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   $$('.tab').forEach(s=>s.classList.toggle('show',s.id==='tab-'+t));
@@ -4910,6 +4895,11 @@ window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-10-03-hm',date:'03/10/2026',title:'🎃 Hộp mù Bí Ngô',items:[
+    ['🎃','Sự kiện Hộp mù Bí Ngô (03/10 → 08/11): sưu tầm 24 món quần áo, mũ, mắt, miệng, linh vật, nền tiệm. Mở ở ☰ Menu → 🎃 Hộp mù','new'],
+    ['🎟️','Mỗi ngày 1 hộp miễn phí. Mỗi 10 hộp chắc chắn có món Hiếm, 150 hộp chắc chắn có món Bí ẩn','new'],
+    ['🥕','Đủ bộ 24 món: danh hiệu Vua Bí Ngô + mở khóa 24 rau củ quả độc quyền để bán','new'],
+    ['👀','Tủ đồ có thêm ô Mắt và Miệng','new']]},
   {v:'2026-09-30-thief',date:'30/09/2026',title:'🚨 Tự tay bắt trộm',items:[
     ['📹','Có Camera an ninh: khi có trộm, hiện nút 🚨 BẮT! trong 4 giây. Bấm kịp là thu hồi hàng + 💚 uy tín +1 (tối đa +3/ngày)','new'],
     ['🕵️','Danh hiệu mới "Thám tử": tự tay bắt 10 kẻ trộm','new'],
