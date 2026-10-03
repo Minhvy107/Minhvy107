@@ -1,0 +1,17 @@
+{
+  "name": "Xuyên Không Làm Giàu",
+  "short_name": "Xuyên Không",
+  "description": "Game mô phỏng pixel: xuyên không về làng quê Việt xưa, trồng trọt, kinh doanh, làm thương nhân hay quan lại.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2b1a0e",
+  "theme_color": "#2b1a0e",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

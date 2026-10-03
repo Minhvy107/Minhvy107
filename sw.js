@@ -11,5 +11,5 @@ self.addEventListener('fetch', e => {
   e.respondWith(fetch(e.request).then(r => {
     if (r.ok) { const cp = r.clone(); caches.open(CACHE).then(c => c.put(e.request, cp)); }
     return r;
-  }).catch(() => caches.match(e.request).then(r => r || caches.match('./index.html'))));
+  }).catch(() => caches.match(e.request).then(r => r || (u.pathname.includes('/xuyen-khong/') ? Response.error() : caches.match('./index.html')))));
 });

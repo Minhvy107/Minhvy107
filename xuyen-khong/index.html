@@ -7,7 +7,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Xuyên Không Làm Giàu</title>
-<link rel="icon" type="image/png" href="../icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Xuyên Không">
 <style>
 :root{--wood:#7a4a26;--wood2:#4e2c12;--paper:#f6ebcf;--ink:#3b2412;--win:#1d2f6b;--win2:#2a43a0;--gold:#ffd54a;--sys:#6fd3ff}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -81,11 +84,20 @@ input[type=text]{font:inherit;font-weight:800;padding:7px 9px;border-radius:6px;
 .sysT{color:var(--sys);font-weight:900}
 #title{position:fixed;inset:0;z-index:30;background:#100a05;display:flex;align-items:center;justify-content:center}
 #tc{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
-.tbox{position:relative;width:min(92%,420px);text-align:center;background:rgba(10,20,50,.82);border:3px solid #9fe6ff;border-radius:12px;padding:16px 14px;box-shadow:0 0 24px rgba(80,190,255,.6)}
+.tbox{position:relative;width:min(92%,420px);max-height:94vh;overflow-y:auto;text-align:center;background:rgba(10,20,50,.82);border:3px solid #9fe6ff;border-radius:12px;padding:16px 14px;box-shadow:0 0 24px rgba(80,190,255,.6)}
 .tbox h1{margin:0;font-size:30px;line-height:1.1;color:var(--gold);text-shadow:3px 3px 0 #6b2d0c,0 0 14px rgba(255,200,80,.5);letter-spacing:.5px}
 .tbox .tag{color:#dff6ff;font-weight:700;font-size:13px;margin:6px 0 12px}
 .tbox .btn{display:block;width:100%;margin:7px 0;padding:9px;font-size:15px}
 .tbox a{color:#9fe6ff;font-size:12px}
+.flab{color:#9fe6ff;font-weight:800;font-size:12.5px;text-align:left;margin:8px 0 4px}
+.gsel{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gcard{background:#0b1a4a;border:3px solid #3e5aa8;border-radius:10px;padding:6px;color:#fff;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px}
+.gcard img{height:84px;image-rendering:pixelated}
+.gcard.on{border-color:var(--gold);background:#2a3f8a;box-shadow:0 0 10px rgba(255,213,74,.6)}
+.osel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ocard{background:#0b1a4a;border:2px solid #3e5aa8;border-radius:8px;padding:4px 2px;color:#dff6ff;font-size:11.5px;font-weight:800;display:flex;flex-direction:column;align-items:center}
+.ocard img{height:48px;image-rendering:pixelated}
+.ocard.on{border-color:var(--gold);background:#2a3f8a}
 </style>
 </head>
 <body>
@@ -121,9 +133,18 @@ input[type=text]{font:inherit;font-weight:800;padding:7px 9px;border-radius:6px;
   <div class="tbox">
     <h1>XUYÊN KHÔNG<br>LÀM GIÀU</h1>
     <div class="tag">[Ting!] Hệ thống đã liên kết với ký chủ.<br>Làng quê Việt xưa · Trồng trọt · Kinh doanh · Thương nhân hay Quan lại?</div>
-    <div id="tcont"></div>
-    <button class="btn" id="tnew">✨ Bắt đầu kiếp mới</button>
-    <a href="../">← Về Chợ Lá Xanh</a>
+    <div id="tmenu"><div id="tcont"></div>
+    <button class="btn" id="tnew">✨ Bắt đầu kiếp mới</button></div>
+    <div id="tform" class="hide">
+      <div class="flab">Chọn nhân vật</div>
+      <div class="gsel"><button class="gcard" data-g="nu"><img id="pv_nu"><b>👩 Nữ</b></button><button class="gcard" data-g="nam"><img id="pv_nam"><b>👨 Nam</b></button></div>
+      <div class="flab">Trang phục lúc xuyên không</div>
+      <div class="osel" id="osel"></div>
+      <div class="flab">Tên nhân vật</div><input type="text" id="tname" maxlength="16">
+      <div class="flab">Tên làng</div><input type="text" id="tvil" maxlength="12" value="An Bình">
+      <button class="btn b" id="tgo" style="margin-top:10px">✦ Xuyên không!</button>
+      <a href="#" id="tback">← Quay lại</a>
+    </div>
   </div>
 </div>
 <script>
@@ -267,8 +288,8 @@ const QA=[
 /* ============ TRẠNG THÁI ============ */
 let S=null,cust=[],fx=[],cid=0,spawnAcc=0,running=false,me=null,burstT=0;
 const occ=new Int16Array(COLS*ROWS),own=new Uint8Array(COLS*ROWS),byUid=new Map();
-function fresh(name){
-  return {v:1,name:name||'Ký chủ',money:800,sp:3,pop:0,rank:0,y:1,m:1,w:1,t:0,spd:1,b:[],uid:0,staff:[],sid:0,cand:[],land:[0],sys:{},inv:{},ads:[],cf:{},
+function fresh(name,hero,gender,outfit){
+  return {v:1,name:name||'An Bình',hero:hero||'Ký chủ',gender:gender||'nu',outfit:outfit||0,money:800,sp:3,pop:0,rank:0,y:1,m:1,w:1,t:0,spd:1,b:[],uid:0,staff:[],sid:0,cand:[],land:[0],sys:{},inv:{},ads:[],cf:{},
     ms:{inc:0,exp:0,vis:0,sat:0},ys:{sales:0,vis:0,sat:0},hist:[],aw:[],k:{harv:{},sold:{},earn:0,trips:0},q:0,sq:null,path:null,trank:0,qrank:0,dt:50,
     ships:[],exNext:0,trang:0,end:0,debt:0,opt:{sfx:1,bgm:0},tut:0,ev:{},burst:0,wx:0};
 }
@@ -346,6 +367,15 @@ const NAMES=['Bờm','Cô Tấm','Cám','Anh Khoai','Chị Dậu','Lão Hạc','
 function mkStaff(){const b=6+S.rank*5;const used=new Set([...S.staff,...(S.cand||[])].map(x=>x.n));const free=NAMES.filter(n=>!used.has(n));const s={id:++S.sid,n:free.length?pick(free):pick(NAMES)+' '+ri(2,9),suc:ri(b,b+22),kheo:ri(b,b+22),noi:ri(b,b+22),lv:1,exp:0,at:null,o:look('nv')};s.sal=Math.round(15+(s.suc+s.kheo+s.noi)*.6);return s;}
 function refreshCand(){S.cand=[];for(let i=0;i<3;i++)S.cand.push(mkStaff());}
 const SKIN=['#f5c9a0','#eab58a','#d9a074','#f2c29b'];
+const OUTFITS=['Áo hoodie','Đồ công sở','Áo thun'];
+function heroLook(g,o){
+  const nu=g!=='nam';const L={sk:'#f5c9a0',hr:nu?'#3a1d0e':'#2a1a10',phone:1};
+  if(nu){L.lh=1;L.hat='bow';}
+  if(o===1){L.sh='#f4f4f4';L.pa=nu?'#2d2d3a':'#2d2d3a';if(!nu)L.tie=1;else L.skirt=1;}
+  else if(o===2){L.sh=nu?'#ffd23f':'#3fbf7f';L.pa='#3a3a48';}
+  else{L.sh=nu?'#ff7aa8':'#4a7fd6';L.pa='#3d5a9e';if(!nu)L.hat='hood';}
+  return L;
+}
 function look(ty){
   const sk=pick(SKIN);
   switch(ty){
@@ -355,7 +385,7 @@ function look(ty){
     case 'linh':return {sk,hr:'#1d1d1d',sh:'#b03a2e',pa:'#2d2a26',hat:'linh'};
     case 'phu':return {sk,hr:'#1d1d1d',sh:pick(['#7d3c98','#1f618d','#922b21']),pa:'#2d2a26',hat:'khan',long:1,gold:1};
     case 'tay':return {sk:'#ffd9c0',hr:'#e2b85c',sh:'#1f3a93',pa:'#3a2a1a',hat:'tri',beard:1};
-    case 'me':return {sk:'#f5c9a0',hr:'#5a3416',sh:'#ff7aa8',pa:'#4a6fb5',hat:'hood',phone:1};
+    case 'me':return heroLook(S.gender,S.outfit);
     case 'rv':return {sk,hr:'#1d1d1d',sh:'#c0392b',pa:'#2d2a26',hat:'khan',long:1,gold:1};
     default:return {sk,hr:pick(['#1d1d1d','#3a2414']),sh:pick(['#a0522d','#556b2f','#8b4513','#6b4f3a','#7b6a58']),pa:'#2d2a26',hat:pick(['non','khan','none']),apron:1};
   }
@@ -370,20 +400,24 @@ function person(x,y,o,fr,sit){
   x=Math.round(x);y=Math.round(y);
   R(x-3,y-1,7,2,'rgba(0,0,0,.2)');
   if(o.long){R(x-3,y-7,7,6,o.sh);R(x-2,y-1,2,1,'#222');R(x+1,y-1,2,1,'#222');}
+  else if(o.skirt){R(x-2,y-2,2,2,o.sk);R(x+1,y-2,2,2,o.sk);R(x-2,y,2,1,'#222');R(x+1,y,2,1,'#222');R(x-3,y-7,7,4,o.sh);R(x-3,y-3,7,2,o.pa);}
   else{R(x-2,y-3,2,fr?3:2,o.pa);R(x+1,y-3,2,fr?2:3,o.pa);R(x-3,y-7,7,4,o.sh);}
   R(x-4,y-7,1,3,o.sk);R(x+4,y-7,1,3,o.sk);
   if(o.apron)R(x-2,y-6,5,3,'#e9dcc0');
   if(o.gold){R(x-3,y-7,7,1,'#f4c542');R(x,y-6,1,4,'#f4c542');}
   if(o.bag)R(x+3,y-6,2,3,'#a67c52');
   if(o.phone)R(x+4,y-6,1,2,'#222');
+  if(o.tie)R(x,y-7,1,3,'#c0392b');
   R(x-3,y-12,7,5,o.sk);R(x-3,y-13,7,2,o.hr);R(x-3,y-11,1,2,o.hr);R(x+3,y-11,1,2,o.hr);
   R(x-2,y-10,1,1,'#222');R(x+1,y-10,1,1,'#222');
   if(o.beard)R(x-2,y-8,5,1,o.hr);
+  if(o.lh){R(x-4,y-12,1,7,o.hr);R(x+4,y-12,1,7,o.hr);R(x-4,y-13,9,1,o.hr);}
   switch(o.hat){
     case 'non':R(x-5,y-12,11,1,'#e8d48a');R(x-4,y-13,9,1,'#e3cc7c');R(x-3,y-14,7,1,'#e8d48a');R(x-2,y-15,5,1,'#e3cc7c');R(x-1,y-16,3,1,'#e8d48a');R(x,y-17,1,1,'#d9bd62');break;
     case 'khan':R(x-3,y-14,7,2,'#1a1a1a');R(x-3,y-14,7,1,'#333');break;
     case 'linh':R(x-4,y-13,9,1,'#c0392b');R(x-2,y-15,5,2,'#c0392b');R(x,y-16,1,1,'#f4c542');break;
     case 'tri':R(x-4,y-14,9,2,'#4a2a12');R(x-2,y-16,5,2,'#4a2a12');break;
+    case 'bow':R(x+2,y-15,3,2,'#ff4d8d');R(x+3,y-14,1,1,'#c2185b');break;
     case 'hood':R(x-4,y-13,1,6,o.sh);R(x+4,y-13,1,6,o.sh);R(x-3,y-14,7,1,o.sh);break;
   }
 }
@@ -470,7 +504,7 @@ function ground(){
 function fenceH(X,Y){R(X,Y+1,T,1,'#4f7a2a');for(let i=0;i<T;i+=3)R(X+i,Y-1,2,3,'#3e8e3e');}
 function fenceV(X,Y){for(let j=0;j<T;j+=3)R(X,Y+j,2,2,'#3e8e3e');}
 function gate(){const X=5*T,Y=13*T;R(X-3,Y-4,3,T+8,'#7b241c');R(X+2*T,Y-4,3,T+8,'#7b241c');R(X-6,Y-8,2*T+12,5,'#8b2c1f');R(X-8,Y-9,4,2,'#a83a28');R(X+2*T+4,Y-9,4,2,'#a83a28');
-  R(X+4,Y-3,2*T-8,5,'#2b1a0e');txt('LÀNG '+(S.name.length<9?S.name.toUpperCase():'LÁ XANH'),X+T,Y-0.4,3.6,'#ffd54a');}
+  R(X+4,Y-3,2*T-8,5,'#2b1a0e');txt('LÀNG '+(S.name.length<9?S.name.toUpperCase():''),X+T,Y-0.4,3.6,'#ffd54a');}
 function drawC(c){
   let ox=0,oy=0;
   if(c.mode==='q'){const b=byUid.get(c.tgt);if(b){const i=b.q.indexOf(c);ox=[0,-5,5,-9,9,-12,12][i]||0;oy=i?2:0;}}
@@ -928,7 +962,7 @@ function openInfo(){
       <div class="li"><div class="flex"><span class="sp">🎵 Nhạc nền</span><button class="btn sm" data-a="${A(()=>{S.opt.bgm^=1;bgm();rerender();})}">${S.opt.bgm?'Bật':'Tắt'}</button></div></div>
       <div class="li"><div class="flex"><span class="sp">💾 Lưu game (tự lưu mỗi tuần)</span><button class="btn sm" data-a="${A(()=>{save();banner('Đã lưu!');})}">Lưu</button></div></div>
       <div class="li"><div class="flex"><span class="sp">🔄 Chơi lại từ đầu</span><button class="btn r sm" data-a="${A(()=>{if(confirm('Xóa bản lưu và bắt đầu kiếp mới?')){try{localStorage.removeItem(KEY);}catch(e){}location.reload();}})}">Xóa</button></div></div>
-      <div class="li"><a href="../" style="color:#1d2f6b;font-weight:800">← Về game Chợ Lá Xanh</a></div>`;}
+`;}
     return h;
   });
 }
@@ -946,7 +980,7 @@ function updTop(){
 }
 function ending(){
   const t=S.path==='thuong'?'Đệ nhất phú hộ thiên hạ':'Thượng thư triều đình';
-  showModal('✦ KẾT THÚC: '+t,()=>`<p style="font-size:15px">[Ting!] Chúc mừng ký chủ <b>${S.name}</b> đã hoàn thành Hệ thống Làm Giàu Xuyên Không!</p><p>${S.path==='thuong'?'Thuyền buôn của bạn đi khắp bốn biển, tên làng vang tới tận Tây dương.':'Từ cô/cậu nhân viên văn phòng, bạn đã thành rường cột triều đình, dân làng lập bia ghi công.'}</p>
+  showModal('✦ KẾT THÚC: '+t,()=>`<p style="font-size:15px">[Ting!] Chúc mừng ký chủ <b>${S.hero||S.name}</b> đã hoàn thành Hệ thống Làm Giàu Xuyên Không!</p><p>${S.path==='thuong'?'Thuyền buôn của bạn đi khắp bốn biển, tên làng vang tới tận Tây dương.':'Từ '+(S.gender==='nam'?'chàng':'cô')+' nhân viên văn phòng, bạn đã thành rường cột triều đình, dân làng lập bia ghi công.'}</p>
    <p>Thời gian: ${S.y} năm · Tài sản ${fm(assets())} văn · ⭐ ${Math.round(S.pop)} · Combo ${Object.keys(S.cf).length}/${COMBO.length}</p><p class="muted">Hệ thống hỏi: Ký chủ muốn quay về năm 2026, hay ở lại làng?</p>
    <button class="btn opt b" data-a="${A(()=>{closeModal();sysToast('Ký chủ chọn ở lại. Cuộc sống tiếp tục!');})}">🏡 Ở lại làng (chơi tiếp)</button>`,1,1);snd('combo');
 }
@@ -978,7 +1012,7 @@ cv.addEventListener('click',e=>{
   if(!S)return;ac();const [x,y,px,py]=tileAt(e);
   if(BM){if(BM.gx===x&&BM.gy===y&&e.pointerType!=='mouse'){place();return;}if(e.pointerType==='mouse'&&BM.gx===x&&BM.gy===y){place();return;}BM.gx=x;BM.gy=y;updBH();return;}
   for(const c of cust){if(Math.abs(c.x-px)<5&&py<c.y+2&&py>c.y-15){const d=CT[c.ty]||{n:'Quan Tổng đốc'};banner(`${d.n} · còn ${fm(c.bud)} văn · ${c.sat>2?'😊':c.sat<0?'😠':'🙂'}`);return;}}
-  if(me&&Math.abs(me.x-px)<5&&py<me.y+2&&py>me.y-15){banner(`👤 ${S.name} (ký chủ xuyên không) · "${pick(['Ở đây không có wifi…','Nhớ trà sữa quá!','Hệ thống ơi, bao giờ được về?','Làm giàu thôi!'])}"`);return;}
+  if(me&&Math.abs(me.x-px)<5&&py<me.y+2&&py>me.y-15){banner(`👤 ${S.hero||S.name} (ký chủ xuyên không) · "${pick(['Ở đây không có wifi…','Nhớ trà sữa quá!','Hệ thống ơi, bao giờ được về?','Làm giàu thôi!'])}"`);return;}
   if(x<0||y<0||x>=COLS||y>=ROWS)return;const k=occ[y*COLS+x];
   if(k>=0){openB(S.b[k]);return;}
   if(y<ROAD&&!own2(x,y)){buildTab='dat';openBuild();}
@@ -1001,8 +1035,8 @@ function startGame(st){
 }
 function intro(){
   const pages=[
-    `Năm 2026. Sau ca tăng ca thứ năm trong tuần, bạn gục xuống bàn phím…<br><br>Mở mắt ra: mái rạ, khói bếp, tiếng gà gáy. Một bà cụ nhìn bạn chằm chằm: <i>"Người ở đâu mà ăn mặc lạ thế này?"</i>`,
-    `<span class="sysT">[Ting!] Hệ thống Làm Giàu Xuyên Không đã liên kết.</span><br><br>Ký chủ: <b>${S.name}</b><br>Thời đại: niên hiệu An Lạc năm thứ 1<br>Vốn khởi nghiệp: <b>800 văn</b><br>Nhiệm vụ cuối: làm giàu và đổi vận cả làng.`,
+    `Năm 2026. Sau ca tăng ca thứ năm trong tuần, bạn gục xuống bàn phím…<br><br>Mở mắt ra: mái rạ, khói bếp, tiếng gà gáy. Một bà cụ nhìn bạn chằm chằm: <i>"${S.gender==='nam'?'Thằng bé':'Con bé'} nhà ai mà ăn mặc lạ thế này?"</i>`,
+    `<span class="sysT">[Ting!] Hệ thống Làm Giàu Xuyên Không đã liên kết.</span><br><br>Ký chủ: <b>${S.hero||S.name}</b> (${S.gender==='nam'?'nam':'nữ'})<br>Làng: <b>${S.name}</b><br>Thời đại: niên hiệu An Lạc năm thứ 1<br>Vốn khởi nghiệp: <b>800 văn</b><br>Nhiệm vụ cuối: làm giàu và đổi vận cả làng.`,
     `<b>Cách chơi</b><br>🌾 <b>Nông trại</b> làm ra hàng → 📦 Kho<br>🏮 <b>Quán</b> lấy hàng trong kho bán cho khách<br>👥 Mỗi công trình cần 1 người làm<br>🎉 Đặt công trình hợp nhau gần nhau để có <b>Combo</b><br>✦ Làm nhiệm vụ Hệ thống để đổi kiến thức hiện đại<br><br>Khi làng thành hình, bạn sẽ chọn: <b>Thương nhân</b> hay <b>Quan lại</b>?`,
   ];
   let i=0;const show=()=>showModal('✦ Hệ thống',()=>`<p style="font-size:15px">${pages[i]}</p><button class="btn opt b" data-a="${A(()=>{i++;if(i<pages.length)show();else{closeModal();sysToast('Nhiệm vụ đầu tiên: Trồng 1 Luống rau!');}})}">${i<pages.length-1?'Tiếp ▶':'Bắt đầu!'}</button>`,1,1);show();
@@ -1022,9 +1056,22 @@ function intro(){
   const sv=load();
   if(sv)$('#tcont').innerHTML=`<button class="btn b" id="tcont2">▶ Tiếp tục: Làng ${sv.name} · Năm ${sv.y} Th${sv.m}</button>`;
   if(sv)$('#tcont2').onclick=()=>{ac();startGame(sv);};
+  let gd='nu',of=0;
+  const DEFN={nu:'Thu Hà',nam:'Minh Khoa'};
+  function pv(g,o,sc){const c=document.createElement('canvas');c.width=20*sc;c.height=22*sc;const old=cx;cx=c.getContext('2d');cx.setTransform(sc,0,0,sc,0,0);person(10,20,heroLook(g,o),0);cx=old;return c.toDataURL();}
+  function form(){
+    $('#pv_nu').src=pv('nu',gd==='nu'?of:0,4);$('#pv_nam').src=pv('nam',gd==='nam'?of:0,4);
+    document.querySelectorAll('.gcard').forEach(b=>b.classList.toggle('on',b.dataset.g===gd));
+    $('#osel').innerHTML=OUTFITS.map((n,i)=>`<button class="ocard ${i===of?'on':''}" data-o="${i}"><img src="${pv(gd,i,3)}">${n}</button>`).join('');
+    document.querySelectorAll('.ocard').forEach(b=>b.onclick=()=>{of=+b.dataset.o;form();});
+    const nm=$('#tname');if(!nm.value||Object.values(DEFN).includes(nm.value))nm.value=DEFN[gd];
+  }
+  document.querySelectorAll('.gcard').forEach(b=>b.onclick=()=>{gd=b.dataset.g;form();});
   $('#tnew').onclick=()=>{ac();if(sv&&!confirm('Bắt đầu kiếp mới sẽ xóa bản lưu cũ. Tiếp tục?'))return;
-    const n=(prompt('Tên của ký chủ (cũng là tên làng):','Lá Xanh')||'Lá Xanh').trim().slice(0,16)||'Lá Xanh';
-    const st=fresh(n);S=st;st.staff.push(mkStaff());st.staff.push(mkStaff());startGame(st);save();};
+    $('#tmenu').classList.add('hide');$('#tform').classList.remove('hide');form();};
+  $('#tback').onclick=e=>{e.preventDefault();$('#tform').classList.add('hide');$('#tmenu').classList.remove('hide');};
+  $('#tgo').onclick=()=>{ac();const hero=$('#tname').value.trim().slice(0,16)||DEFN[gd];const vil=$('#tvil').value.trim().slice(0,12)||'An Bình';
+    const st=fresh(vil,hero,gd,of);S=st;st.staff.push(mkStaff());st.staff.push(mkStaff());startGame(st);save();};
 })();
 requestAnimationFrame(frame);
 </script>
