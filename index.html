@@ -5010,6 +5010,9 @@ window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-10-03-lb',date:'03/10/2026',title:'🏆 Sửa cách tính điểm Bảng xếp hạng',items:[
+    ['🏆','Bảng xếp hạng hiện đúng tổng tài sản của tiệm lâu năm. Trước đây vốn bị giới hạn 25 triệu/ngày game nên tiệm lớn (có chi nhánh, tập đoàn) bị hiện thấp hơn thực tế','fix'],
+    ['📈','Mức giới hạn chống gian lận giờ tăng theo tuổi tiệm (ngày 209 ~70 tỷ, ngày 360 ~203 tỷ). Số mới hiện sau khi bạn chơi tiếp khoảng 20–30 phút','fix']]},
   {v:'2026-10-03-corp',date:'03/10/2026',title:'🏢 Tập đoàn & Báo Chợ Lá Cải',items:[
     ['🏢','Tiệm lên Siêu thị mở khóa Tập đoàn (☰ Menu → 🏢): bản đồ 6 quận, mua lại tiệm đối thủ, mở cửa hàng ở mặt bằng trống, thống lĩnh quận','new'],
     ['💼','Đầu tư Chuỗi nhà hàng (nấu hàng sắp hư), Spa & làm đẹp, Điện máy & trả góp. Lãi cộng cuối mỗi ngày','new'],
