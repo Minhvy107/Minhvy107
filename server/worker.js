@@ -102,7 +102,7 @@ async function leaderboard(req, env, path, url) {
       rep: Math.max(0, Math.min(100, Math.round(Number(b.rep) || 0))),
       stars: Math.max(0, Math.min(5, Math.round((Number(b.stars) || 0) * 10) / 10)), at: now,
       frame: ['hang'].includes(b.frame) ? b.frame : '',
-      title: ['haggle', 'kind', 'smart', 'streak', 'lucky', 'hand', 'star', 'trust', 'rich', 'old', 'mil', 'wolf', 'uno', 'boom', 'quiz', 'xom', 'book', 'cat', 'king', 'mart', 'gift', 'thief'].includes(b.title) ? b.title : '',
+      title: ['haggle', 'kind', 'smart', 'streak', 'lucky', 'hand', 'star', 'trust', 'rich', 'old', 'mil', 'wolf', 'uno', 'boom', 'quiz', 'xom', 'book', 'cat', 'king', 'mart', 'gift', 'thief', 'hmking'].includes(b.title) ? b.title : '',
     };
     // Tiết kiệm lượt ghi KV (gói miễn phí chỉ 1.000 lượt/ngày, cần để dành cho nạp tiền): mỗi tiệm tối đa 1 lần / LB_GAP
     const rankIn = async key => JSON.parse((await env.ORDERS.get(key)) || '[]').findIndex(r => r.pid === pid) + 1;
@@ -172,7 +172,7 @@ const FEATS = {
   openFriends: '🏘️ Bạn bè', openGuild: '🤝 Hội chủ tiệm', openWheel: '🎡 Vòng quay', openLogin: '📅 Điểm danh', openTitles: '🏅 Danh hiệu',
   openRegulars: '💞 Khách quen', openBook: '📒 Sổ khách', openStory: '📖 Cốt truyện', openMarket: '📈 Chợ đầu mối', openCat: '🐱 Mèo',
   openJuice: '🧃 Quầy nước', openRival: '⚔️ Đối thủ', openOrders: '🛵 Đơn online', openTier: '🏢 Nâng cấp tiệm', openRename: '✏️ Đổi tên',
-  payOpen: '💳 Mở nạp', openLeaderboard: '🏆 Bảng xếp hạng', openNews: '📰 Có gì mới', openSaves: '💾 Lưu game', thiefCatch: '🚨 Bắt trộm',
+  payOpen: '💳 Mở nạp', openLeaderboard: '🏆 Bảng xếp hạng', openNews: '📰 Có gì mới', openSaves: '💾 Lưu game', thiefCatch: '🚨 Bắt trộm', openHM: '🎃 Hộp mù',
 };
 async function stats(req, env, path) {
   let now = Date.now(), today = vnDay(now);
